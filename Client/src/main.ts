@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 import Preload from './scenes/Preload';
 import Game from './scenes/Game';
+import Background from './scenes/Background';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -18,7 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: true,
     },
   },
-  scene: [Preload, Game],
+  scene: [Preload, Background, Game],
 };
 
 export default new Phaser.Game(config);

@@ -7,6 +7,8 @@ export default class Preload extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('backdrop_day', 'assets/background/backdrop_day.png');
+
     this.load.tilemapTiledJSON('tilemap', 'assets/map/map.json');
     this.load.spritesheet('tiles_wall', 'assets/map/FloorAndGround.png', {
       frameWidth: 32,
@@ -20,6 +22,16 @@ export default class Preload extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('game');
+    // this.scene.start('game');
+    this.launchBackground();
+    this.launchGame();
+  }
+
+  launchBackground() {
+    this.scene.launch(SceneType.BACKGROUND);
+  }
+
+  launchGame() {
+    this.scene.launch(SceneType.GAME);
   }
 }
