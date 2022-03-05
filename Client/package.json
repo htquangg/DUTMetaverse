@@ -16,6 +16,7 @@
 	},
 	"homepage": "https://github.com/ourcade/phaser3-parcel-template",
 	"devDependencies": {
+		"@babel/core": "^7.17.5",
 		"@typescript-eslint/eslint-plugin": "^2.29.0",
 		"@typescript-eslint/parser": "^2.29.0",
 		"eslint": "^6.8.0",
@@ -25,6 +26,7 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
+		"babel-plugin-module-resolver": "^4.1.0",
 		"phaser": "^3.55.2"
 	},
 	"parcelCleanPaths": [
