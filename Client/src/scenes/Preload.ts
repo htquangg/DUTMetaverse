@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
+import { SceneType } from '@tlq/types//Scene';
 
 export default class Preload extends Phaser.Scene {
   constructor() {
-    super('preload');
+    super(SceneType.PRELOAD);
   }
 
   preload() {

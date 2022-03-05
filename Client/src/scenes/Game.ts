@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
-import { createCharacterAnim } from '../anim/CharacterAnims';
-import { debugDraw } from '../utils/debug';
+import { createCharacterAnim } from '@tlq/anims/CharacterAnims';
+import { debugDraw } from '@tlq/utils/debug';
 
-import '../character/Player';
-import Player from '../character/Player';
+import '@tlq/character/Player';
+import Player from '@tlq/character/Player';
+
+import {SceneType} from "@tlq/types/Scene";
 
 export default class Game extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
@@ -12,7 +14,7 @@ export default class Game extends Phaser.Scene {
   private player!: Player;
 
   constructor() {
-    super('game');
+    super(SceneType.GAME);
   }
 
   preload() {
