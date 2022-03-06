@@ -15,12 +15,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@tlq/*": ["src/*"],
-      "@tlq/types/*": ["src/types/*"],
-      "@tlq/scenes/*": ["src/scenes/*"],
-      "@tlq/anims/*": ["src/anims/*"],
-      "@tlq/character/*": ["src/character/*"],
-      "@tlq/utils/*": ["src/utils/*"]
+      "@tlq/*": ["src/*"]
     },
     "typeRoots": ["node_modules/@types", "node_module/phaser/types"],
     "types": ["phaser"]
