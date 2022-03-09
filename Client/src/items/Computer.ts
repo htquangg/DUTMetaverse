@@ -17,7 +17,7 @@ export default class Computer extends ItemBase {
   }
 
   public onOverlapDialog(): void {
-    this.setDialogBox('Press R to use computer');
+    this.showDialogBox('Press R to use computer');
   }
 
   public openDialog() {}

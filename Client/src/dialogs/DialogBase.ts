@@ -6,12 +6,18 @@ export default class DialogBase extends Phaser.GameObjects.Container {
     x?: number,
     y?: number,
     children?: Phaser.GameObjects.GameObject[],
+    width?: number,
+    height?: number,
   ) {
     super(scene, x, y, children);
     this.setDepth(10000);
+
+    if (width && height) {
+      this.setSize(width, height);
+    }
   }
 
-  public showMessageBox(text: string): void {
+  public show(text: string): void {
     const innerText = this.scene.add
       .text(0, 0, text)
       .setFontFamily('Aria')
@@ -20,8 +26,8 @@ export default class DialogBase extends Phaser.GameObjects.Container {
 
     const dlgBoxWidth = innerText.width + 4;
     const dlgBoxHeight = innerText.height + 2;
-    const dlgBoxX = this.x - dlgBoxWidth * 0.5;
-    const dlgBoxY = this.y - this.height * 0.5;
+    const dlgBoxX = -dlgBoxWidth * 0.5;
+    const dlgBoxY = -this!.height * 0.5;
 
     this.add(
       this.scene.add
@@ -34,7 +40,7 @@ export default class DialogBase extends Phaser.GameObjects.Container {
     this.add(innerText.setPosition(dlgBoxX + 2, dlgBoxY));
   }
 
-  public clearMessagebox() {
-    this.removeAll();
+  public clear(): void {
+    this.removeAll(true);
   }
 }

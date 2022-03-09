@@ -17,7 +17,7 @@ export default class Whiteboard extends ItemBase {
   }
 
   public onOverlapDialog() {
-    this.setDialogBox('Press R to use whiteboard');
+    this.showDialogBox('Press R to use whiteboard');
   }
 
   public openDialog() {}

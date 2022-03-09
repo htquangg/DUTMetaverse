@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { ItemType } from '@tlq/types';
+import { DialogBase } from '@tlq/dialogs';
 
 export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
-  private dialogBox!: Phaser.GameObjects.Container;
+  private dialogBase!: DialogBase;
 
   public getType(): ItemType {
     return ItemType.NONE;
@@ -20,33 +21,22 @@ export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
 
-    this.dialogBox = this.scene.add.container().setDepth(10000);
+    this.dialogBase = new DialogBase(
+      this.scene,
+      x,
+      y,
+      undefined,
+      this.width,
+      this.height,
+    );
+    this.scene.add.existing(this.dialogBase);
   }
 
-  public setDialogBox(text: string): void {
-    const innerText = this.scene.add
-      .text(0, 0, text)
-      .setFontFamily('Aria')
-      .setFontSize(12)
-      .setColor('#000000');
-
-    const dlgBoxWidth = innerText.width + 4;
-    const dlgBoxHeight = innerText.height + 2;
-    const dlgBoxX = this.x - dlgBoxWidth * 0.5;
-    const dlgBoxY = this.y - this.height * 0.5;
-
-    this.dialogBox.add(
-      this.scene.add
-        .graphics()
-        .fillStyle(0xffffff, 1)
-        .fillRoundedRect(dlgBoxX, dlgBoxY, dlgBoxWidth, dlgBoxHeight, 3)
-        .strokeRoundedRect(dlgBoxX, dlgBoxY, dlgBoxWidth, dlgBoxHeight, 3),
-    );
-
-    this.dialogBox.add(innerText.setPosition(dlgBoxX + 2, dlgBoxY));
+  public showDialogBox(text: string): void {
+    this.dialogBase.show(text);
   }
 
   public clearDialogBox(): void {
-    this.dialogBox.removeAll(true);
+    this.dialogBase.clear();
   }
 }

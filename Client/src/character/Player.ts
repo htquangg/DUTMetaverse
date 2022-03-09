@@ -102,7 +102,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
           });
 
           chairItem.clearDialogBox();
-          chairItem.setDialogBox('Press E to leave');
+          chairItem.showDialogBox('Press E to leave');
           this.behavior = PlayerState.SITTING;
           return;
         }
