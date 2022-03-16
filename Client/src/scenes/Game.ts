@@ -6,27 +6,25 @@ import {
   TilesetKey,
   PlayerKey,
   PlayerState,
+  CustomCursorKeys,
 } from '@tlq/types';
-import { debugDraw } from '@tlq/utils';
+import { debugDraw, createCursorKeys } from '@tlq/utils';
 
 import { createCharacterAnim } from '@tlq/anims';
 
 import '@tlq/character';
-import { Player } from '@tlq/character';
+import { Player, PlayerSelector } from '@tlq/character';
 
 import { ItemBase, Chair, Computer, Whiteboard } from '@tlq/items';
 
 export default class Game extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
 
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private keyE!: Phaser.Input.Keyboard.Key;
-  private keyR!: Phaser.Input.Keyboard.Key;
-  private keyH!: Phaser.Input.Keyboard.Key;
-  private keyJ!: Phaser.Input.Keyboard.Key;
-  private keyK!: Phaser.Input.Keyboard.Key;
-  private keyL!: Phaser.Input.Keyboard.Key;
+  private cursors!: CustomCursorKeys;
+
   private player!: Player;
+  private playerSelector!: PlayerSelector;
+
   private items!: Phaser.Physics.Arcade.StaticGroup;
 
   constructor() {
@@ -81,6 +79,7 @@ export default class Game extends Phaser.Scene {
         AssetKey.COMPUTER,
         TilesetKey.COMPUTER,
       ) as Computer;
+
       item.setDepth(item.y + item.height * 0.27);
     });
 
@@ -96,12 +95,13 @@ export default class Game extends Phaser.Scene {
     });
 
     this.player = this.add.player(100, 100, PlayerKey.NANCY);
+    this.playerSelector = new PlayerSelector(this, 0, 0, 16, 16);
 
     this.cameras.main.startFollow(this.player);
 
     this.physics.add.collider(this.player, wallLayer);
     this.physics.add.overlap(
-      this.player,
+      this.playerSelector,
       [chairs, computers, whiteboards],
       this.handleItemSelectorOverlap,
       undefined,
@@ -111,7 +111,8 @@ export default class Game extends Phaser.Scene {
 
   update(t: number, dt: number) {
     if (this.player) {
-      this.player.update(this.cursors, this.keyE, this.keyR);
+      this.playerSelector.update(this.player, this.cursors);
+      this.player.update(this.playerSelector, this.cursors);
     }
   }
 
@@ -120,13 +121,7 @@ export default class Game extends Phaser.Scene {
   }
 
   registerKey(): void {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.keyE = this.input.keyboard.addKey('E');
-    this.keyR = this.input.keyboard.addKey('R');
-    this.keyH = this.input.keyboard.addKey('H');
-    this.keyJ = this.input.keyboard.addKey('J');
-    this.keyK = this.input.keyboard.addKey('K');
-    this.keyL = this.input.keyboard.addKey('L');
+    this.cursors = createCursorKeys(this);
     this.input.keyboard.disableGlobalCapture();
   }
 
@@ -134,20 +129,18 @@ export default class Game extends Phaser.Scene {
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody,
   ) {
-    const player = obj1 as Player;
+    const playerSelector = obj1 as PlayerSelector;
     const selectionItem = obj2 as ItemBase;
 
-    const currentItem = player.itemSelected as ItemBase;
-    if (currentItem) {
+    if (playerSelector && playerSelector.itemSelected) {
+      const currentItem = playerSelector.itemSelected as ItemBase;
+
       if (currentItem === selectionItem) {
         return;
       }
-      if (this.player.behavior !== PlayerState.SITTING) {
-        currentItem.clearDialogBox();
-      }
     }
 
-    player.itemSelected = selectionItem;
+    playerSelector.itemSelected = selectionItem;
     selectionItem.onOverlapDialog();
   }
 
