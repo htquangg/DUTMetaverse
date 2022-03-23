@@ -27,7 +27,9 @@
 	},
 	"dependencies": {
 		"babel-plugin-module-resolver": "^4.1.0",
-		"phaser": "^3.55.2"
+		"colyseus.js": "^0.14.13",
+		"phaser": "^3.55.2",
+		"regenerator-runtime": "^0.13.9"
 	},
 	"parcelCleanPaths": [
 		"dist"

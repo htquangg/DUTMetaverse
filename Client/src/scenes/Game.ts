@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import * as Colyseus from 'colyseus.js';
 import {
   SceneType,
   AssetKey,
@@ -27,8 +28,16 @@ export default class Game extends Phaser.Scene {
 
   private items!: Phaser.Physics.Arcade.StaticGroup;
 
+  private client!: Colyseus.Client;
+
   constructor() {
     super(SceneType.GAME);
+  }
+
+  async init() {
+    this.client = new Colyseus.Client('ws://localhost:3000');
+    const room = await this.client.joinOrCreate('my_room');
+    console.log(room)
   }
 
   preload() {
