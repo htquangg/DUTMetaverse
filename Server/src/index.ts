@@ -1,10 +1,11 @@
 import express from 'express';
-import { Server } from 'colyseus';
+import { Server, LobbyRoom } from 'colyseus';
 import cors from 'cors';
 import { createServer } from 'http';
 import { monitor } from '@colyseus/monitor';
 
 import { DUTOffice } from './rooms/DUTOffice';
+import { RoomState } from './types/';
 
 const port = Number(process.env.port) || 3000;
 
@@ -17,7 +18,8 @@ const gameServer = new Server({
 });
 
 // register your room handlers
-gameServer.define('my_room', DUTOffice);
+gameServer.define(RoomState.LOBBY, LobbyRoom);
+gameServer.define(RoomState.PUBLIC, DUTOffice);
 
 app.use('/colyseus', monitor());
 gameServer.listen(port);
