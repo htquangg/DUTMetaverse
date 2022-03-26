@@ -1,1 +1,1 @@
-export { default as NetWork } from './NetworkClient';
+export { default as NetworkManager } from './NetworkManager';
