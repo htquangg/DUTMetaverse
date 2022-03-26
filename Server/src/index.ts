@@ -1,6 +1,7 @@
 import express from 'express';
 import { Server, LobbyRoom } from 'colyseus';
 import cors from 'cors';
+import 'dotenv/config'
 import { createServer } from 'http';
 import { monitor } from '@colyseus/monitor';
 
@@ -9,6 +10,7 @@ import { RoomState } from './types/';
 
 const port = Number(process.env.port) || 3000;
 
+console.log("@@@@@@@@@@@@ env: ", process.env.NODE_ENV)
 const app = express();
 app.use(express.json());
 app.use(cors());
