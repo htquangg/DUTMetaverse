@@ -14,30 +14,29 @@ import { debugDraw, createCursorKeys } from '@tlq/utils';
 import { createCharacterAnim } from '@tlq/anims';
 
 import '@tlq/character';
-import { Player, PlayerSelector } from '@tlq/character';
+import { PlayerSelector, MyPlayer, OtherPlayer } from '@tlq/character';
 
 import { ItemBase, Chair, Computer, Whiteboard } from '@tlq/items';
 
+import { NetworkManager } from '@tlq/network';
+import { RoomState, IPlayer } from '@tlq/types';
+
 export default class Game extends Phaser.Scene {
-  private map!: Phaser.Tilemaps.Tilemap;
+  private _map!: Phaser.Tilemaps.Tilemap;
 
-  private cursors!: CustomCursorKeys;
+  private _cursors!: CustomCursorKeys;
 
-  private player!: Player;
-  private playerSelector!: PlayerSelector;
+  private _myPlayer!: MyPlayer;
+  private _playerSelector!: PlayerSelector;
+  private _otherPlayers!: Phaser.Physics.Arcade.Group;
+  private _otherPlayerMap!: Map<string, OtherPlayer>;
 
   private items!: Phaser.Physics.Arcade.StaticGroup;
 
-  private client!: Colyseus.Client;
+  private _network!: NetworkManager;
 
   constructor() {
     super(SceneType.GAME);
-  }
-
-  async init() {
-    this.client = new Colyseus.Client('ws://localhost:3000');
-    const room = await this.client.joinOrCreate('my_room');
-    console.log(room)
   }
 
   preload() {
@@ -45,19 +44,21 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    this._network = NetworkManager.getIntance();
+
     createCharacterAnim(this.anims);
 
     this.createMap();
 
-    const FloorAndGround = this.map.addTilesetImage(
+    const FloorAndGround = this._map.addTilesetImage(
       TilesetKey.FLOOR_AND_GROUND,
       AssetKey.TILES_WALL,
     );
 
-    const wallLayer = this.map.createLayer(LayerKey.WALL, FloorAndGround);
+    const wallLayer = this._map.createLayer(LayerKey.WALL, FloorAndGround);
     // const groundLayer = this.map.createLayer('Ground', FloorAndGround);
 
-    this.map.createLayer(LayerKey.GROUND, FloorAndGround);
+    this._map.createLayer(LayerKey.GROUND, FloorAndGround);
 
     wallLayer.setCollisionByProperty({ collides: true });
     // groundLayer.setCollisionByProperty({ collides: true });
@@ -67,7 +68,7 @@ export default class Game extends Phaser.Scene {
 
     // import items objects
     const chairs = this.physics.add.staticGroup({ classType: Chair });
-    const chairLayer = this.map.getObjectLayer(LayerKey.CHAIR);
+    const chairLayer = this._map.getObjectLayer(LayerKey.CHAIR);
     chairLayer.objects.forEach((chairObj) => {
       const item = this.addObjectFromTiled(
         chairs,
@@ -80,7 +81,7 @@ export default class Game extends Phaser.Scene {
     });
 
     const computers = this.physics.add.staticGroup({ classType: Computer });
-    const computersLayer = this.map.getObjectLayer(LayerKey.COMPUTER);
+    const computersLayer = this._map.getObjectLayer(LayerKey.COMPUTER);
     computersLayer.objects.forEach((obj) => {
       const item = this.addObjectFromTiled(
         computers,
@@ -93,7 +94,7 @@ export default class Game extends Phaser.Scene {
     });
 
     const whiteboards = this.physics.add.staticGroup({ classType: Whiteboard });
-    const whiteboardLayer = this.map.getObjectLayer(LayerKey.WHITEBOARD);
+    const whiteboardLayer = this._map.getObjectLayer(LayerKey.WHITEBOARD);
     whiteboardLayer.objects.forEach((obj, i) => {
       const item = this.addObjectFromTiled(
         whiteboards,
@@ -103,34 +104,45 @@ export default class Game extends Phaser.Scene {
       ) as Whiteboard;
     });
 
-    this.player = this.add.player(100, 100, PlayerKey.NANCY);
-    this.playerSelector = new PlayerSelector(this, 0, 0, 16, 16);
+    this._myPlayer = this.add.myPlayer(
+      100,
+      100,
+      PlayerKey.NANCY,
+      this._network.sessionID,
+    );
+    this._playerSelector = new PlayerSelector(this, 0, 0, 16, 16);
+    this._otherPlayers = this.physics.add.group({ classType: OtherPlayer });
 
-    this.cameras.main.startFollow(this.player);
+    this._otherPlayerMap = new Map<string, OtherPlayer>();
 
-    this.physics.add.collider(this.player, wallLayer);
+    this.cameras.main.startFollow(this._myPlayer);
+
+    this.physics.add.collider(this._myPlayer, wallLayer);
     this.physics.add.overlap(
-      this.playerSelector,
+      this._playerSelector,
       [chairs, computers, whiteboards],
       this.handleItemSelectorOverlap,
       undefined,
       this,
     );
+
+    // register network event listeners
+    this._registerNetworkListener();
   }
 
   update(t: number, dt: number) {
-    if (this.player) {
-      this.playerSelector.update(this.player, this.cursors);
-      this.player.update(this.playerSelector, this.cursors);
+    if (this._myPlayer) {
+      this._playerSelector.update(this._myPlayer, this._cursors);
+      this._myPlayer.update(this._playerSelector, this._cursors);
     }
   }
 
   createMap(): void {
-    this.map = this.make.tilemap({ key: 'tilemap' });
+    this._map = this.make.tilemap({ key: 'tilemap' });
   }
 
   registerKey(): void {
-    this.cursors = createCursorKeys(this);
+    this._cursors = createCursorKeys(this);
     this.input.keyboard.disableGlobalCapture();
   }
 
@@ -166,9 +178,45 @@ export default class Game extends Phaser.Scene {
         actualX,
         actualY,
         key,
-        object.gid! - this.map.getTileset(tilesetName).firstgid,
+        object.gid! - this._map.getTileset(tilesetName).firstgid,
       )
       .setDepth(actualY);
     return obj;
+  }
+
+  private _registerNetworkListener(): void {
+    this._network.onPlayerJoined(this._handlePlayerJoined, this);
+    this._network.onPlayerUpdated(this._handlePlayerUpdated, this);
+    this._network.onPlayerLeft(this._handlePlayerLeft, this);
+  }
+
+  private _handlePlayerJoined(player: IPlayer, id: string) {
+    console.log('[Game] hanle player joined!!!', player, id);
+    const otherPlayer = this.add.otherPlayer(
+      player.x,
+      player.y,
+      PlayerKey.NANCY,
+      id,
+    );
+    this._otherPlayers.add(otherPlayer);
+    this._otherPlayerMap.set(id, otherPlayer);
+  }
+
+  private _handlePlayerUpdated(
+    field: string,
+    value: number | string,
+    id: string,
+  ) {
+    const otherPlayer = this._otherPlayerMap.get(id);
+    otherPlayer?.updateRemote(field, value);
+  }
+
+  private _handlePlayerLeft(id: string) {
+    if (this._otherPlayerMap.has(id)) {
+      const otherPlayer = this._otherPlayerMap.get(id);
+      if (!otherPlayer) return;
+      this._otherPlayers.remove(otherPlayer, true, true);
+      this._otherPlayerMap.delete(id);
+    }
   }
 }

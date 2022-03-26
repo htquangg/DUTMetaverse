@@ -4,4 +4,5 @@ export * from './Data';
 export * from './Player';
 export * from './CustomCursorKeys';
 export * from './Room';
-export * from './IDUTState'
+export * from './IDUTState';
+export * from './Messages';

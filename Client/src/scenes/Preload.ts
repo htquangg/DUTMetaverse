@@ -1,9 +1,16 @@
 import Phaser from 'phaser';
 import { SceneType, AssetKey, PlayerKey } from '@tlq/types';
+import { NetworkManager } from '@tlq/network';
 
 export default class Preload extends Phaser.Scene {
+  private _network!: NetworkManager;
+
   constructor() {
     super(SceneType.PRELOAD);
+  }
+
+  init() {
+    this._network = NetworkManager.getIntance();
   }
 
   preload() {
@@ -55,6 +62,13 @@ export default class Preload extends Phaser.Scene {
   }
 
   launchGame() {
-    this.scene.launch(SceneType.GAME);
+    this._network
+      .joinOrCreatePublic()
+      .then(() => {
+        this.scene.launch(SceneType.GAME);
+      })
+      .catch((err) =>
+        console.log('[Preload]: Failed to launch the game!!!', err),
+      );
   }
 }
