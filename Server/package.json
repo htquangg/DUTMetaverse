@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "NODE_ENV=DEV ts-node-dev --respawn --transpile-only src/index.ts",
-    "start:prod": "npm run build && NODE_ENV=PROD node dist/src/index.js ",
-    "build": "rimraf ./build && tsc"
+    "start": "node dist/src/index.js",
+    "postinstall": "tsc",
+    "build": "rimraf ./dist && tsc"
   },
   "keywords": [],
   "author": "",
