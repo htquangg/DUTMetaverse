@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import Player from './Player';
+import MyPlayer from './MyPlayer';
 import { PlayerState, CustomCursorKeys } from '@tlq/types';
 import { ItemBase } from '@tlq/items';
 
@@ -24,7 +24,7 @@ export default class PlayerSelector extends Phaser.GameObjects.Zone {
     scene.physics.add.existing(this);
   }
 
-  update(player: Player, cursors: CustomCursorKeys) {
+  update(player: MyPlayer, cursors: CustomCursorKeys) {
     if (!cursors) return;
 
     if (player.behavior === PlayerState.SITTING) return;
