@@ -1,6 +1,7 @@
 import * as Colyseus from 'colyseus.js';
 import { RoomState, IDUTState, IPlayer, Messages } from '@tlq/types';
 import { EventManager, Event } from '@tlq/events';
+import { BuildConfig } from '@tlq/config';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
@@ -12,9 +13,10 @@ export default class NetworkManager {
   public static inst: NetworkManager;
 
   constructor() {
-    const protocol = window.location.protocol.replace('http', 'ws');
-    // const endpoint = `${protocol}://${window.location.hostname}:3000`;
-    const endpoint = 'ws://localhost:3000';
+    const endpoint =
+      BuildConfig.Environment === 'DEV'
+        ? 'ws://localhost:3000'
+        : 'ws://68.183.224.175:3000';
     this._client = new Colyseus.Client(endpoint);
 
     this.joinLobbyRoom();
