@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "NODE_ENV=DEV ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "node dist/src/index.js",
+    "start": "pm2 start ecosystem.config.json --no-daemon",
     "postinstall": "tsc",
     "build": "rimraf ./dist && tsc"
   },
@@ -19,7 +19,8 @@
     "colyseus": "^0.14.23",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "pm2": "^5.2.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
