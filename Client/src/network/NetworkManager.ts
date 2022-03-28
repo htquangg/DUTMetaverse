@@ -16,7 +16,7 @@ export default class NetworkManager {
     const endpoint =
       BuildConfig.Environment === 'DEV'
         ? 'ws://localhost:3000'
-        : 'ws://68.183.224.175:3000';
+        : BuildConfig.GameServer;
     this._client = new Colyseus.Client(endpoint);
 
     this.joinLobbyRoom();
