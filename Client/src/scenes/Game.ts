@@ -9,7 +9,7 @@ import {
   PlayerState,
   CustomCursorKeys,
 } from '@tlq/types';
-import { debugDraw, createCursorKeys } from '@tlq/utils';
+import { debugDraw, createCustomCursorKeys } from '@tlq/utils';
 
 import { createCharacterAnim } from '@tlq/anims';
 
@@ -142,7 +142,7 @@ export default class Game extends Phaser.Scene {
   }
 
   registerKey(): void {
-    this._cursors = createCursorKeys(this);
+    this._cursors = createCustomCursorKeys(this);
     this.input.keyboard.disableGlobalCapture();
   }
 

@@ -3,7 +3,7 @@ import { CustomCursorKeys } from '@tlq/types';
 
 const KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 
-export const createCursorKeys = (scene: Phaser.Scene): CustomCursorKeys => {
+export const createCustomCursorKeys = (scene: Phaser.Scene): CustomCursorKeys => {
   return scene.input.keyboard.addKeys({
     up: KeyCodes.UP,
     down: KeyCodes.DOWN,

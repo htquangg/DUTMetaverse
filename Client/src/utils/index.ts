@@ -1,2 +1,2 @@
 export * from './debug';
-export * from './createCursorKeys';
+export * from './createCustomCursorKeys';
