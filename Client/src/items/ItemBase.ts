@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ItemType } from '@tlq/types';
-import { DialogBase } from '@tlq/dialogs';
+import { DialogBase } from '@tlq/features/dialogs';
 
 export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
   private dialogBase!: DialogBase;
