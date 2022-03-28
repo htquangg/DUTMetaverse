@@ -1,4 +1,4 @@
 export const BuildConfig = {
-  Environment: 'DEV',
+  Environment: 'PROD',
   GameServer: 'ws://68.183.224.175:3000'
 }
