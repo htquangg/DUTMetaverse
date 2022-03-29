@@ -57,6 +57,9 @@
 		"mac": {
 			"category": "your.app.category.type"
 		},
+    "win": {
+      "target": "nsis"
+    },
 		"files": [
 			"dist/*"
 		]
