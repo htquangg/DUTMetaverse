@@ -1,67 +1,68 @@
 {
-	"name": "phaser3-parcel-template",
-	"version": "1.0.0",
-	"description": "A typescript template project for Phaser 3 using Parceljs",
-	"main": "dist/main.js",
-	"scripts": {
-		"start": "parcel src/index.html -p 8000",
-		"build:browser": "parcel build src/index.html --no-minify --out-dir dist",
-		"build:app": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron",
-		"watch": "rimraf build && parcel watch src/main.ts src/index.html --public-url ./ -d build --out-file=main --target=electron",
-		"app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
-		"dist:app": "yarn build:app && electron-builder",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
-	},
-	"author": "supertommy",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ourcade/phaser3-parcel-template.git"
-	},
-	"homepage": "https://github.com/ourcade/phaser3-parcel-template",
-	"devDependencies": {
-		"@babel/core": "^7.17.5",
-		"@typescript-eslint/eslint-plugin": "^2.29.0",
-		"@typescript-eslint/parser": "^2.29.0",
-		"cross-env": "^7.0.3",
-		"cssnano": "^5.1.5",
-		"electron": "^17.2.0",
-		"electron-builder": "^22.14.13",
-		"electron-reload": "^2.0.0-alpha.1",
-		"eslint": "^6.8.0",
-		"minimist": ">=1.2.2",
-		"parcel-bundler": "^1.12.5",
-		"parcel-plugin-clean-easy": "^1.0.2",
-		"parcel-plugin-static-files-copy": "^2.6.0",
-		"postcss": "^8.2.15",
-		"typescript": "^3.8.3"
-	},
-	"dependencies": {
-		"babel-plugin-module-resolver": "^4.1.0",
-		"colyseus.js": "^0.14.13",
-		"phaser": "^3.55.2",
-		"regenerator-runtime": "^0.13.9",
-		"tslib": "^2.3.1",
-		"ws": "^8.5.0"
-	},
-	"parcelCleanPaths": [
-		"dist"
-	],
-	"staticFiles": {
-		"staticPath": "public",
-		"watcherGlob": "**"
-	},
-	"build": {
-		"appId": "parcel.electron",
-		"mac": {
-			"category": "your.app.category.type"
-		},
+  "name": "phaser3-parcel-template",
+  "version": "1.0.0",
+  "description": "A typescript template project for Phaser 3 using Parceljs",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "parcel src/index.html -p 8000",
+    "build:browser": "parcel build src/index.html --no-minify --out-dir dist",
+    "build:app": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron",
+    "watch": "rimraf build && parcel watch src/main.ts src/index.html --public-url ./ -d build --out-file=main --target=electron",
+    "app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
+    "dist:app": "yarn build:app && electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
+  },
+  "author": "supertommy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ourcade/phaser3-parcel-template.git"
+  },
+  "homepage": "https://github.com/ourcade/phaser3-parcel-template",
+  "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@types/webrtc": "^0.0.31",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "cross-env": "^7.0.3",
+    "cssnano": "^5.1.5",
+    "electron": "^17.2.0",
+    "electron-builder": "^22.14.13",
+    "electron-reload": "^2.0.0-alpha.1",
+    "eslint": "^6.8.0",
+    "minimist": ">=1.2.2",
+    "parcel-bundler": "^1.12.5",
+    "parcel-plugin-clean-easy": "^1.0.2",
+    "parcel-plugin-static-files-copy": "^2.6.0",
+    "postcss": "^8.2.15",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "babel-plugin-module-resolver": "^4.1.0",
+    "colyseus.js": "^0.14.13",
+    "phaser": "^3.55.2",
+    "regenerator-runtime": "^0.13.9",
+    "tslib": "^2.3.1",
+    "ws": "^8.5.0"
+  },
+  "parcelCleanPaths": [
+    "dist"
+  ],
+  "staticFiles": {
+    "staticPath": "public",
+    "watcherGlob": "**"
+  },
+  "build": {
+    "appId": "parcel.electron",
+    "mac": {
+      "category": "your.app.category.type"
+    },
     "win": {
       "target": "nsis"
     },
-		"files": [
-			"dist/*"
-		]
-	}
+    "files": [
+      "dist/*"
+    ]
+  }
 }
