@@ -41,6 +41,7 @@
   "dependencies": {
     "babel-plugin-module-resolver": "^4.1.0",
     "colyseus.js": "^0.14.13",
+    "encrypt-storage": "^2.2.6",
     "phaser": "^3.55.2",
     "regenerator-runtime": "^0.13.9",
     "tslib": "^2.3.1",
