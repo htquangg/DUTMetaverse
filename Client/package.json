@@ -58,10 +58,13 @@
   "build": {
     "appId": "parcel.electron",
     "mac": {
-      "category": "your.app.category.type"
-    },
-    "win": {
-      "target": "nsis"
+      "category": "your.app.category.type",
+      "entitlements": "entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Please give us access to your microphone",
+        "NSCameraUsageDescription": "Please give us access to your camera"
+      }
     },
     "files": [
       "dist/*"
