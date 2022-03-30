@@ -82,12 +82,12 @@ export default class Preload extends Phaser.Scene {
 
   launchGame() {
     this._network
-      .joinOrCreatePublic()
-      .then(() => {
-        this.scene.launch(SceneType.GAME);
+      .getUserMedia()
+      .then((_userMedia) => {
+        this._network.joinOrCreatePublic().then(() => {
+          this.scene.launch(SceneType.GAME);
+        });
       })
-      .catch((err) =>
-        console.log('[Preload]: Failed to launch the game!!!', err),
-      );
+      .catch((err) => window.alert(err));
   }
 }

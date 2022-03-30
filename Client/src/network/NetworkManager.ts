@@ -2,11 +2,13 @@ import * as Colyseus from 'colyseus.js';
 import { RoomState, IDUTState, IPlayer, Messages } from '@tlq/types';
 import { EventManager, Event } from '@tlq/events';
 import { BuildConfig } from '@tlq/config';
+import { WebRTCManager } from '@tlq/features/webRTC';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
   private _lobby!: Colyseus.Room;
   private _room?: Colyseus.Room<IDUTState>;
+  private _webRTC!: WebRTCManager;
 
   public sessionID!: string;
 
@@ -17,7 +19,9 @@ export default class NetworkManager {
       BuildConfig.Environment === 'DEV'
         ? 'ws://localhost:3000'
         : BuildConfig.GameServer;
+
     this._client = new Colyseus.Client(endpoint);
+    this._webRTC = WebRTCManager.getInstance();
 
     this.joinLobbyRoom();
   }
@@ -28,6 +32,10 @@ export default class NetworkManager {
     }
 
     return NetworkManager.inst;
+  }
+
+  public getUserMedia(): Promise<MediaStream> {
+    return this._webRTC.getUserMedia();
   }
 
   public async joinLobbyRoom() {
@@ -56,6 +64,8 @@ export default class NetworkManager {
 
     this._lobby.leave();
     this.sessionID = this._room.sessionId;
+
+    this._webRTC.initilize(this.sessionID);
 
     console.error(this._room);
     console.error(this.sessionID);
