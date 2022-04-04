@@ -57,11 +57,11 @@ export default class Game extends Phaser.Scene {
 
     this._createMap();
 
-    // create map layers
-    this._createMapLayers();
-
     // create map objects
     this._createMapObjects();
+
+    // create map layers
+    this._createMapLayers();
 
     // register network event listeners
     this._registerNetworkListener();
