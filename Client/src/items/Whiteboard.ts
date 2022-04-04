@@ -2,6 +2,8 @@ import ItemBase from './ItemBase';
 import { ItemType } from '@tlq/types';
 
 export default class Whiteboard extends ItemBase {
+  public id!: string;
+
   constructor(
     scene: Phaser.Scene,
     x: number,
