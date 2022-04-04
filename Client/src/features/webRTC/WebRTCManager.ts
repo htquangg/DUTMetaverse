@@ -5,7 +5,7 @@ import { TlqLocalStorage } from '@tlq/localstorage';
 import { StorageKeys } from '@tlq/types';
 
 export default class WebRTCManager {
-  private _videoElement!: HTMLVideoElement;
+  private _myVideo!: HTMLVideoElement;
   private _videoGrid: HTMLElement | null;
   private _buttonGrid: HTMLElement | null;
 
@@ -31,7 +31,7 @@ export default class WebRTCManager {
       video: true,
     };
 
-    this._videoElement = document.createElement('video');
+    this._myVideo = document.createElement('video');
 
     this._buttonGrid = document.querySelector('.button-grid');
     this._videoGrid = document.querySelector('.video-grid');
@@ -57,19 +57,22 @@ export default class WebRTCManager {
   public initilize(userID: string): void {
     const sanitizedID = Utils.replaceInvalidID(userID);
 
-    this._myPeer = new Peer(sanitizedID);
+    this._myPeer = new Peer(sanitizedID, {
+      host: 'localhost',
+      port: 9000,
+      path: '/myapp',
+    });
 
     this._myPeer.on('call', (call: Peer.MediaConnection) => {
-      call.answer(this._myStream);
+      const video = document.createElement('video');
 
+      call.answer(this._myStream);
+      call.on('stream', (remoteStream) => {
+        this.startVideoStream(video, remoteStream);
+      });
       this._onCalledPeers.set(call.peer, {
         call,
-        video: this._videoElement,
-      });
-
-      call.on('stream', (userStream) => {
-        this._myStream = userStream;
-        this.startVideoStream();
+        video,
       });
     });
 
@@ -145,7 +148,7 @@ export default class WebRTCManager {
               );
             }
             this._myStream = mediaStream;
-            this.startVideoStream();
+            this.startVideoStream(this._myVideo, this._myStream);
             resolve(this._myStream);
           })
           .catch((_err) => {
@@ -165,32 +168,39 @@ export default class WebRTCManager {
     const sanitizedID = Utils.replaceInvalidID(userID);
     if (!this._peers.has(sanitizedID)) {
       const call = this._myPeer.call(sanitizedID, this._myStream);
-
-      call.on('stream', (userStream) => {
-        this._myStream = userStream;
-        this.startVideoStream();
+      const video = document.createElement('video');
+      call.on('stream', (remoteStream) => {
+        this.startVideoStream(video, remoteStream);
       });
-
-      this._peers.set(sanitizedID, { call, video: this._videoElement });
+      this._peers.set(sanitizedID, { call, video });
     }
   }
 
-  public startVideoStream() {
-    if (!this._myStream || !this._videoElement) return;
+  public startVideoStream(video: HTMLVideoElement, stream: MediaStream) {
+    if (!video || !stream) return;
 
     this.setUpButtons();
 
-    this._videoElement.srcObject = this._myStream;
+    video.srcObject = stream;
 
-    const t = this;
-    this._videoElement.onloadedmetadata = function (_ev: Event) {
-      t._videoElement.play();
+    video.onloadedmetadata = function (_ev: Event) {
+      video.play();
     };
 
-    if (this._videoGrid) this._videoGrid.append(this._videoElement);
+    if (this._videoGrid) this._videoGrid.append(video);
   }
 
-  public stopVideoStream() {}
+  public stopVideoStream(userID: string) {
+    const sanitizedID = Utils.replaceInvalidID(userID);
+    if (this._peers.has(sanitizedID)) {
+      const peer = this._peers.get(sanitizedID);
+      if (peer) {
+        peer.video.remove();
+        peer.call.close();
+        this._peers.delete(sanitizedID);
+      }
+    }
+  }
 
   // set up mute/unmute and video on/off buttons
   setUpButtons() {
