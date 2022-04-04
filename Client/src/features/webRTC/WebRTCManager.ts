@@ -12,6 +12,8 @@ export default class WebRTCManager {
   private _myPeer!: Peer;
   private _myStream!: MediaStream;
 
+  private _mediaStreamConstraints: MediaStreamConstraints | null;
+
   private _peers: Map<
     string,
     { call: Peer.MediaConnection; video: HTMLVideoElement }
@@ -24,6 +26,11 @@ export default class WebRTCManager {
   public static inst: WebRTCManager;
 
   constructor() {
+    this._mediaStreamConstraints = {
+      audio: true,
+      video: true,
+    };
+
     this._videoElement = document.createElement('video');
 
     this._buttonGrid = document.querySelector('.button-grid');
@@ -126,26 +133,28 @@ export default class WebRTCManager {
         };
       }
 
-      navigator.mediaDevices
-        .getUserMedia({
-          audio: true,
-          video: true,
-        })
-        .then((mediaStream) => {
-          if (!mediaStream) {
-            return reject(
-              new Error(
-                '[WebRTCManager] No webcam or microphone found, or permission is blocked!!!',
-              ),
+      if (this._mediaStreamConstraints) {
+        navigator.mediaDevices
+          .getUserMedia(this._mediaStreamConstraints)
+          .then((mediaStream) => {
+            if (!mediaStream) {
+              return reject(
+                new Error(
+                  '[WebRTCManager] No webcam or microphone found, or permission is blocked!!!',
+                ),
+              );
+            }
+            this._myStream = mediaStream;
+            this.startVideoStream();
+            resolve(this._myStream);
+          })
+          .catch((_err) => {
+            this._mediaStreamConstraints = null;
+            reject(
+              'No webcam or microphone found, or permission is blocked!!!',
             );
-          }
-          this._myStream = mediaStream;
-          this.startVideoStream();
-          resolve(this._myStream);
-        })
-        .catch((_err) => {
-          reject('No webcam or microphone found, or permission is blocked!!!');
-        });
+          });
+      }
     });
   }
 
@@ -167,7 +176,7 @@ export default class WebRTCManager {
   }
 
   public startVideoStream() {
-    if (!this._videoElement || !this._myStream) return;
+    if (!this._myStream || !this._videoElement) return;
 
     this.setUpButtons();
 
@@ -181,19 +190,29 @@ export default class WebRTCManager {
     if (this._videoGrid) this._videoGrid.append(this._videoElement);
   }
 
-  public stopVideoStream() {
-
-  }
+  public stopVideoStream() {}
 
   // set up mute/unmute and video on/off buttons
   setUpButtons() {
-    if (!this._myStream) return;
+    if (
+      !this._myStream ||
+      !this._mediaStreamConstraints ||
+      !this._videoGrid ||
+      !this._buttonGrid
+    )
+      return;
 
     const audioButton = document.createElement('button');
     const videoButton = document.createElement('button');
 
     const audioTrack = this._myStream.getAudioTracks()[0];
     const videoTrack = this._myStream.getVideoTracks()[0];
+
+    if (!audioTrack || !videoTrack) {
+      this._videoGrid.style.display = 'none';
+      this._buttonGrid.style.display = 'none';
+      return;
+    }
 
     audioTrack.enabled =
       TlqLocalStorage.getItem(StorageKeys.AUDIO_TRACK) ?? true;
@@ -236,7 +255,7 @@ export default class WebRTCManager {
       }
     });
 
-    this._buttonGrid?.append(audioButton);
-    this._buttonGrid?.append(videoButton);
+    this._buttonGrid.append(audioButton);
+    this._buttonGrid.append(videoButton);
   }
 }
