@@ -26,7 +26,7 @@ export default class NetworkManager {
     this.joinLobbyRoom();
   }
 
-  static getIntance(): NetworkManager {
+  static getInstance(): NetworkManager {
     if (!NetworkManager.inst) {
       NetworkManager.inst = new NetworkManager();
     }

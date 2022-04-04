@@ -51,7 +51,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this._network = NetworkManager.getIntance();
+    this._network = NetworkManager.getInstance();
 
     createCharacterAnim(this.anims);
 

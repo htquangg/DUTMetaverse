@@ -10,7 +10,7 @@ export default class Preload extends Phaser.Scene {
   }
 
   init() {
-    this._network = NetworkManager.getIntance();
+    this._network = NetworkManager.getInstance();
   }
 
   preload() {

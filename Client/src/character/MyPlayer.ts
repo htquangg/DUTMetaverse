@@ -27,7 +27,7 @@ export default class MyPlayer extends Player {
     frame?: string | number,
   ) {
     super(scene, x, y, texture, id, frame);
-    this._network = NetworkManager.getIntance();
+    this._network = NetworkManager.getInstance();
   }
 
   update(playerSelector: PlayerSelector, cursors: CustomCursorKeys) {
