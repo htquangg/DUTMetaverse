@@ -16,16 +16,13 @@ services:
   dut-server:
     build: ./
     volumes:
-      - dut-server:/usr/src/dut-server
+      - .:/usr/src/dut-server
     ports:
       - 3000:3000
     depends_on:
       - peer-server
     networks:
     - node-network
-
-volumes:
-  dut-server:
 
 networks:
   node-network:
