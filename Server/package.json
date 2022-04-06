@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "cross-env NODE_ENV=DEV ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "pm2 start ecosystem.config.json --no-daemon",
+    "start:prod": "pm2 start ecosystem.config.json --no-daemon",
     "postinstall": "tsc",
-    "build": "rimraf ./dist && tsc"
+    "build": "rimraf ./dist && tsc",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up"
   },
   "keywords": [],
   "author": "",

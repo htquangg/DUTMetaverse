@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  dut-server:
+    container_name: dut-server-dev
+    command: yarn start:dev
