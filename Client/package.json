@@ -1,15 +1,15 @@
 {
-  "name": "phaser3-parcel-template",
+  "name": "DUT-Metaverse",
   "version": "1.0.0",
   "description": "A typescript template project for Phaser 3 using Parceljs",
   "main": "dist/main.js",
   "scripts": {
-    "start": "parcel src/index.html -p 8000",
-    "build:browser": "parcel build src/index.html --no-minify --out-dir dist",
-    "build:app": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron",
+    "start:dev": "NODE_ENV=dev parcel src/index.html -p 8000",
+    "start:prod": "npm run build:web && npx serve dist/",
+    "start:app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
+    "build:web": "parcel build src/index.html --no-minify --out-dir dist",
+    "build:mac": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron && electron-builder",
     "watch": "rimraf build && parcel watch src/main.ts src/index.html --public-url ./ -d build --out-file=main --target=electron",
-    "app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
-    "dist:app": "yarn build:app && electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
