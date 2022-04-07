@@ -18,6 +18,8 @@ export class Player extends Schema implements IPlayer {
   @type('number') x = 100;
   @type('number') y = 100;
   @type('string') anim = '';
+  @type('boolean') readyToConnect = false;
+  @type('boolean') videoConnected = false;
 }
 
 export class Computer extends Schema implements IComputer {

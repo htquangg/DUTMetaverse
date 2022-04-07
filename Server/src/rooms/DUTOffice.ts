@@ -22,19 +22,35 @@ export class DUTOffice extends Room<DUTState> {
         });
       },
     );
+
+    this.onMessage(Messages.READY_TO_CONNECT, (client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) player.readyToConnect = true;
+    });
+
+    console.log('@@@ DUTOffice onCreate ');
   }
 
   onJoin(client: Client, options: any) {
     this.state.players.set(client.sessionId, new Player());
-    client.send(Messages.READY_TO_CONNECT, {
+    client.send(Messages.SEND_ROOM_DATA, {
       id: this.roomId,
-      message: 'hello new player'
+      message: 'hello new player',
     });
+
+    this.broadcast(
+      Messages.NEW_COMMER,
+      { playerId: client.sessionId, message: 'new commer is comming ...' },
+      { except: client },
+    );
   }
 
   onLeave(client: Client, consented?: boolean) {
     if (this.state.players.has(client.sessionId)) {
       this.state.players.delete(client.sessionId);
+      this.broadcast(Messages.USER_LEAVE, {
+        playerId: client.sessionId, messsage: 'user leave'
+      })
     }
   }
 

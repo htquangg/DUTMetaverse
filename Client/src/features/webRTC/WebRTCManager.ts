@@ -17,12 +17,14 @@ export default class WebRTCManager {
 
   private _peers: Map<
     string,
-    { call: Peer.MediaConnection; video: HTMLVideoElement }
+    { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
   >;
   private _onCalledPeers: Map<
     string,
-    { call: Peer.MediaConnection; video: HTMLVideoElement }
+    { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
   >;
+
+  private _peerRemoteId: string = '';
 
   public static inst: WebRTCManager;
 
@@ -37,13 +39,15 @@ export default class WebRTCManager {
     this._buttonGrid = document.querySelector('.button-grid');
     this._videoGrid = document.querySelector('.video-grid');
 
+    this._videoGrid!.style.gridTemplateColumns = `repeat(${GameConfig.VIDEO_PER_ROW}, minmax(10em, 1fr))`;
+
     this._peers = new Map<
       string,
-      { call: Peer.MediaConnection; video: HTMLVideoElement }
+      { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
     >();
     this._onCalledPeers = new Map<
       string,
-      { call: Peer.MediaConnection; video: HTMLVideoElement }
+      { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
     >();
   }
 
@@ -68,14 +72,17 @@ export default class WebRTCManager {
     this._myPeer.on('call', (call: Peer.MediaConnection) => {
       const video = document.createElement('video');
 
-      console.error(this._myPeer);
       call.answer(this._myStream);
       call.on('stream', (remoteStream) => {
-        this.startVideoStream(video, remoteStream);
-      });
-      this._onCalledPeers.set(call.peer, {
-        call,
-        video,
+        if (!this._onCalledPeers.has(call.peer)) {
+          this._peerRemoteId = Utils.formatEncryptID(call.peer);
+          this._onCalledPeers.set(call.peer, {
+            call,
+            video,
+            encryptID: this._peerRemoteId,
+          });
+          this.startVideoStream(video, remoteStream);
+        }
       });
     });
 
@@ -165,7 +172,7 @@ export default class WebRTCManager {
   }
 
   // method to call a peer
-  public makeCall(userID: string) {
+  public makeCall(userID: string): void {
     if (!this._myStream) return;
 
     const sanitizedID = Utils.replaceInvalidID(userID);
@@ -173,40 +180,72 @@ export default class WebRTCManager {
       const call = this._myPeer.call(sanitizedID, this._myStream);
       const video = document.createElement('video');
       call.on('stream', (remoteStream) => {
-        this.startVideoStream(video, remoteStream);
+        if (!this._peers.has(sanitizedID)) {
+          this._peerRemoteId = Utils.formatEncryptID(sanitizedID);
+          this._peers.set(sanitizedID, {
+            call,
+            video,
+            encryptID: this._peerRemoteId,
+          });
+          this.startVideoStream(video, remoteStream);
+        }
       });
-      this._peers.set(sanitizedID, { call, video });
     }
   }
 
-  public startVideoStream(video: HTMLVideoElement, stream: MediaStream) {
+  public startVideoStream(video: HTMLVideoElement, stream: MediaStream): void {
     if (!video || !stream) return;
 
-    this.setUpButtons();
-
     video.srcObject = stream;
-
     video.onloadedmetadata = function (_ev: Event) {
       video.play();
     };
-
-    if (this._videoGrid) this._videoGrid.append(video);
+    this._setUpButtons(video);
   }
 
-  public stopVideoStream(userID: string) {
-    const sanitizedID = Utils.replaceInvalidID(userID);
+  // method delete video stream (when we are the host of the call)
+  public stopVideoStream(playerID: string) {
+    const sanitizedID = Utils.replaceInvalidID(playerID);
     if (this._peers.has(sanitizedID)) {
       const peer = this._peers.get(sanitizedID);
       if (peer) {
-        peer.video.remove();
-        peer.call.close();
+        const { encryptID, video, call } = peer;
+        const remoteStreamEle = document.getElementsByClassName(encryptID)[0];
+
+        if (remoteStreamEle) {
+          remoteStreamEle.remove();
+        }
+
+        video.remove();
+        call.close();
         this._peers.delete(sanitizedID);
       }
     }
   }
 
+  // method to remove video stream (when we are the guest of the call)
+  public stopOnCalledVideoStream(playerID: string) {
+    const sanitizedID = Utils.replaceInvalidID(playerID);
+
+    if (this._onCalledPeers.has(sanitizedID)) {
+      const onCalledPeer = this._onCalledPeers.get(sanitizedID);
+      if (onCalledPeer) {
+        const { encryptID, video, call } = onCalledPeer;
+        const remoteStreamEle = document.getElementsByClassName(encryptID)[0];
+
+        if (remoteStreamEle) {
+          remoteStreamEle.remove();
+        }
+
+        video.remove();
+        call.close();
+        this._onCalledPeers.delete(sanitizedID);
+      }
+    }
+  }
+
   // set up mute/unmute and video on/off buttons
-  setUpButtons() {
+  private _setUpButtons(video: HTMLVideoElement): void {
     if (
       !this._myStream ||
       !this._mediaStreamConstraints ||
@@ -215,66 +254,87 @@ export default class WebRTCManager {
     )
       return;
 
-    const audioButton = document.createElement('button');
-    const videoButton = document.createElement('button');
+    this._peerRemoteId = this._peerRemoteId || 'me';
 
-    const audioTrack = this._myStream.getAudioTracks()[0];
-    const videoTrack = this._myStream.getVideoTracks()[0];
+    const gridChild = document.createElement('div');
+    gridChild.classList.add('grid-child', this._peerRemoteId);
 
-    if (!audioTrack || !videoTrack) {
-      this._videoGrid.style.display = 'none';
-      this._buttonGrid.style.display = 'none';
-      return;
-    }
+    if (video !== this._myVideo) {
+      const dotActive = document.createElement('div');
+      dotActive.classList.add('dot', 'dot--green');
 
-    audioTrack.enabled =
-      TlqLocalStorage.getItem(StorageKeys.AUDIO_TRACK) ??
-      GameConfig.AUDIO_TRACK_DEFAULT;
-    videoTrack.enabled =
-      TlqLocalStorage.getItem(StorageKeys.VIDEO_TRACK) ??
-      GameConfig.VIDEO_TRACK_DEFAULT;
-
-    if (audioTrack.enabled) {
-      audioButton.innerText = 'Mute';
-      TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, true);
+      gridChild.append(dotActive);
     } else {
-      audioButton.innerText = 'Unmute';
-      TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
-    }
+      const buttonGrid = document.createElement('div');
+      buttonGrid.classList.add('button-grid');
 
-    if (videoTrack.enabled) {
-      videoButton.innerText = 'Video off';
-      TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, true);
-    } else {
-      videoButton.innerText = 'Video on';
-      TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
-    }
+      const audioButton = document.createElement('button');
+      const videoButton = document.createElement('button');
 
-    audioButton.addEventListener('click', () => {
+      const audioTrack = this._myStream.getAudioTracks()[0];
+      const videoTrack = this._myStream.getVideoTracks()[0];
+
+      if (!audioTrack || !videoTrack) {
+        this._videoGrid.style.display = 'none';
+        this._buttonGrid.style.display = 'none';
+        return;
+      }
+
+      audioTrack.enabled =
+        TlqLocalStorage.getItem(StorageKeys.AUDIO_TRACK) ??
+        GameConfig.AUDIO_TRACK_DEFAULT;
+      videoTrack.enabled =
+        TlqLocalStorage.getItem(StorageKeys.VIDEO_TRACK) ??
+        GameConfig.VIDEO_TRACK_DEFAULT;
+
       if (audioTrack.enabled) {
-        audioTrack.enabled = false;
-        audioButton.innerText = 'Unmute';
-        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
-      } else {
-        audioTrack.enabled = true;
         audioButton.innerText = 'Mute';
         TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, true);
-      }
-    });
-
-    videoButton.addEventListener('click', () => {
-      if (videoTrack.enabled) {
-        videoTrack.enabled = false;
-        videoButton.innerText = 'Video on';
-        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
       } else {
-        videoTrack.enabled = true;
+        audioButton.innerText = 'Unmute';
+        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
+      }
+
+      if (videoTrack.enabled) {
         videoButton.innerText = 'Video off';
         TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, true);
+      } else {
+        videoButton.innerText = 'Video on';
+        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
       }
-    });
 
-    this._buttonGrid.append(audioButton);
-    this._buttonGrid.append(videoButton);
+      audioButton.addEventListener('click', () => {
+        if (audioTrack.enabled) {
+          audioTrack.enabled = false;
+          audioButton.innerText = 'Unmute';
+          TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
+        } else {
+          audioTrack.enabled = true;
+          audioButton.innerText = 'Mute';
+          TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, true);
+        }
+      });
+
+      videoButton.addEventListener('click', () => {
+        if (videoTrack.enabled) {
+          videoTrack.enabled = false;
+          videoButton.innerText = 'Video on';
+          TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
+        } else {
+          videoTrack.enabled = true;
+          videoButton.innerText = 'Video off';
+          TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, true);
+        }
+      });
+
+      buttonGrid.append(audioButton);
+      buttonGrid.append(videoButton);
+
+      gridChild.append(buttonGrid);
+    }
+
+    gridChild.append(video);
+
+    this._videoGrid.append(gridChild);
   }
 }

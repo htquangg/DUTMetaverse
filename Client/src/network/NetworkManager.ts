@@ -96,8 +96,19 @@ export default class NetworkManager {
       EventManager.emit(Event.PLAYER_LEFT, key);
     };
 
-    this._room.onMessage(Messages.READY_TO_CONNECT, (message) => {
-      console.error('READY_TO_CONNECT: ', message);
+    this._room.onMessage(Messages.SEND_ROOM_DATA, (content) => {
+      console.error('send room data: ', content);
+    });
+
+    this._room.onMessage(Messages.NEW_COMMER, (content) => {
+      console.error('new commer', content);
+      this._webRTC.makeCall(content.playerId);
+    });
+
+    this._room.onMessage(Messages.USER_LEAVE, (content) => {
+      console.error('someone is leaving: ', content);
+      this._webRTC.stopVideoStream(content.playerId);
+      this._webRTC.stopOnCalledVideoStream(content.playerId);
     });
   }
 
@@ -125,5 +136,10 @@ export default class NetworkManager {
       y: currentY,
       anim: currentAnim,
     });
+  }
+
+  public readyToConnect() {
+    if (!this._room) return;
+    this._room.send(Messages.READY_TO_CONNECT);
   }
 }

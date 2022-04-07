@@ -7,16 +7,20 @@
         padding: 0;
       }
 
+      html {
+        font-size: 16px;
+      }
+
       .video-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 160px);
+        grid-template-columns: repeat(8, minmax(10em, 1fr));
         grid-gap: 5px;
-        grid-auto-rows: 160px;
         position: absolute;
-        top: 35px;
-        right: 10px;
+        top: 10px;
+        padding: 0 10px;
         max-height: calc(100% - 100px);
         overflow-y: auto;
+        direction: rtl;
       }
 
       .video-grid video {
@@ -27,6 +31,11 @@
         border: 1px groove rgb(229, 251, 255);
       }
 
+      .grid-child {
+        display: flex;
+        position: relative;
+      }
+
       .button-grid {
         width: 160px;
         display: flex;
@@ -34,6 +43,25 @@
         position: absolute;
         top: 5px;
         z-index: 999;
+      }
+
+      .dot {
+        display: flex;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        z-index: 999;
+      }
+
+      .dot--green {
+        background-color: #019267;
+      }
+
+      .dot--red {
+        background-color: #b33030;
       }
     </style>
   </head>
