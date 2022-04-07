@@ -3,7 +3,7 @@ import Peer from 'peerjs';
 import Utils from '@tlq/utils';
 import { TlqLocalStorage } from '@tlq/localstorage';
 import { StorageKeys } from '@tlq/types';
-import { BuildConfig } from '@tlq/config';
+import { BuildConfig, GameConfig } from '@tlq/config';
 
 export default class WebRTCManager {
   private _myVideo!: HTMLVideoElement;
@@ -68,6 +68,7 @@ export default class WebRTCManager {
     this._myPeer.on('call', (call: Peer.MediaConnection) => {
       const video = document.createElement('video');
 
+      console.error(this._myPeer);
       call.answer(this._myStream);
       call.on('stream', (remoteStream) => {
         this.startVideoStream(video, remoteStream);
@@ -156,7 +157,7 @@ export default class WebRTCManager {
           .catch((_err) => {
             this._mediaStreamConstraints = null;
             reject(
-              'No webcam or microphone found, or permission is blocked!!!',
+              `No webcam or microphone found, or permission is blocked!!!, ${_err}`,
             );
           });
       }
@@ -227,31 +228,37 @@ export default class WebRTCManager {
     }
 
     audioTrack.enabled =
-      TlqLocalStorage.getItem(StorageKeys.AUDIO_TRACK) ?? true;
+      TlqLocalStorage.getItem(StorageKeys.AUDIO_TRACK) ??
+      GameConfig.AUDIO_TRACK_DEFAULT;
     videoTrack.enabled =
-      TlqLocalStorage.getItem(StorageKeys.VIDEO_TRACK) ?? true;
+      TlqLocalStorage.getItem(StorageKeys.VIDEO_TRACK) ??
+      GameConfig.VIDEO_TRACK_DEFAULT;
 
     if (audioTrack.enabled) {
       audioButton.innerText = 'Mute';
+      TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, true);
     } else {
       audioButton.innerText = 'Unmute';
+      TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
     }
 
     if (videoTrack.enabled) {
       videoButton.innerText = 'Video off';
+      TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, true);
     } else {
       videoButton.innerText = 'Video on';
+      TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
     }
 
     audioButton.addEventListener('click', () => {
       if (audioTrack.enabled) {
         audioTrack.enabled = false;
         audioButton.innerText = 'Unmute';
-        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, 'false');
+        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, false);
       } else {
         audioTrack.enabled = true;
         audioButton.innerText = 'Mute';
-        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, 'true');
+        TlqLocalStorage.setItem(StorageKeys.AUDIO_TRACK, true);
       }
     });
 
@@ -259,11 +266,11 @@ export default class WebRTCManager {
       if (videoTrack.enabled) {
         videoTrack.enabled = false;
         videoButton.innerText = 'Video on';
-        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, 'false');
+        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, false);
       } else {
         videoTrack.enabled = true;
         videoButton.innerText = 'Video off';
-        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, 'true');
+        TlqLocalStorage.setItem(StorageKeys.VIDEO_TRACK, true);
       }
     });
 
