@@ -1,4 +1,8 @@
 export const BuildConfig = {
   Environment: 'PROD',
-  GameServer: 'ws://68.183.224.175:3000'
-}
+  GameServerDomain: 'dut-metaverse-server.xyz',
+  GameServerPort: 443,
+  PeerServerDomain: 'dut-metaverse-server.xyz',
+  PeerServerPort: 9000,
+  PeerServerPath: 'myapp',
+};

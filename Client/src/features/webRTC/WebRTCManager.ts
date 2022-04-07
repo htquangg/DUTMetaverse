@@ -3,6 +3,7 @@ import Peer from 'peerjs';
 import Utils from '@tlq/utils';
 import { TlqLocalStorage } from '@tlq/localstorage';
 import { StorageKeys } from '@tlq/types';
+import { BuildConfig } from '@tlq/config';
 
 export default class WebRTCManager {
   private _myVideo!: HTMLVideoElement;
@@ -58,9 +59,10 @@ export default class WebRTCManager {
     const sanitizedID = Utils.replaceInvalidID(userID);
 
     this._myPeer = new Peer(sanitizedID, {
-      host: 'localhost',
-      port: 9000,
-      path: '/myapp',
+      host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
+      port: Number(process.env.PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
+      path: process.env.PEER_SERVER_PATH || BuildConfig.PeerServerPath,
+      secure: process.env.PEER_SERVER_DOMAIN === 'localhost' ? false : true,
     });
 
     this._myPeer.on('call', (call: Peer.MediaConnection) => {

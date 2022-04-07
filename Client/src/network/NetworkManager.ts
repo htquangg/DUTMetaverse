@@ -15,15 +15,19 @@ export default class NetworkManager {
   public static inst: NetworkManager;
 
   constructor() {
-    const endpoint =
-      BuildConfig.Environment === 'DEV'
-        ? 'ws://localhost:3000'
-        : BuildConfig.GameServer;
+    const protocol = process.env.NODE_ENV === 'dev' ? 'ws' : 'wss';
+    const serverDomain =
+      process.env.GAME_SERVER_DOMAIN || BuildConfig.GameServerDomain;
+    const serverPort =
+      process.env.GAME_SERVER_PORT || BuildConfig.GameServerPort;
 
-    this._client = new Colyseus.Client(endpoint);
+    const gameUrl = `${protocol}://${serverDomain}:${serverPort}`;
+
+    this._client = new Colyseus.Client(gameUrl);
     this._webRTC = WebRTCManager.getInstance();
 
     this.joinLobbyRoom();
+    console.error('[NetworkManager] Game Server URL: ', gameUrl);
   }
 
   static getInstance(): NetworkManager {
