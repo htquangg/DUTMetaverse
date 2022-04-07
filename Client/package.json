@@ -22,6 +22,7 @@
   "homepage": "https://github.com/ourcade/phaser3-parcel-template",
   "devDependencies": {
     "@babel/core": "^7.17.5",
+    "@types/crypto-js": "^4.1.1",
     "@types/webrtc": "^0.0.31",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
@@ -41,6 +42,7 @@
   "dependencies": {
     "babel-plugin-module-resolver": "^4.1.0",
     "colyseus.js": "^0.14.13",
+    "crypto-js": "^4.1.1",
     "encrypt-storage": "^2.2.6",
     "peerjs": "^1.3.2",
     "phaser": "^3.55.2",
