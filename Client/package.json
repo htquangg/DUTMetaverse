@@ -9,6 +9,7 @@
     "start:app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
     "build:web": "parcel build src/index.html --no-minify --out-dir dist",
     "build:mac": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron && electron-builder",
+    "deploy": "npm run build:web && firebase deploy",
     "watch": "rimraf build && parcel watch src/main.ts src/index.html --public-url ./ -d build --out-file=main --target=electron",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
