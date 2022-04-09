@@ -40,7 +40,7 @@ export class DUTOffice extends Room<DUTState> {
 
     this.broadcast(
       Messages.NEW_COMMER,
-      { playerId: client.sessionId, message: 'new commer is comming ...' },
+      { playerID: client.sessionId, message: 'new commer is comming ...' },
       { except: client },
     );
   }
@@ -49,7 +49,7 @@ export class DUTOffice extends Room<DUTState> {
     if (this.state.players.has(client.sessionId)) {
       this.state.players.delete(client.sessionId);
       this.broadcast(Messages.USER_LEAVE, {
-        playerId: client.sessionId, messsage: 'user leave'
+        playerID: client.sessionId, messsage: 'user leave'
       })
     }
   }

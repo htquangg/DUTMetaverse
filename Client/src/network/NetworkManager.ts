@@ -102,13 +102,13 @@ export default class NetworkManager {
 
     this._room.onMessage(Messages.NEW_COMMER, (content) => {
       console.error('new commer', content);
-      this._webRTC.makeCall(content.playerId);
+      this._webRTC.connectToNewUser(content.playerID);
     });
 
     this._room.onMessage(Messages.USER_LEAVE, (content) => {
       console.error('someone is leaving: ', content);
-      this._webRTC.stopVideoStream(content.playerId);
-      this._webRTC.stopOnCalledVideoStream(content.playerId);
+      this._webRTC.stopVideoStream(content.playerID);
+      this._webRTC.stopOnCalledVideoStream(content.playerID);
     });
   }
 

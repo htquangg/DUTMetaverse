@@ -12,7 +12,7 @@ export const sittingShiftData = {
 };
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  private _playerId: string
+  private _playerID: string
 
   readonly SPEED = 500;
 
@@ -26,7 +26,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
 
-    this._playerId = id;
+    this._playerID = id;
     this.setDepth(this.y);
 
     this.anims.play('nancy_idle_down', true);

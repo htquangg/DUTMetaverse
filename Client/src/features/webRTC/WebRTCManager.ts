@@ -59,8 +59,8 @@ export default class WebRTCManager {
     return WebRTCManager.inst;
   }
 
-  public initilize(userID: string): void {
-    const sanitizedID = Utils.replaceInvalidID(userID);
+  public initilize(playerID: string): void {
+    const sanitizedID = Utils.replaceInvalidID(playerID);
 
     this._myPeer = new Peer(sanitizedID, {
       host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
@@ -172,10 +172,10 @@ export default class WebRTCManager {
   }
 
   // method to call a peer
-  public makeCall(userID: string): void {
+  public connectToNewUser(playerID: string): void {
     if (!this._myStream) return;
 
-    const sanitizedID = Utils.replaceInvalidID(userID);
+    const sanitizedID = Utils.replaceInvalidID(playerID);
     if (!this._peers.has(sanitizedID)) {
       const call = this._myPeer.call(sanitizedID, this._myStream);
       const video = document.createElement('video');
@@ -226,7 +226,6 @@ export default class WebRTCManager {
   // method to remove video stream (when we are the guest of the call)
   public stopOnCalledVideoStream(playerID: string) {
     const sanitizedID = Utils.replaceInvalidID(playerID);
-
     if (this._onCalledPeers.has(sanitizedID)) {
       const onCalledPeer = this._onCalledPeers.get(sanitizedID);
       if (onCalledPeer) {
