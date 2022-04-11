@@ -8,7 +8,6 @@ import { BuildConfig, GameConfig } from '@tlq/config';
 export default class WebRTCManager {
   private _myVideo!: HTMLVideoElement;
   private _videoGrid: HTMLElement | null;
-  private _buttonGrid: HTMLElement | null;
 
   private _myPeer!: Peer;
   private _myStream!: MediaStream;
@@ -36,7 +35,6 @@ export default class WebRTCManager {
 
     this._myVideo = document.createElement('video');
 
-    this._buttonGrid = document.querySelector('.button-grid');
     this._videoGrid = document.querySelector('.video-grid');
 
     this._videoGrid!.style.gridTemplateColumns = `repeat(${GameConfig.VIDEO_PER_ROW}, minmax(10em, 1fr))`;
@@ -245,12 +243,7 @@ export default class WebRTCManager {
 
   // set up mute/unmute and video on/off buttons
   private _setUpButtons(video: HTMLVideoElement): void {
-    if (
-      !this._myStream ||
-      !this._mediaStreamConstraints ||
-      !this._videoGrid ||
-      !this._buttonGrid
-    )
+    if (!this._myStream || !this._mediaStreamConstraints || !this._videoGrid)
       return;
 
     this._peerRemoteId = this._peerRemoteId || 'me';
@@ -275,7 +268,7 @@ export default class WebRTCManager {
 
       if (!audioTrack || !videoTrack) {
         this._videoGrid.style.display = 'none';
-        this._buttonGrid.style.display = 'none';
+        buttonGrid.style.display = 'none';
         return;
       }
 
