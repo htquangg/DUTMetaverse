@@ -5,6 +5,8 @@ export interface IPlayer extends Schema {
   x: number;
   y: number;
   anim: string;
+  readyToConnect: boolean;
+  videoConnected: boolean;
 }
 
 export interface IComputer extends Schema {

@@ -27,6 +27,6 @@ export default class Chair extends ItemBase {
   }
 
   public onOverlapDialog() {
-    this.showDialogBox('Press E to sit');
+    this.showInstructionDialog('Press E to sit');
   }
 }

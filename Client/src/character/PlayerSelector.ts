@@ -43,7 +43,7 @@ export default class PlayerSelector extends Phaser.GameObjects.Zone {
 
     if (this.itemSelected) {
       if (!this.scene.physics.overlap(this, this.itemSelected)) {
-        this.itemSelected.clearDialogBox();
+        this.itemSelected.hideInstructionDialog();
         this.itemSelected = undefined;
       }
     }

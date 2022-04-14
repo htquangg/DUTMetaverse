@@ -17,30 +17,15 @@ export default class DialogBase extends Phaser.GameObjects.Container {
     }
   }
 
+  protected _show(text: string): void {}
   public show(text: string): void {
-    const innerText = this.scene.add
-      .text(0, 0, text)
-      .setFontFamily('Aria')
-      .setFontSize(12)
-      .setColor('#000000');
-
-    const dlgBoxWidth = innerText.width + 4;
-    const dlgBoxHeight = innerText.height + 2;
-    const dlgBoxX = -dlgBoxWidth * 0.5;
-    const dlgBoxY = -this!.height * 0.5;
-
-    this.add(
-      this.scene.add
-        .graphics()
-        .fillStyle(0xffffff, 1)
-        .fillRoundedRect(dlgBoxX, dlgBoxY, dlgBoxWidth, dlgBoxHeight, 3)
-        .strokeRoundedRect(dlgBoxX, dlgBoxY, dlgBoxWidth, dlgBoxHeight, 3),
-    );
-
-    this.add(innerText.setPosition(dlgBoxX + 2, dlgBoxY));
+    this._show(text);
   }
 
-  public clear(): void {
+  protected _hide(): void {
     this.removeAll(true);
+  }
+  public hide() {
+    this._hide();
   }
 }

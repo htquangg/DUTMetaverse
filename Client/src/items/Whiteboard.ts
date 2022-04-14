@@ -1,8 +1,11 @@
 import ItemBase from './ItemBase';
 import { ItemType } from '@tlq/types';
+import { SetSchema } from '@colyseus/schema';
+import { EventManager } from '@tlq/events';
 
 export default class Whiteboard extends ItemBase {
   public id!: string;
+  public currentUsers: SetSchema<string>;
 
   constructor(
     scene: Phaser.Scene,
@@ -12,6 +15,18 @@ export default class Whiteboard extends ItemBase {
     frame?: string | number,
   ) {
     super(scene, x, y, texture, frame);
+    this.currentUsers = new SetSchema<string>();
+  }
+
+  private _updateStatus() {
+    if (!this.currentUsers) return;
+    const numberOfUsers = this.currentUsers.size;
+    this.hideStatusDialog();
+    if (numberOfUsers === 1) {
+      this.showStatusDialog(`${numberOfUsers} user.`);
+    } else {
+      this.showStatusDialog(`${numberOfUsers} users.`);
+    }
   }
 
   public getType(): ItemType {
@@ -19,8 +34,30 @@ export default class Whiteboard extends ItemBase {
   }
 
   public onOverlapDialog() {
-    this.showDialogBox('Press R to use whiteboard');
+    if (this.currentUsers.size === 0) {
+      this.showInstructionDialog('Press R to use whiteboard!!!');
+    } else {
+      this.showInstructionDialog('Press R join!!!');
+    }
   }
 
-  public openDialog() {}
+  public openDialog(playerID: string) {
+    console.error('Whiteboard openDialog: ', playerID);
+    EventManager.getInstance().emit('CONNECT_TO_WHITEBOARD', {
+      whiteboardID: this.id,
+    });
+  }
+
+  public addCurrentUser(playerID: string) {
+    console.error('computer add currentUsers');
+    if (!this.currentUsers || this.currentUsers.has(playerID)) return;
+    this.currentUsers.add(playerID);
+    this._updateStatus();
+  }
+
+  public removeCurrentUsers(playerID: string) {
+    if (!this.currentUsers || !this.currentUsers.has(playerID)) return;
+    this.currentUsers.delete(playerID);
+    this._updateStatus();
+  }
 }

@@ -5,14 +5,31 @@ import { TlqLocalStorage } from '@tlq/localstorage';
 import { StorageKeys } from '@tlq/types';
 import { BuildConfig, GameConfig } from '@tlq/config';
 
+// navigator.mediaDevices should have getDisplayMedia
+// https://github.com/microsoft/TypeScript/issues/33232#issuecomment-633343054
+declare global {
+  interface MediaDevices {
+    getDisplayMedia(constraints?: MediaStreamConstraints): Promise<MediaStream>;
+  }
+
+  // if constraints config still lose some prop, you can define it by yourself also
+  interface MediaTrackConstraintSet {
+    displaySurface?: ConstrainDOMString;
+    logicalSurface?: ConstrainBoolean;
+    // more....
+  }
+}
+
 export default class WebRTCManager {
   private _myVideo!: HTMLVideoElement;
   private _videoGrid: HTMLElement | null;
 
   private _myPeer!: Peer;
-  private _myStream!: MediaStream;
 
-  private _mediaStreamConstraints: MediaStreamConstraints | null;
+  private _myStream!: MediaStream;
+  private _myShareStream!: MediaStream;
+
+  private _mediaStreamConstraints: MediaStreamConstraints;
 
   private _peers: Map<
     string,
@@ -160,7 +177,6 @@ export default class WebRTCManager {
             resolve(this._myStream);
           })
           .catch((_err) => {
-            this._mediaStreamConstraints = null;
             reject(
               `No webcam or microphone found, or permission is blocked!!!, ${_err}`,
             );
@@ -239,6 +255,35 @@ export default class WebRTCManager {
         this._onCalledPeers.delete(sanitizedID);
       }
     }
+  }
+
+  // method to start sharing current screen of user
+  public startShareScreen(): void {
+    navigator.mediaDevices
+      .getDisplayMedia(this._mediaStreamConstraints)
+      .then((mediaStream) => {
+        // Detect when user clicks "Stop sharing" outside of our UI.
+        // https://stackoverflow.com/a/25179198
+        const track = mediaStream.getVideoTracks()[0];
+        if (track) {
+          track.onended = () => {
+            this.stopShareScreen();
+          };
+        }
+
+        this._myShareStream = mediaStream;
+
+        // if (computerItem) {
+        //   for (const userId of computerItem.currentUsers) {
+        //     this.onUserJoined(userId);
+        //   }
+        // }
+      });
+  }
+
+  // method to stop sharing currennt screen of user
+  public stopShareScreen() {
+    this._myShareStream?.getTracks().forEach((track) => track.stop());
   }
 
   // set up mute/unmute and video on/off buttons

@@ -5,9 +5,7 @@ import { NetworkManager } from '@tlq/network';
 import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
 
-
 export default class MyPlayer extends Player {
-
   private _behavior: PlayerState = PlayerState.IDLE;
   public get behavior(): PlayerState {
     return this._behavior;
@@ -41,11 +39,11 @@ export default class MyPlayer extends Player {
       switch (itemType) {
         case ItemType.COMPUTER:
           const computer = itemSelected as Computer;
-          computer.openDialog();
+          computer.openDialog(this._playerID);
           break;
         case ItemType.WHITEBOARD:
           const whiteboard = itemSelected as Whiteboard;
-          whiteboard.openDialog();
+          whiteboard.openDialog(this._playerID);
           break;
         default:
           break;
@@ -74,7 +72,7 @@ export default class MyPlayer extends Player {
 
                 this.play(`nancy_sit_${chairItem.direction}`, true);
 
-                this._network.updatePlayer(
+                this._network.sendMsgUpdatePlayer(
                   this.x,
                   this.y,
                   this.anims.currentAnim.key,
@@ -85,8 +83,8 @@ export default class MyPlayer extends Player {
             loop: false,
           });
 
-          chairItem.clearDialogBox();
-          chairItem.showDialogBox('Press E to leave');
+          chairItem.hideInstructionDialog();
+          chairItem.showInstructionDialog('Press E to leave');
           this.behavior = PlayerState.SITTING;
           return;
         }
@@ -99,10 +97,10 @@ export default class MyPlayer extends Player {
           const parts = this.anims.currentAnim.key.split('_');
           parts[1] = 'idle';
           this.play(parts.join('_'), true);
-          itemSelected?.clearDialogBox();
+          itemSelected?.hideInstructionDialog();
           this.behavior = PlayerState.IDLE;
 
-          this._network.updatePlayer(
+          this._network.sendMsgUpdatePlayer(
             this.x,
             this.y,
             this.anims.currentAnim.key,
@@ -126,7 +124,11 @@ export default class MyPlayer extends Player {
     }
 
     this.body.velocity.setLength(this.SPEED);
-    this._network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
+    this._network.sendMsgUpdatePlayer(
+      this.x,
+      this.y,
+      this.anims.currentAnim.key,
+    );
   }
 
   private _moveTop() {

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ourcade/phaser3-parcel-template",
   "devDependencies": {
     "@babel/core": "^7.17.5",
+    "@colyseus/schema": "^1.0.34",
     "@types/crypto-js": "^4.1.1",
     "@types/webrtc": "^0.0.31",
     "@typescript-eslint/eslint-plugin": "^2.29.0",

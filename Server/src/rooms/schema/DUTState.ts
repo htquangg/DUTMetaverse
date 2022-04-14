@@ -56,7 +56,7 @@ const characters =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const charactersLength = characters.length;
 
-function getRoomId() {
+function getRoomId(): string {
   let result = '';
   for (let i = 0; i < 12; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -64,8 +64,6 @@ function getRoomId() {
   if (!whiteboardRoomIds.has(result)) {
     whiteboardRoomIds.add(result);
     return result;
-  } else {
-    console.log('roomId exists, remaking another one.');
-    getRoomId();
   }
+  return getRoomId();
 }

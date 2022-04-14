@@ -1,16 +1,18 @@
 import Phaser from 'phaser';
 import { ItemType } from '@tlq/types';
-import { DialogBase } from '@tlq/features/dialogs';
+import { InstructionDialog, StatusDialog } from '@tlq/features/dialogs';
 
 export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
-  private dialogBase!: DialogBase;
+  private _instructionDialog!: InstructionDialog;
+  private _statusDialog!: StatusDialog;
 
   public getType(): ItemType {
     return ItemType.NONE;
   }
 
+  // must implement
   public onOverlapDialog(): void {}
-  public openDialog(): void {}
+  public openDialog(playerID: string): void {}
 
   constructor(
     scene: Phaser.Scene,
@@ -21,7 +23,7 @@ export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
 
-    this.dialogBase = new DialogBase(
+    this._instructionDialog = new InstructionDialog(
       this.scene,
       x,
       y,
@@ -29,14 +31,35 @@ export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
       this.width,
       this.height,
     );
-    this.scene.add.existing(this.dialogBase);
+
+    this._statusDialog = new StatusDialog(
+      this.scene,
+      x,
+      y,
+      undefined,
+      this.width,
+      this.height,
+    );
+
+    this.scene.add.existing(this._instructionDialog);
+    this.scene.add.existing(this._statusDialog);
   }
 
-  public showDialogBox(text: string): void {
-    this.dialogBase.show(text);
+
+  public showInstructionDialog(text: string): void {
+    this._instructionDialog.show(text);
   }
 
-  public clearDialogBox(): void {
-    this.dialogBase.clear();
+  public hideInstructionDialog(): void {
+    this._instructionDialog.hide();
   }
+
+  public showStatusDialog(text: string): void {
+    this._statusDialog.show(text);
+  }
+
+  public hideStatusDialog(): void {
+    this._statusDialog.hide();
+  }
+
 }

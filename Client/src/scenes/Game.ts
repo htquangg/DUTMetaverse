@@ -8,6 +8,7 @@ import {
   PlayerKey,
   PlayerState,
   CustomCursorKeys,
+  ItemType,
 } from '@tlq/types';
 import { debugDraw, createCustomCursorKeys } from '@tlq/utils';
 
@@ -215,35 +216,120 @@ export default class Game extends Phaser.Scene {
     this._network.onPlayerJoined(this._handlePlayerJoined, this);
     this._network.onPlayerUpdated(this._handlePlayerUpdated, this);
     this._network.onPlayerLeft(this._handlePlayerLeft, this);
+
+    this._network.onItemAddUser(this._handleItemAddUser, this);
+    this._network.onItemRemoveUser(this._handleItemRemoveUser, this);
+
+    this._network.onPlayerConnectComputer(
+      this._handlePlayerConnectComputer,
+      this,
+    );
+    this._network.onPlayerConnectWhiteboard(
+      this._handlePlayerConnectWhiteboard,
+      this,
+    );
   }
 
-  private _handlePlayerJoined(player: IPlayer, id: string) {
-    console.log('[Game] hanle player joined!!!', player, id);
+  private _handlePlayerJoined<T extends { player: IPlayer; playerID: string }>(
+    msg: T,
+  ) {
+    const { player, playerID } = msg;
     const otherPlayer = this.add.otherPlayer(
       player.x,
       player.y,
       PlayerKey.NANCY,
-      id,
+      playerID,
     );
     this._otherPlayers.add(otherPlayer);
-    this._otherPlayerMap.set(id, otherPlayer);
+    this._otherPlayerMap.set(playerID, otherPlayer);
+    console.log('[Game] hanle player joined!!!', msg.player, msg.playerID);
   }
 
-  private _handlePlayerUpdated(
-    field: string,
-    value: number | string,
-    id: string,
-  ): void {
-    const otherPlayer = this._otherPlayerMap.get(id);
-    otherPlayer?.updateRemote(field, value);
+  private _handlePlayerUpdated<
+    T extends { playerID: string; field: string; value: number },
+  >(msg: T): void {
+    const { playerID, field, value } = msg;
+    const otherPlayer = this._otherPlayerMap.get(playerID);
+    if (otherPlayer) {
+      otherPlayer.updateRemote(field, value);
+    }
   }
 
-  private _handlePlayerLeft(id: string): void {
-    if (this._otherPlayerMap.has(id)) {
-      const otherPlayer = this._otherPlayerMap.get(id);
+  private _handlePlayerLeft<T extends { playerID: string }>(msg: T): void {
+    const { playerID } = msg;
+    if (this._otherPlayerMap.has(playerID)) {
+      const otherPlayer = this._otherPlayerMap.get(playerID);
       if (!otherPlayer) return;
       this._otherPlayers.remove(otherPlayer, true, true);
-      this._otherPlayerMap.delete(id);
+      this._otherPlayerMap.delete(playerID);
     }
+  }
+
+  private _handleItemAddUser<
+    T extends {
+      playerID: string;
+      itemID: string;
+      itemType: ItemType;
+    },
+  >(msg: T) {
+    const { playerID, itemID, itemType } = msg;
+
+    switch (itemType) {
+      case ItemType.COMPUTER:
+        const computer = this._computerMap.get(itemID);
+        if (computer) {
+          computer.addCurrentUser(playerID);
+        }
+        break;
+      case ItemType.WHITEBOARD:
+        const whiteboard = this._whiteboardMap.get(itemID);
+        if (whiteboard) {
+          whiteboard.addCurrentUser(playerID);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  private _handleItemRemoveUser<
+    T extends {
+      playerID: string;
+      itemID: string;
+      itemType: ItemType;
+    },
+  >(msg: T) {
+    const { playerID, itemID, itemType } = msg;
+
+    switch (itemType) {
+      case ItemType.COMPUTER:
+        const computer = this._computerMap.get(itemID);
+        if (computer) {
+          computer.removeCurrentUsers(playerID);
+        }
+        break;
+      case ItemType.WHITEBOARD:
+        const whiteboard = this._whiteboardMap.get(itemID);
+        if (whiteboard) {
+          whiteboard.removeCurrentUsers(playerID);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  private _handlePlayerConnectComputer<T extends { computerID: string }>(
+    msg: T,
+  ): void {
+    console.error('_handlePlayerConnectComputer');
+    this._network.sendMsgPlayerConnectComputer(msg.computerID);
+  }
+
+  private _handlePlayerConnectWhiteboard<T extends { whiteboardID: string }>(
+    msg: T,
+  ): void {
+    console.error('_handlePlayerConnectComputer');
+    this._network.sendMsgPlayerConnectWhiteboard(msg.whiteboardID);
   }
 }
