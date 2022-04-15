@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { EventType, EventParamsMap } from '@tlq/types';
+import { EventParamsMap, EventName, KeyEventMessage } from '@tlq/types';
 
 export default class EventManager extends Phaser.Events.EventEmitter {
   public static inst: EventManager;
@@ -11,20 +11,20 @@ export default class EventManager extends Phaser.Events.EventEmitter {
     return EventManager.inst;
   }
 
-  emit<E extends EventType, P extends EventParamsMap[E]>(
+  emit<E extends EventName, P extends EventParamsMap[E]
+  >(
     event: E | symbol,
     args: P,
   ): boolean {
     return super.emit(event, args);
   }
-
-  on<E extends EventType, P extends EventParamsMap[E]>(
+  on<E extends EventName, P extends EventParamsMap[E]>(
     event: E | symbol,
     fn: (message: P) => void,
     context?: any,
   ): this;
 
-  on<E extends EventType, P extends EventParamsMap[E]>(
+  on<E extends EventName, P extends EventParamsMap[E]>(
     event: E | symbol,
     fn: (message: P) => any,
     context?: any,

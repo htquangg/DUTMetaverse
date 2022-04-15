@@ -2,39 +2,47 @@ import { IPlayer } from './IDUTState';
 import { Schema } from '@colyseus/schema';
 import { ItemType } from './Item';
 
-export type EventType = keyof EventParamsMap;
+export enum EventMessage {
+  PLAYER_JOINED = 'player-joined',
+  PLAYER_UPDATED = 'player-updated',
+  PLAYER_LEFT = 'player-left',
+  ITEM_ADD_USER = 'item-add-user',
+  ITEM_REMOVE_USER = 'item-remove-user',
+  CONNECT_TO_COMPUTER = 'connect-to-computer',
+  CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
+}
 
-export type EventProps<E extends EventType> = {
-  params: EventParamsMap[E];
-};
+export type KeyEventMessage = keyof typeof EventMessage;
+
+export type EventName = typeof EventMessage[KeyEventMessage];
 
 export type EventParamsMap = {
-  PLAYER_JOINED: {
+  [EventMessage.PLAYER_JOINED]: {
     player: IPlayer;
     playerID: string;
   };
-  PLAYER_UPDATED: {
+  [EventMessage.PLAYER_UPDATED]: {
     playerID: string;
     field: string;
     value: Exclude<IPlayer[keyof IPlayer], Schema[keyof Schema]>;
   };
-  PLAYER_LEFT: {
+  [EventMessage.PLAYER_LEFT]: {
     playerID: string;
   };
-  ITEM_ADD_USER: {
-    playerID: string;
-    itemID: string;
-    itemType: ItemType;
-  };
-  ITEM_REMOVE_USER: {
+  [EventMessage.ITEM_ADD_USER]: {
     playerID: string;
     itemID: string;
     itemType: ItemType;
   };
-  CONNECT_TO_COMPUTER: {
+  [EventMessage.ITEM_REMOVE_USER]: {
+    playerID: string;
+    itemID: string;
+    itemType: ItemType;
+  };
+  [EventMessage.CONNECT_TO_COMPUTER]: {
     computerID: string;
   };
-  CONNECT_TO_WHITEBOARD: {
+  [EventMessage.CONNECT_TO_WHITEBOARD]: {
     whiteboardID: string;
   };
 };
