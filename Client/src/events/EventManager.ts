@@ -18,6 +18,7 @@ export default class EventManager extends Phaser.Events.EventEmitter {
   ): boolean {
     return super.emit(event, args);
   }
+
   on<E extends EventName, P extends EventParamsMap[E]>(
     event: E | symbol,
     fn: (message: P) => void,

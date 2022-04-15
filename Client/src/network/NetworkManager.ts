@@ -26,7 +26,7 @@ export default class NetworkManager {
   public static inst: NetworkManager;
 
   constructor() {
-    const protocol = process.env.NODE_ENV === 'dev' ? 'ws' : 'wss';
+    const protocol = process.env.NODE_ENV === 'development' ? 'ws' : 'wss';
     const serverDomain =
       process.env.GAME_SERVER_DOMAIN || BuildConfig.GameServerDomain;
     const serverPort =

@@ -3,7 +3,14 @@
 /node_modules
 /.DS_Store
 /.firebase
+/build
 
 .env
 .env.dev
 .env.production
+
+.DS_Store
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

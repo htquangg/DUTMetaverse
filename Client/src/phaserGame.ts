@@ -4,10 +4,11 @@ import Preload from './scenes/Preload';
 import Game from './scenes/Game';
 import Background from './scenes/Background';
 
-import 'regenerator-runtime/runtime'
+import 'regenerator-runtime/runtime';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
+  parent: 'phaser-game',
   scale: {
     width: window.innerWidth,
     height: window.innerHeight,
