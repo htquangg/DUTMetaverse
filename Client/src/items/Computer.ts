@@ -1,5 +1,5 @@
 import ItemBase from './ItemBase';
-import { ItemType } from '@tlq/types';
+import { EventMessage, ItemType } from '@tlq/types';
 import { SetSchema } from '@colyseus/schema';
 import { EventManager } from '@tlq/events';
 
@@ -44,7 +44,7 @@ export default class Computer extends ItemBase {
   public openDialog(playerID: string) {
     if (!this.id) return;
     console.error('Computer openDialog: ', playerID);
-    EventManager.getInstance().emit('CONNECT_TO_COMPUTER', {
+    EventManager.getInstance().emit(EventMessage.CONNECT_TO_COMPUTER, {
       computerID: this.id,
     });
   }

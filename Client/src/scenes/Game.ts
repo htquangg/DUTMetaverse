@@ -9,6 +9,8 @@ import {
   PlayerState,
   CustomCursorKeys,
   ItemType,
+  EventMessage,
+  EventParamsMap,
 } from '@tlq/types';
 import { debugDraw, createCustomCursorKeys } from '@tlq/utils';
 
@@ -230,9 +232,9 @@ export default class Game extends Phaser.Scene {
     );
   }
 
-  private _handlePlayerJoined<T extends { player: IPlayer; playerID: string }>(
-    msg: T,
-  ) {
+  private _handlePlayerJoined<
+    T extends EventParamsMap[EventMessage.PLAYER_JOINED],
+  >(msg: T) {
     const { player, playerID } = msg;
     const otherPlayer = this.add.otherPlayer(
       player.x,
@@ -246,7 +248,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private _handlePlayerUpdated<
-    T extends { playerID: string; field: string; value: number },
+    T extends EventParamsMap[EventMessage.PLAYER_UPDATED],
   >(msg: T): void {
     const { playerID, field, value } = msg;
     const otherPlayer = this._otherPlayerMap.get(playerID);
@@ -255,7 +257,9 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private _handlePlayerLeft<T extends { playerID: string }>(msg: T): void {
+  private _handlePlayerLeft<T extends EventParamsMap[EventMessage.PLAYER_LEFT]>(
+    msg: T,
+  ): void {
     const { playerID } = msg;
     if (this._otherPlayerMap.has(playerID)) {
       const otherPlayer = this._otherPlayerMap.get(playerID);
@@ -266,11 +270,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private _handleItemAddUser<
-    T extends {
-      playerID: string;
-      itemID: string;
-      itemType: ItemType;
-    },
+    T extends EventParamsMap[EventMessage.ITEM_ADD_USER],
   >(msg: T) {
     const { playerID, itemID, itemType } = msg;
 
@@ -293,11 +293,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private _handleItemRemoveUser<
-    T extends {
-      playerID: string;
-      itemID: string;
-      itemType: ItemType;
-    },
+    T extends EventParamsMap[EventMessage.ITEM_REMOVE_USER],
   >(msg: T) {
     const { playerID, itemID, itemType } = msg;
 
@@ -319,16 +315,16 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private _handlePlayerConnectComputer<T extends { computerID: string }>(
-    msg: T,
-  ): void {
+  private _handlePlayerConnectComputer<
+    T extends EventParamsMap[EventMessage.CONNECT_TO_COMPUTER],
+  >(msg: T): void {
     console.error('_handlePlayerConnectComputer');
     this._network.sendMsgPlayerConnectComputer(msg.computerID);
   }
 
-  private _handlePlayerConnectWhiteboard<T extends { whiteboardID: string }>(
-    msg: T,
-  ): void {
+  private _handlePlayerConnectWhiteboard<
+    T extends EventParamsMap[EventMessage.CONNECT_TO_WHITEBOARD],
+  >(msg: T): void {
     console.error('_handlePlayerConnectComputer');
     this._network.sendMsgPlayerConnectWhiteboard(msg.whiteboardID);
   }

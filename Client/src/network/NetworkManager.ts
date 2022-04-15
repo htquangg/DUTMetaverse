@@ -7,13 +7,12 @@ import {
   IComputer,
   IWhiteboard,
   ItemType,
-  EventType,
-  EventProps,
+  EventMessage,
+  EventParamsMap,
 } from '@tlq/types';
 import { EventManager } from '@tlq/events';
 import { BuildConfig } from '@tlq/config';
 import { WebRTCManager } from '@tlq/features/webRTC';
-import { EventParamsMap } from '@tlq/types';
 import { DataChange } from '@colyseus/schema';
 
 export default class NetworkManager {
@@ -101,12 +100,14 @@ export default class NetworkManager {
 
       console.error('player: ', player, key);
       player.onChange = (
-        changes: DataChange<EventParamsMap['PLAYER_UPDATED']['value']>[],
+        changes: DataChange<
+          EventParamsMap[EventMessage.PLAYER_UPDATED]['value']
+        >[],
       ) => {
         changes.forEach((change) => {
           const { field, value } = change;
 
-          EventManager.getInstance().emit('PLAYER_UPDATED', {
+          EventManager.getInstance().emit(EventMessage.PLAYER_UPDATED, {
             playerID: key,
             field,
             value,
@@ -114,7 +115,7 @@ export default class NetworkManager {
 
           if (field === 'name' && value !== '') {
             console.log('[NetworkManager] player joined!!!', player, key);
-            EventManager.getInstance().emit('PLAYER_JOINED', {
+            EventManager.getInstance().emit(EventMessage.PLAYER_JOINED, {
               player,
               playerID: key,
             });
@@ -124,14 +125,16 @@ export default class NetworkManager {
     };
 
     this._room.state.players.onRemove = (player: IPlayer, key: string) => {
-      EventManager.getInstance().emit('PLAYER_LEFT', { playerID: key });
+      EventManager.getInstance().emit(EventMessage.PLAYER_LEFT, {
+        playerID: key,
+      });
       this._webRTC.stopVideoStream(key);
       this._webRTC.stopOnCalledVideoStream(key);
     };
 
     this._room.state.computers.onAdd = (computer: IComputer, key: string) => {
       computer.connectedUser.onAdd = (clientID: string) => {
-        EventManager.getInstance().emit('ITEM_ADD_USER', {
+        EventManager.getInstance().emit(EventMessage.ITEM_ADD_USER, {
           playerID: clientID,
           itemID: key,
           itemType: ItemType.COMPUTER,
@@ -139,7 +142,7 @@ export default class NetworkManager {
       };
 
       computer.connectedUser.onRemove = (clientID: string) => {
-        EventManager.getInstance().emit('ITEM_REMOVE_USER', {
+        EventManager.getInstance().emit(EventMessage.ITEM_REMOVE_USER, {
           playerID: clientID,
           itemID: key,
           itemType: ItemType.COMPUTER,
@@ -152,7 +155,7 @@ export default class NetworkManager {
       key: string,
     ) => {
       whiteboard.connectedUser.onAdd = (clientID: string) => {
-        EventManager.getInstance().emit('ITEM_ADD_USER', {
+        EventManager.getInstance().emit(EventMessage.ITEM_ADD_USER, {
           playerID: clientID,
           itemID: key,
           itemType: ItemType.WHITEBOARD,
@@ -160,7 +163,7 @@ export default class NetworkManager {
       };
 
       whiteboard.connectedUser.onRemove = (clientID: string) => {
-        EventManager.getInstance().emit('ITEM_REMOVE_USER', {
+        EventManager.getInstance().emit(EventMessage.ITEM_REMOVE_USER, {
           playerID: clientID,
           itemID: key,
           itemType: ItemType.WHITEBOARD,
@@ -185,62 +188,78 @@ export default class NetworkManager {
   // <------------------------------------------------------->
   // <--------------- HANDLE EVENT LISTENER ----------------->
   // <------------------------------------------------------->
-  public onPlayerJoined<T extends { player: IPlayer; playerID: string }>(
+  public onPlayerJoined<T extends EventParamsMap[EventMessage.PLAYER_JOINED]>(
     callback: (msg: T) => void,
     context?: any,
   ) {
-    EventManager.getInstance().on('PLAYER_JOINED', callback, context);
+    EventManager.getInstance().on(
+      EventMessage.PLAYER_JOINED,
+      callback,
+      context,
+    );
   }
 
-  public onPlayerUpdated<
-    T extends { playerID: string; field: string; value: number },
-  >(callback: (msg: T) => void, context: any) {
-    EventManager.getInstance().on('PLAYER_UPDATED', callback, context);
+  public onPlayerUpdated<T extends EventParamsMap[EventMessage.PLAYER_UPDATED]>(
+    callback: (msg: T) => void,
+    context: any,
+  ) {
+    EventManager.getInstance().on(
+      EventMessage.PLAYER_UPDATED,
+      callback,
+      context,
+    );
   }
 
-  public onPlayerLeft<T extends { playerID: string }>(
+  public onPlayerLeft<T extends EventParamsMap[EventMessage.PLAYER_LEFT]>(
     callback: (message: T) => void,
     context?: any,
   ) {
-    EventManager.getInstance().on('PLAYER_LEFT', callback, context);
+    EventManager.getInstance().on(EventMessage.PLAYER_LEFT, callback, context);
   }
 
-  public onItemAddUser<
-    T extends {
-      playerID: string;
-      itemID: string;
-      itemType: ItemType;
-    },
-  >(callback: (msg: T) => void, context?: any) {
+  public onItemAddUser<T extends EventParamsMap[EventMessage.ITEM_ADD_USER]>(
+    callback: (msg: T) => void,
+    context?: any,
+  ) {
     console.error('onItemAddUser');
-    EventManager.getInstance().on('ITEM_ADD_USER', callback, context);
+    EventManager.getInstance().on(
+      EventMessage.ITEM_ADD_USER,
+      callback,
+      context,
+    );
   }
 
   public onItemRemoveUser<
-    T extends {
-      playerID: string;
-      itemID: string;
-      itemType: ItemType;
-    },
+    T extends EventParamsMap[EventMessage.ITEM_REMOVE_USER],
   >(callback: (msg: T) => void, context?: any) {
     console.error('onItemRemoveUser');
-    EventManager.getInstance().on('ITEM_REMOVE_USER', callback, context);
+    EventManager.getInstance().on(
+      EventMessage.ITEM_REMOVE_USER,
+      callback,
+      context,
+    );
   }
 
-  public onPlayerConnectComputer<T extends { computerID: string }>(
-    callback: (msg: T) => void,
-    context?: any,
-  ) {
+  public onPlayerConnectComputer<
+    T extends EventParamsMap[EventMessage.CONNECT_TO_COMPUTER],
+  >(callback: (msg: T) => void, context?: any) {
     console.error('onPlayerConnectComputer');
-    EventManager.getInstance().on('CONNECT_TO_COMPUTER', callback, context);
+    EventManager.getInstance().on(
+      EventMessage.CONNECT_TO_COMPUTER,
+      callback,
+      context,
+    );
   }
 
-  public onPlayerConnectWhiteboard<T extends { whiteboardID: string }>(
-    callback: (msg: T) => void,
-    context?: any,
-  ) {
+  public onPlayerConnectWhiteboard<
+    T extends EventParamsMap[EventMessage.CONNECT_TO_WHITEBOARD],
+  >(callback: (msg: T) => void, context?: any) {
     console.error('onPlayerConnectWhiteboard');
-    EventManager.getInstance().on('CONNECT_TO_WHITEBOARD', callback, context);
+    EventManager.getInstance().on(
+      EventMessage.CONNECT_TO_WHITEBOARD,
+      callback,
+      context,
+    );
   }
 
   // <------------------------------------------------------->

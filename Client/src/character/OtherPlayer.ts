@@ -1,3 +1,4 @@
+import { EventMessage, EventParamsMap } from '@tlq/types';
 import Phaser from 'phaser';
 import Player, { sittingShiftData } from './Player';
 
@@ -74,7 +75,10 @@ export default class OtherPlayer extends Player {
     super.destroy(fromScene);
   }
 
-  updateRemote(field: string, value: number | string) {
+  updateRemote(
+    field: string,
+    value: EventParamsMap[EventMessage.PLAYER_UPDATED]['value'],
+  ) {
     switch (field) {
       case 'name':
         if (typeof value === 'string') {

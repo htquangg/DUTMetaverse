@@ -1,5 +1,5 @@
 import ItemBase from './ItemBase';
-import { ItemType } from '@tlq/types';
+import { EventMessage, ItemType } from '@tlq/types';
 import { SetSchema } from '@colyseus/schema';
 import { EventManager } from '@tlq/events';
 
@@ -43,7 +43,7 @@ export default class Whiteboard extends ItemBase {
 
   public openDialog(playerID: string) {
     console.error('Whiteboard openDialog: ', playerID);
-    EventManager.getInstance().emit('CONNECT_TO_WHITEBOARD', {
+    EventManager.getInstance().emit(EventMessage.CONNECT_TO_WHITEBOARD, {
       whiteboardID: this.id,
     });
   }
