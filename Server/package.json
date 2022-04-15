@@ -9,7 +9,8 @@
     "postinstall": "tsc",
     "build": "rimraf ./dist && tsc",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
-    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
+    "docker:ubi": "docker-compose -f docker-compose.yml -f docker-compose.ubi.yml up"
   },
   "keywords": [],
   "author": "",

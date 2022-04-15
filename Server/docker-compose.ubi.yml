@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  dut-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubi
+    container_name: dut-server-dev
+    command: yarn start:dev
