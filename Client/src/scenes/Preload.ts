@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import Phaser from 'phaser';
 import { SceneType, AssetKey, PlayerKey } from '@tlq/types';
 import { NetworkManager } from '@tlq/network';
