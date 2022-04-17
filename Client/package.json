@@ -31,9 +31,6 @@
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^8.13.0",
     "minimist": ">=1.2.2",
-    "parcel-bundler": "^1.12.5",
-    "parcel-plugin-clean-easy": "^1.0.2",
-    "parcel-plugin-static-files-copy": "^2.6.0",
     "postcss": "^8.2.15",
     "prettier": "^2.6.2",
     "typescript": "^3.8.3",
@@ -51,16 +48,12 @@
     "phaser": "^3.55.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "^5.0.1",
     "regenerator-runtime": "^0.13.9",
     "tslib": "^2.3.1",
     "vite": "^2.9.5",
     "web-vitals": "^2.1.4",
     "ws": "^8.5.0"
   },
-  "parcelCleanPaths": [
-    "dist"
-  ],
   "eslintConfig": {
     "extends": [
       "react-app"
