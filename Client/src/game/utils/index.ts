@@ -22,4 +22,12 @@ export default class Utils {
   static formatEncryptID(id: string): string {
     return 'cc' + Utils.encryptID(id);
   }
+
+  // Thanks yannick @ https://phaser.discourse.group/t/loading-audio/1306/4
+  static asyncLoader(loaderPlugin): Promise {
+    return new Promise((resolve, reject) => {
+      loaderPlugin.on('filecomplete', resolve).on('loaderror', reject);
+      loaderPlugin.start();
+    });
+  }
 }

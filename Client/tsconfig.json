@@ -8,6 +8,7 @@
     "noEmit": true,
     "allowJs": true,
     "jsx": "react",
+    "resolveJsonModule": true,
     "importHelpers": true,
     "moduleResolution": "Node",
     "experimentalDecorators": true,
