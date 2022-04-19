@@ -9,10 +9,10 @@ import {
   ItemType,
   EventMessage,
   EventParamsMap,
-} from '@tlq/types';
-import { EventManager } from '@tlq/events';
-import { BuildConfig } from '@tlq/config';
-import { WebRTCManager } from '@tlq/features/webRTC';
+} from '@tlq/game/types';
+import { EventManager } from '@tlq/game/events';
+import { BuildConfig } from '@tlq/game/config';
+import { WebRTCManager } from '@tlq/game/features/webRTC';
 import { DataChange } from '@colyseus/schema';
 
 export default class NetworkManager {

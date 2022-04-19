@@ -1,5 +1,5 @@
 import ItemBase from './ItemBase';
-import { ItemType } from '@tlq/types';
+import { ItemType } from '@tlq/game/types';
 
 export default class Chair extends ItemBase {
   private _direction?: string;

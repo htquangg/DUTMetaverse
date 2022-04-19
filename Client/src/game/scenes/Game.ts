@@ -11,18 +11,18 @@ import {
   ItemType,
   EventMessage,
   EventParamsMap,
-} from '@tlq/types';
-import { debugDraw, createCustomCursorKeys } from '@tlq/utils';
+} from '@tlq/game/types';
+import { debugDraw, createCustomCursorKeys } from '@tlq/game/utils';
 
-import { createCharacterAnim } from '@tlq/anims';
+import { createCharacterAnim } from '@tlq/game/anims';
 
-import '@tlq/character';
-import { PlayerSelector, MyPlayer, OtherPlayer } from '@tlq/character';
+import '@tlq/game/character';
+import { PlayerSelector, MyPlayer, OtherPlayer } from '@tlq/game/character';
 
-import { ItemBase, Chair, Computer, Whiteboard } from '@tlq/items';
+import { ItemBase, Chair, Computer, Whiteboard } from '@tlq/game/items';
 
-import { NetworkManager } from '@tlq/network';
-import { RoomState, IPlayer } from '@tlq/types';
+import { NetworkManager } from '@tlq/game/network';
+import { RoomState, IPlayer } from '@tlq/game/types';
 
 export default class Game extends Phaser.Scene {
   private _map!: Phaser.Tilemaps.Tilemap;

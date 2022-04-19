@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import Phaser from 'phaser';
-import { SceneType, AssetKey, PlayerKey } from '@tlq/types';
-import { NetworkManager } from '@tlq/network';
+import { SceneType, AssetKey, PlayerKey } from '@tlq/game/types';
+import { NetworkManager } from '@tlq/game/network';
 
 export default class Preload extends Phaser.Scene {
   private _network!: NetworkManager;

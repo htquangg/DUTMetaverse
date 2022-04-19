@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { EventParamsMap, EventName, KeyEventMessage } from '@tlq/types';
+import { EventParamsMap, EventName, KeyEventMessage } from '@tlq/game/types';
 
 export default class EventManager extends Phaser.Events.EventEmitter {
   public static inst: EventManager;

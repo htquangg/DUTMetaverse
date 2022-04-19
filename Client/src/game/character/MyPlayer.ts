@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { PlayerState, ItemType, CustomCursorKeys } from '@tlq/types';
-import { ItemBase, Chair, Whiteboard, Computer } from '@tlq/items';
-import { NetworkManager } from '@tlq/network';
+import { PlayerState, ItemType, CustomCursorKeys } from '@tlq/game/types';
+import { ItemBase, Chair, Whiteboard, Computer } from '@tlq/game/items';
+import { NetworkManager } from '@tlq/game/network';
 import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
 

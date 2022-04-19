@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { SceneType } from '@tlq/types/Scene';
+import { SceneType } from '@tlq/game/types/Scene';
 
 export default class Background extends Phaser.Scene {
   constructor() {

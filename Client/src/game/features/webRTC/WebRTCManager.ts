@@ -1,9 +1,9 @@
 /// <reference types="webrtc" />
 import Peer from 'peerjs';
-import Utils from '@tlq/utils';
+import Utils from '@tlq/game/utils';
 import { TlqLocalStorage } from '@tlq/localstorage';
-import { StorageKeys } from '@tlq/types';
-import { BuildConfig, GameConfig } from '@tlq/config';
+import { StorageKeys } from '@tlq/game/types';
+import { BuildConfig, GameConfig } from '@tlq/game/config';
 
 // navigator.mediaDevices should have getDisplayMedia
 // https://github.com/microsoft/TypeScript/issues/33232#issuecomment-633343054

@@ -1,9 +1,9 @@
 import ItemBase from './ItemBase';
-import { EventMessage, ItemType } from '@tlq/types';
+import { EventMessage, ItemType } from '@tlq/game/types';
 import { SetSchema } from '@colyseus/schema';
-import { EventManager } from '@tlq/events';
+import { EventManager } from '@tlq/game/events';
 
-export default class Whiteboard extends ItemBase {
+export default class Computer extends ItemBase {
   public id!: string;
   public currentUsers: SetSchema<string>;
 
@@ -30,21 +30,22 @@ export default class Whiteboard extends ItemBase {
   }
 
   public getType(): ItemType {
-    return ItemType.WHITEBOARD;
+    return ItemType.COMPUTER;
   }
 
-  public onOverlapDialog() {
+  public onOverlapDialog(): void {
     if (this.currentUsers.size === 0) {
-      this.showInstructionDialog('Press R to use whiteboard!!!');
+      this.showInstructionDialog('Press R to use computer!!!');
     } else {
       this.showInstructionDialog('Press R join!!!');
     }
   }
 
   public openDialog(playerID: string) {
-    console.error('Whiteboard openDialog: ', playerID);
-    EventManager.getInstance().emit(EventMessage.CONNECT_TO_WHITEBOARD, {
-      whiteboardID: this.id,
+    if (!this.id) return;
+    console.error('Computer openDialog: ', playerID);
+    EventManager.getInstance().emit(EventMessage.CONNECT_TO_COMPUTER, {
+      computerID: this.id,
     });
   }
 

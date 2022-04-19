@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CustomCursorKeys } from '@tlq/types';
+import { CustomCursorKeys } from '@tlq/game/types';
 
 const KeyCodes = Phaser.Input.Keyboard.KeyCodes;
 

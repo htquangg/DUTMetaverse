@@ -1,4 +1,4 @@
-import { EventMessage, EventParamsMap } from '@tlq/types';
+import { EventMessage, EventParamsMap } from '@tlq/game/types';
 import Phaser from 'phaser';
 import Player, { sittingShiftData } from './Player';
 

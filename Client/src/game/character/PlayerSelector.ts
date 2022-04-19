@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import MyPlayer from './MyPlayer';
-import { PlayerState, CustomCursorKeys } from '@tlq/types';
-import { ItemBase } from '@tlq/items';
+import { PlayerState, CustomCursorKeys } from '@tlq/game/types';
+import { ItemBase } from '@tlq/game/items';
 
 export default class PlayerSelector extends Phaser.GameObjects.Zone {
   private _itemSelected?: ItemBase;
