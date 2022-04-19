@@ -17,17 +17,17 @@ export default class Preload extends Phaser.Scene {
   preload() {
     this.load.image(
       AssetKey.BACKDROP_DAY,
-      require('../assets/background/backdrop_day.png'),
+      require('../../assets/background/backdrop_day.png'),
     );
 
     this.load.tilemapTiledJSON(
       AssetKey.TILEMAP,
-      require('../assets/map/map.json'),
+      require('../../assets/map/map.json'),
     );
 
     this.load.spritesheet(
       AssetKey.TILES_WALL,
-      require('../assets/map/FloorAndGround.png'),
+      require('../../assets/map/FloorAndGround.png'),
       {
         frameWidth: 32,
         frameHeight: 32,
@@ -36,7 +36,7 @@ export default class Preload extends Phaser.Scene {
 
     this.load.spritesheet(
       AssetKey.COMPUTER,
-      require('../assets/items/computer.png'),
+      require('../../assets/items/computer.png'),
       {
         frameWidth: 96,
         frameHeight: 64,
@@ -45,7 +45,7 @@ export default class Preload extends Phaser.Scene {
 
     this.load.spritesheet(
       AssetKey.WHITEBOARD,
-      require('../assets/items/whiteboard.png'),
+      require('../../assets/items/whiteboard.png'),
       {
         frameWidth: 64,
         frameHeight: 64,
@@ -54,7 +54,7 @@ export default class Preload extends Phaser.Scene {
 
     this.load.spritesheet(
       AssetKey.CHAIR,
-      require('../assets/items/chair.png'),
+      require('../../assets/items/chair.png'),
       {
         frameWidth: 32,
         frameHeight: 64,
@@ -63,7 +63,7 @@ export default class Preload extends Phaser.Scene {
 
     this.load.spritesheet(
       PlayerKey.NANCY,
-      require('../assets/character/nancy.png'),
+      require('../../assets/character/nancy.png'),
       {
         frameWidth: 32,
         frameHeight: 48,

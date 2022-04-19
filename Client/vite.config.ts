@@ -13,20 +13,29 @@ export default ({ command }: ConfigEnv): UserConfig => {
       plugins: [react()],
       resolve: {
         alias: {
-          '/@': srcRoot
-        }
+          '@tlq': resolve(__dirname, './src'),
+        },
       },
       build: {
         outDir: resolve(__dirname, 'dist'),
         emptyOutDir: true,
-        rollupOptions: {}
+        rollupOptions: {},
       },
       server: {
-        port: process.env.PORT === undefined ? 8000 : +process.env.PORT
+        port: process.env.PORT === undefined ? 8000 : +process.env.PORT,
+        watch: {
+          usePolling: true,
+        },
       },
       optimizeDeps: {
-        exclude: ['path']
-      }
+        exclude: ['path'],
+      },
+      define: {
+        'process.env': {
+          GAME_SERVER_DOMAIN: 'localhost',
+          GAME_SERVER_PORT: '3000',
+        },
+      },
     };
   }
   // PROD
@@ -36,19 +45,22 @@ export default ({ command }: ConfigEnv): UserConfig => {
     plugins: [react()],
     resolve: {
       alias: {
-        '/@': srcRoot
-      }
+        '@tlq': resolve(__dirname, './src'),
+      },
     },
     build: {
       outDir: resolve(__dirname, 'dist'),
       emptyOutDir: true,
-      rollupOptions: {}
+      rollupOptions: {},
     },
     server: {
-      port: process.env.PORT === undefined ? 8000 : +process.env.PORT
+      port: process.env.PORT === undefined ? 8000 : +process.env.PORTS,
+      watch: {
+        usePolling: true,
+      },
     },
     optimizeDeps: {
-      exclude: ['path']
-    }
+      exclude: ['path'],
+    },
   };
 };

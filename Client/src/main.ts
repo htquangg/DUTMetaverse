@@ -3,7 +3,10 @@ import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
 // Let electron reloads by itself
-if (process.env.ELECTRON_DEBUG === 'true' || process.env.ELECTRON_DEBUG === 'vscode') {
+if (
+  process.env.ELECTRON_DEBUG === 'true' ||
+  process.env.ELECTRON_DEBUG === 'vscode'
+) {
   require('electron-reload')(__dirname);
 }
 
@@ -16,7 +19,7 @@ function createWindow() {
     height: 700,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
   });
 
@@ -26,11 +29,14 @@ function createWindow() {
   if (process.env.ELECTRON_DEBUG === 'true') {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
-  } else if (!process.env.ELECTRON_DEBUG || process.env.ELECTRON_DEBUG === 'false') {
+  } else if (
+    !process.env.ELECTRON_DEBUG ||
+    process.env.ELECTRON_DEBUG === 'false'
+  ) {
     // Open window in fullscreen
     mainWindow.setFullScreen(false);
     mainWindow.webContents.openDevTools();
-   global.__statics = __dirname
+    global.__statics = __dirname;
   }
 
   // Emitted when the window is closed.
