@@ -24,7 +24,7 @@ export default class Utils {
   }
 
   // Thanks yannick @ https://phaser.discourse.group/t/loading-audio/1306/4
-  static asyncLoader(loaderPlugin): Promise {
+  static asyncLoader(loaderPlugin): Promise<void> {
     return new Promise((resolve, reject) => {
       loaderPlugin.on('filecomplete', resolve).on('loaderror', reject);
       loaderPlugin.start();

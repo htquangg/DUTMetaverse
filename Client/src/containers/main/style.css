@@ -1,0 +1,67 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+#game-content {
+  position: relative;
+  border: 3px solid #019267;
+  border-radius: 5px;
+}
+
+.video-grid {
+  display: flex;
+  flex-direction: column;
+  top: 10px;
+  right: 10px;
+  padding: 0 0 0 10px;
+  height: 100%;
+  /* max-height: 100%; */
+  overflow: hidden;
+}
+
+.video-grid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px groove rgb(229, 251, 255);
+}
+
+.grid-child {
+  display: flex;
+  position: relative;
+  width: 250px;
+}
+
+.button-grid {
+  width: 160px;
+  display: flex;
+  justify-content: space-evenly;
+  position: absolute;
+  top: 5px;
+  z-index: 999;
+}
+
+.dot {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  z-index: 999;
+}
+
+.dot--green {
+  background-color: #019267;
+}
+
+.dot--red {
+  background-color: #b33030;
+}

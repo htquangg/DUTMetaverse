@@ -54,7 +54,7 @@ export default class WebRTCManager {
 
     this._videoGrid = document.querySelector('.video-grid');
 
-    this._videoGrid!.style.gridTemplateColumns = `repeat(${GameConfig.VIDEO_PER_ROW}, minmax(10em, 1fr))`;
+    // this._videoGrid!.style.gridTemplateColumns = `repeat(${GameConfig.VIDEO_PER_ROW}, minmax(10em, 1fr))`;
 
     this._peers = new Map<
       string,
