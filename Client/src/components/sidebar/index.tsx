@@ -7,6 +7,7 @@ import SidebarContent from './SidebarContent';
 const Sidebar = ({
   isOpen,
   onClose,
+  ...rest
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -45,6 +46,7 @@ const Sidebar = ({
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
+        {...rest}
       />
       <Drawer
         autoFocus={false}

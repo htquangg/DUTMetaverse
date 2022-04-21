@@ -4,6 +4,8 @@ import { Preload, Background, Game } from '@tlq/game/scenes';
 
 import { Box } from '@chakra-ui/react';
 
+import './styles.css'
+
 const GameContainer = () => {
   const [game, setGame] = useState<Phaser.Game>();
 
