@@ -36,7 +36,7 @@ const App = () => {
 
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
-      <Sidebar isOpen={isOpen} onClose={onClose} children={undefined} />
+      <Sidebar isOpen={isOpen} onClose={onClose} />
       <Header onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="4" height="calc(100vh - 80px)">
         <div id="game-content" key="game-content"></div>

@@ -50,6 +50,7 @@
     "framer-motion": "^6.3.0",
     "peerjs": "^1.3.2",
     "phaser": "^3.55.2",
+    "query-string": "^7.1.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-icons": "^4.3.1",

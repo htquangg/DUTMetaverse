@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import MainEntry from '@tlq/containers/main';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
+import AppRoute from "@tlq/router";
 
 // const root = ReactDOM.createRoot(
 //   document.getElementById('root') as HTMLElement,
@@ -19,7 +19,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider>
-      <MainEntry />
+      <AppRoute />
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root'),

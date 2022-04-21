@@ -20,7 +20,7 @@ import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
-//       bg={useColorModeValue('white', 'gray.900')}
+
 const Header = ({ onOpen, ...rest }: MobileProps) => {
   return (
     <Flex

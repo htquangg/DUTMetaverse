@@ -1,47 +1,45 @@
-import React, { ReactNode } from 'react';
-import {
-  Box,
-  CloseButton,
-  Flex,
-  Icon,
-  useColorModeValue,
-  Link,
-  Drawer,
-  DrawerContent,
-  Text,
-  useDisclosure,
-  BoxProps,
-  FlexProps,
-} from '@chakra-ui/react';
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-} from 'react-icons/fi';
-import { IconType } from 'react-icons';
-import { ReactText } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Drawer, DrawerContent } from '@chakra-ui/react';
+import { useLocation } from 'react-router-dom';
+import { HOME_SIDER_MENU_LIST } from '@tlq/constants';
+import SidebarContent from './SidebarContent';
 
-interface LinkItemProps {
-  name: string;
-  icon: IconType;
-}
-const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome },
-  { name: 'Trending', icon: FiTrendingUp },
-  { name: 'Explore', icon: FiCompass },
-  { name: 'Favourites', icon: FiStar },
-  { name: 'Settings', icon: FiSettings },
-];
-
-export default function App({
+const Sidebar = ({
   isOpen,
   onClose,
 }: {
   isOpen: boolean;
   onClose: () => void;
-}) {
+}) => {
+  const location = useLocation();
+  const [selectedKeys, setSelectedKeys] = useState('');
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const pathname = location.pathname;
+    const fragment = pathname.split('/').slice(0, 3);
+    const prefixPath = fragment.join('/');
+    if (fragment.length === 3) {
+      for (let i = 0; i < HOME_SIDER_MENU_LIST.length; i++) {
+        const menu = HOME_SIDER_MENU_LIST[i];
+        if (Array.isArray(menu.children)) {
+          const findIdx = menu.children.findIndex(
+            (menu) => pathname === menu.path,
+          );
+          if (findIdx !== -1) {
+            setSelectedKeys(menu.children[findIdx].path);
+            setOpenKeys([menu.name]);
+            break;
+          }
+        }
+        if (menu.path.indexOf(prefixPath) !== -1) {
+          setSelectedKeys(menu.path);
+          break;
+        }
+      }
+    }
+  }, [location.pathname]);
+
   return (
     <>
       <SidebarContent
@@ -61,79 +59,8 @@ export default function App({
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
-      {/* mobilenav */}
-      {/* <MobileNav onOpen={onOpen} /> */}
     </>
   );
-}
-
-interface SidebarProps extends BoxProps {
-  onClose: () => void;
-}
-
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
-  return (
-    <Box
-      transition="3s ease"
-      bg={useColorModeValue('white', 'gray.900')}
-      borderRight="1px"
-      borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: 60 }}
-      pos="fixed"
-      h="full"
-      {...rest}
-    >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
-        </Text>
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
-      </Flex>
-      {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
-          {link.name}
-        </NavItem>
-      ))}
-    </Box>
-  );
 };
 
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: ReactText;
-}
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      href="#"
-      style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: 'cyan.400',
-          color: 'white',
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: 'white',
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
-  );
-};
+export default Sidebar;
