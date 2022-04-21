@@ -24,7 +24,7 @@ const SidebarItem = ({ icon, path, children, ...rest }: NavItemProps) => {
         role="group"
         cursor="pointer"
         _hover={{
-          bg: 'cyan.400',
+          bg: 'green.700',
           color: 'white',
         }}
         {...rest}

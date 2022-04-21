@@ -4,7 +4,7 @@ import { Preload, Background, Game } from '@tlq/game/scenes';
 
 import { Box } from '@chakra-ui/react';
 
-import './styles.css'
+import './styles.css';
 
 const GameContainer = () => {
   const [game, setGame] = useState<Phaser.Game>();
@@ -40,6 +40,11 @@ const GameContainer = () => {
         w={{ base: 'full', xl: 'calc(100vw - 250px)' }}
         h="100%"
         overflow="hidden"
+        position="relative"
+        borderWidth="2px"
+        borderRadius="5px"
+        borderStyle="solid"
+        borderColor="green.700"
       ></Box>
       <Box
         display={{ base: 'none', xl: 'block' }}

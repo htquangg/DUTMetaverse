@@ -29,7 +29,7 @@ const Header = ({ onOpen, ...rest }: MobileProps) => {
       height="20"
       alignItems="center"
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
+      borderBottomColor={useColorModeValue('green.900', 'gray.700')}
       justifyContent={{ base: 'space-between', md: 'flex-end' }}
       {...rest}
     >
@@ -47,7 +47,7 @@ const Header = ({ onOpen, ...rest }: MobileProps) => {
         fontFamily="monospace"
         fontWeight="bold"
       >
-        Logo
+        DUT Meta
       </Text>
 
       <HStack spacing={{ base: '0', md: '6' }}>

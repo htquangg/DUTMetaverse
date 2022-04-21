@@ -1,9 +1,3 @@
-#game-content {
-  position: relative;
-  border: 3px solid #019267;
-  border-radius: 5px;
-}
-
 .video-grid {
   display: flex;
   flex-direction: column;
