@@ -9,6 +9,9 @@ export enum AssetKey {
 
 export enum PlayerKey {
   NANCY = 'nancy',
+  ADAM = 'adam',
+  ASH = 'ash',
+  LUCY = 'lucy',
 }
 
 export enum LayerKey {

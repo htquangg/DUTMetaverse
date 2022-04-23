@@ -13,6 +13,7 @@ export const sittingShiftData = {
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   protected _playerID: string;
+  protected _skin: string | Phaser.Textures.Texture;
 
   readonly SPEED = 500;
 
@@ -29,6 +30,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this._playerID = id;
     this.setDepth(this.y);
 
-    this.anims.play('nancy_idle_down', true);
+    this._skin = texture;
+
+    this.anims.play(`${this._skin}_idle_down`, true);
   }
 }

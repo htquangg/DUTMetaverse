@@ -16,6 +16,27 @@ export default class Preload extends Phaser.Scene {
   }
 
   async create() {
+    await this._loadAsset();
+    this.launchBackground();
+    this.launchGame();
+  }
+
+  launchBackground() {
+    this.scene.launch(SceneType.BACKGROUND);
+  }
+
+  launchGame() {
+    this._network
+      .getUserMedia()
+      .then((_userMedia) => {
+        this._network.joinOrCreatePublic().then(() => {
+          this.scene.launch(SceneType.GAME);
+        });
+      })
+      .catch((err) => window.alert(err));
+  }
+
+  private async _loadAsset(): Promise<void> {
     const { default: backdropDayPath } = await import(
       '../../assets/background/backdrop_day.png'
     );
@@ -76,22 +97,32 @@ export default class Preload extends Phaser.Scene {
       }),
     );
 
-    this.launchBackground();
-    this.launchGame();
-  }
+    const { default: adamPath } = await import(
+      '../../assets/character/adam.png'
+    );
+    await Utils.asyncLoader(
+      this.load.spritesheet(PlayerKey.ADAM, adamPath, {
+        frameWidth: 32,
+        frameHeight: 48,
+      }),
+    );
 
-  launchBackground() {
-    this.scene.launch(SceneType.BACKGROUND);
-  }
+    const { default: ashPath } = await import('../../assets/character/ash.png');
+    await Utils.asyncLoader(
+      this.load.spritesheet(PlayerKey.ASH, ashPath, {
+        frameWidth: 32,
+        frameHeight: 48,
+      }),
+    );
 
-  launchGame() {
-    this._network
-      .getUserMedia()
-      .then((_userMedia) => {
-        this._network.joinOrCreatePublic().then(() => {
-          this.scene.launch(SceneType.GAME);
-        });
-      })
-      .catch((err) => window.alert(err));
+    const { default: lucyPath } = await import(
+      '../../assets/character/lucy.png'
+    );
+    await Utils.asyncLoader(
+      this.load.spritesheet(PlayerKey.LUCY, lucyPath, {
+        frameWidth: 32,
+        frameHeight: 48,
+      }),
+    );
   }
 }

@@ -70,7 +70,7 @@ export default class MyPlayer extends Player {
                   chairItem.depth + sittingShiftData[chairItem.direction][2],
                 );
 
-                this.play(`nancy_sit_${chairItem.direction}`, true);
+                this.play(`${this._skin}_sit_${chairItem.direction}`, true);
 
                 this._network.sendMsgUpdatePlayer(
                   this.x,
@@ -132,22 +132,22 @@ export default class MyPlayer extends Player {
   }
 
   private _moveTop() {
-    this.anims.play('nancy_run_up', true);
+    this.anims.play(`${this._skin}_run_up`, true);
     this.setVelocity(0, -this.SPEED);
   }
 
   private _moveBottom() {
-    this.anims.play('nancy_run_down', true);
+    this.anims.play(`${this._skin}_run_down`, true);
     this.setVelocity(0, this.SPEED);
   }
 
   private _moveLeft() {
-    this.anims.play('nancy_run_left', true);
+    this.anims.play(`${this._skin}_run_left`, true);
     this.setVelocity(-this.SPEED, 0);
   }
 
   private _moveRight() {
-    this.anims.play('nancy_run_right', true);
+    this.anims.play(`${this._skin}_run_right`, true);
     this.setVelocity(this.SPEED, 0);
   }
 
@@ -182,7 +182,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     id: string,
     frame?: string | number,
   ) {
-    var sprite = new MyPlayer(this.scene, x, y, texture, id, frame);
+    const sprite = new MyPlayer(this.scene, x, y, texture, id, frame);
 
     this.displayList.add(sprite);
     this.updateList.add(sprite);
