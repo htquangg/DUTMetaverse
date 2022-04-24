@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { ChakraProvider } from '@chakra-ui/react';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { ChakraProvider } from '@chakra-ui/react';
-import AppRoute from "@tlq/router";
+import AppRoute from '@tlq/router';
+import store from '@tlq/store';
 
 // const root = ReactDOM.createRoot(
 //   document.getElementById('root') as HTMLElement,
@@ -18,9 +20,11 @@ import AppRoute from "@tlq/router";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider>
-      <AppRoute />
-    </ChakraProvider>
+    <Provider store={store}>
+      <ChakraProvider>
+        <AppRoute />
+      </ChakraProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
