@@ -5,6 +5,7 @@ import Player, { sittingShiftData } from './Player';
 export default class OtherPlayer extends Player {
   private _targetPosition: [number, number];
   private lastUpdateTimestamp?: number;
+  private _playContainerBody: Phaser.Physics.Arcade.Body;
 
   constructor(
     scene: Phaser.Scene,
@@ -12,10 +13,16 @@ export default class OtherPlayer extends Player {
     y: number,
     texture: string | Phaser.Textures.Texture,
     id: string,
+    name: string,
     frame?: string | number,
   ) {
     super(scene, x, y, texture, id, frame);
+
     this._targetPosition = [x, y];
+
+    this._playerName.setText(name);
+    this._playContainerBody = this.playerContainer
+      .body as Phaser.Physics.Arcade.Body;
   }
 
   preUpdate(t: number, dt: number) {
@@ -28,12 +35,15 @@ export default class OtherPlayer extends Player {
       this.lastUpdateTimestamp = t;
       this.x = this._targetPosition[0];
       this.y = this._targetPosition[1];
+      this.playerContainer.x = this._targetPosition[0];
+      this.playerContainer.y = this._targetPosition[1] - 30;
       return;
     }
 
     this.lastUpdateTimestamp = t;
 
-    const animParts = this.anims.currentAnim.key.split('_');
+    const animParts = this.anims.currentAnim?.key.split('_');
+
     const animState = animParts[1];
     if (animState === 'sit') {
       const animDir = animParts[2];
@@ -51,10 +61,12 @@ export default class OtherPlayer extends Player {
     // if the player is close enough to the target position, directly snap the player to that position
     if (Math.abs(dx) < delta) {
       this.x = this._targetPosition[0];
+      this.playerContainer.x = this._targetPosition[0];
       dx = 0;
     }
     if (Math.abs(dy) < delta) {
       this.y = this._targetPosition[1];
+      this.playerContainer.y = this._targetPosition[1] - 30;
       dy = 0;
     }
 
@@ -69,9 +81,13 @@ export default class OtherPlayer extends Player {
     // update character velocity
     this.setVelocity(vx, vy);
     this.body.velocity.setLength(this.SPEED);
+    // also update playerNameContainer velocity
+    this._playContainerBody.setVelocity(vx, vy);
+    this._playContainerBody.velocity.setLength(this.SPEED);
   }
 
   destroy(fromScene: boolean) {
+    this.playerContainer.destroy();
     super.destroy(fromScene);
   }
 
@@ -114,6 +130,8 @@ declare global {
         x: number,
         y: number,
         texture: string | Phaser.Textures.Texture,
+        id: string,
+        name: string,
         frame?: string | number,
       ): OtherPlayer;
     }
@@ -130,7 +148,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     id: string,
     frame?: string | number,
   ) {
-    var sprite = new OtherPlayer(this.scene, x, y, texture, id, frame);
+    const sprite = new OtherPlayer(this.scene, x, y, texture, id, name, frame);
 
     this.displayList.add(sprite);
     this.updateList.add(sprite);

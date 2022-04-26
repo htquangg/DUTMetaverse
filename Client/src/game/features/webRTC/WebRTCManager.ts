@@ -106,6 +106,12 @@ export default class WebRTCManager {
     });
   }
 
+  public disconnect() {
+    this._peerRemoteId = '';
+    this._peers.clear();
+    this._myPeer.destroy();
+  }
+
   public checkPreviousPermissions(): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
       const permission = 'microphone' as PermissionName;

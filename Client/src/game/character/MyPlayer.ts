@@ -4,8 +4,12 @@ import { ItemBase, Chair, Whiteboard, Computer } from '@tlq/game/items';
 import { NetworkManager } from '@tlq/game/network';
 import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
+import { EventManager } from '../events';
+import { EventMessage } from '@tlq/game/types';
 
 export default class MyPlayer extends Player {
+  private _playContainerBody: Phaser.Physics.Arcade.Body;
+
   private _behavior: PlayerState = PlayerState.IDLE;
   public get behavior(): PlayerState {
     return this._behavior;
@@ -25,6 +29,10 @@ export default class MyPlayer extends Player {
     frame?: string | number,
   ) {
     super(scene, x, y, texture, id, frame);
+
+    this._playContainerBody = this.playerContainer
+      .body as Phaser.Physics.Arcade.Body;
+
     this._network = NetworkManager.getInstance();
   }
 
@@ -68,6 +76,12 @@ export default class MyPlayer extends Player {
                   chairItem.y + sittingShiftData[chairItem.direction][1],
                 ).setDepth(
                   chairItem.depth + sittingShiftData[chairItem.direction][2],
+                );
+
+                this._playContainerBody.setVelocity(0, 0);
+                this.playerContainer.setPosition(
+                  chairItem.x + sittingShiftData[chairItem.direction][0],
+                  chairItem.y + sittingShiftData[chairItem.direction][1] - 30,
                 );
 
                 this.play(`${this._skin}_sit_${chairItem.direction}`, true);
@@ -134,28 +148,60 @@ export default class MyPlayer extends Player {
   private _moveTop() {
     this.anims.play(`${this._skin}_run_up`, true);
     this.setVelocity(0, -this.SPEED);
+    this._playContainerBody.setVelocity(0, -this.SPEED);
   }
 
   private _moveBottom() {
     this.anims.play(`${this._skin}_run_down`, true);
     this.setVelocity(0, this.SPEED);
+    this._playContainerBody.setVelocity(0, this.SPEED);
   }
 
   private _moveLeft() {
     this.anims.play(`${this._skin}_run_left`, true);
     this.setVelocity(-this.SPEED, 0);
+    this._playContainerBody.setVelocity(-this.SPEED, 0);
   }
 
   private _moveRight() {
     this.anims.play(`${this._skin}_run_right`, true);
     this.setVelocity(this.SPEED, 0);
+    this._playContainerBody.setVelocity(this.SPEED, 0);
   }
 
   private _stopMove() {
     const parts = this.anims.currentAnim.key.split('_');
     parts[1] = 'idle';
+    // const newAnim = parts.join('_');
+
+    // if (this.anims.currentAnim.key !== newAnim) {
+    //   this.play(parts.join('_'));
+    //   this._network.updatePlayer({
+    //     x: this.x,
+    //     y: this.y,
+    //     anim: this.anims.currentAnim.key,
+    //   });
+    // }
+
     this.play(parts.join('_'));
     this.setVelocity(0, 0);
+    this._playContainerBody.setVelocity(0, 0);
+  }
+
+  public setUserName(name: string) {
+    this._playerName.setText(name);
+    // EventManager.getInstance().emit(EventMessage.PLAYER_CHANGE_NAME, { name });
+    // store.dispatch(pushPlayerJoinedMessage(name));
+  }
+
+  public setSKin(texture: string) {
+    this._skin = texture;
+    this.anims.play(`${this._skin}_idle_down`, true);
+    // EventManager.getInstance().emit(EventMessage.PLAYER_CHANGE_SKIN, {
+    //   x: this.x,
+    //   y: this.y,
+    //   anim: this.anims.currentAnim.key,
+    // });
   }
 }
 

@@ -1,13 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Phaser from 'phaser';
-import { Preload, Background, Game } from '@tlq/game/scenes';
-
 import { Box } from '@chakra-ui/react';
-
+import { Preload, Background, Game } from '@tlq/game/scenes';
+import { useAppDispatch, useAppSelector } from '@tlq/hooks';
 import './styles.css';
+import { setGamePhaser, setPreloadScene, setGameScene } from '@tlq/store/game';
+import { SceneType } from '@tlq/game/types';
+// import "@tlq/game/phaserGame";
+
+// hard code phaserGame
+declare global {
+  interface Window {
+    game: Phaser.Game;
+  }
+}
 
 const GameContainer = () => {
   const [game, setGame] = useState<Phaser.Game>();
+
+  const dispatch = useAppDispatch();
+
+  const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
+  const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
 
   useEffect(() => {
     if (game) return;
@@ -19,19 +33,52 @@ const GameContainer = () => {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         mode: Phaser.Scale.ScaleModes.RESIZE,
       },
-      pixelArt: true, // Prevent pixel art from becoming blurred when scaled.
+      render: {
+        antialias: false,
+        pixelArt: true,
+        roundPixels: true,
+      },
       physics: {
         default: 'arcade',
         arcade: {
           gravity: { y: 0 },
-          debug: false,
+          debug: true,
         },
       },
       scene: [Preload, Background, Game],
+      callbacks: {
+        postBoot: (game) => {
+          const preloadScene = game.scene.keys[SceneType.PRELOAD];
+          const gameScene = game.scene.keys[SceneType.GAME];
+
+          gameScene.events.on('create', (_gameScene: Game) => {
+            dispatch(setGameScene(_gameScene));
+          });
+
+          preloadScene.events.on('create', (_preloadScene: Preload) => {
+            dispatch(setGameScene(_preloadScene));
+          });
+
+          dispatch(setGamePhaser(game));
+        },
+      },
     });
 
     setGame(phaserGame);
-  }, []);
+  }, [game]);
+
+  useEffect(() => {
+    if (!game || !gameScene) return;
+
+    return () => {
+      gameScene.leave();
+      game.destroy(true, false);
+      dispatch(setGameScene(undefined));
+      dispatch(setGameScene(undefined));
+      dispatch(setGamePhaser(undefined));
+    };
+  }, [game, gameScene]);
+
   return (
     <>
       <Box

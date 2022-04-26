@@ -74,6 +74,19 @@ export default class NetworkManager {
     this._initialize();
   }
 
+  public disconnect() {
+    this._webRTC.disconnect();
+
+    if (this._room) {
+      console.error('room disconnect');
+      this._room.leave();
+    }
+    if (this._lobby) {
+      console.error('lobby disconnect');
+      this._lobby.leave();
+    }
+  }
+
   private _initialize() {
     if (!this._room) return;
 

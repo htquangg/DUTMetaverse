@@ -83,7 +83,10 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.startFollow(this._myPlayer);
 
     // handle objects collisions
-    this.physics.add.collider(this._myPlayer, this._wallLayer);
+    this.physics.add.collider(
+      [this._myPlayer, this._myPlayer.playerContainer],
+      this._wallLayer,
+    );
     this.physics.add.overlap(
       this._playerSelector,
       [this._chairs, this._computers, this._whiteboards],
@@ -239,8 +242,9 @@ export default class Game extends Phaser.Scene {
     const otherPlayer = this.add.otherPlayer(
       player.x,
       player.y,
-      PlayerKey.NANCY,
+      PlayerKey.ADAM,
       playerID,
+      player.name,
     );
     this._otherPlayers.add(otherPlayer);
     this._otherPlayerMap.set(playerID, otherPlayer);
@@ -327,5 +331,17 @@ export default class Game extends Phaser.Scene {
   >(msg: T): void {
     console.error('_handlePlayerConnectComputer');
     this._network.sendMsgPlayerConnectWhiteboard(msg.whiteboardID);
+  }
+
+  public leave(): void {
+    this._network.disconnect();
+  }
+
+  public setNamePlayer(name: string): void {
+    this._myPlayer.setUserName(name);
+  }
+
+  public setSkinPlayer(skin: string): void {
+    this._myPlayer.setSKin(skin);
   }
 }
