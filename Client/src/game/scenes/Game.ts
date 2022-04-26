@@ -242,7 +242,7 @@ export default class Game extends Phaser.Scene {
     const otherPlayer = this.add.otherPlayer(
       player.x,
       player.y,
-      PlayerKey.ADAM,
+      PlayerKey.NANCY,
       playerID,
       player.name,
     );
