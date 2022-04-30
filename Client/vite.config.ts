@@ -34,6 +34,9 @@ export default ({ command }: ConfigEnv): UserConfig => {
         'process.env': {
           GAME_SERVER_DOMAIN: 'localhost',
           GAME_SERVER_PORT: '3000',
+          PEER_SERVER_DOMAIN: 'localhost',
+          PEER_SERVER_PORT: '9000',
+          PEER_SERVER_PATH: 'myapp',
         },
       },
     };
