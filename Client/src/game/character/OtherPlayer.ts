@@ -146,6 +146,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     y: number,
     texture: string | Phaser.Textures.Texture,
     id: string,
+    name: string,
     frame?: string | number,
   ) {
     const sprite = new OtherPlayer(this.scene, x, y, texture, id, name, frame);

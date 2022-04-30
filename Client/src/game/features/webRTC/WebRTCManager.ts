@@ -76,6 +76,7 @@ export default class WebRTCManager {
 
   public initilize(playerID: string): void {
     const sanitizedID = Utils.replaceInvalidID(playerID);
+    console.error("WebRTCManager initilize: ", process.env.PEER_SERVER_DOMAIN)
 
     this._myPeer = new Peer(sanitizedID, {
       host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,

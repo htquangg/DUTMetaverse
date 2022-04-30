@@ -1,12 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { enableMapSet } from 'immer';
 import userSlice from './user';
 import gameSlice from './game';
+import computerSlice from './computer';
+
+enableMapSet();
 
 const store = configureStore({
   reducer: {
     user: userSlice,
     game: gameSlice,
+    computer: computerSlice,
   },
+  // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.
+  // https://stackoverflow.com/a/63244831
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export default store;

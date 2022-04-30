@@ -139,8 +139,9 @@ export default class ShareScreenManager {
   }
 
   onUserLeft(userId: string) {
-    console.error("ShareScreenManager: onUserLeft", userId, this.userId)
+    console.error('ShareScreenManager: onUserLeft', userId, this.userId);
     this.myStream?.getTracks().forEach((track) => track.stop());
+    this.myStream = undefined;
     if (userId === this.userId) return;
 
     const sanatizedId = this.makeId(userId);

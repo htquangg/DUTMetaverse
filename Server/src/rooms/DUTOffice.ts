@@ -88,7 +88,6 @@ export class DUTOffice extends Room<DUTState> {
   }
 
   private _onMessageFromClient(): void {
-
     this.onMessage(Messages.UPDATE_PLAYER, this._handleUpdatePlayer.bind(this));
 
     this.onMessage(Messages.READY_TO_CONNECT, (client) => {
@@ -104,6 +103,11 @@ export class DUTOffice extends Room<DUTState> {
     this.onMessage(
       Messages.DISCONNECT_FROM_COMPUTER,
       this._handleToDisconnectFromComputer.bind(this),
+    );
+
+    this.onMessage(
+      Messages.STOP_SCREEN_SHARE,
+      this._handleToStopScreenShare.bind(this),
     );
 
     this.onMessage(
@@ -133,7 +137,10 @@ export class DUTOffice extends Room<DUTState> {
     });
   }
 
-  private _handleToConnectComputer(client: Client, message: { computerID: string }) {
+  private _handleToConnectComputer(
+    client: Client,
+    message: { computerID: string },
+  ) {
     this._dispatcher.dispatch(new ComputerAddUserCommand(), {
       client,
       computerID: message.computerID,
@@ -150,7 +157,26 @@ export class DUTOffice extends Room<DUTState> {
     });
   }
 
-  private _handleToConnectWhiteboard(client: Client, message: { whiteboardID: string }) {
+  private _handleToStopScreenShare(
+    client: Client,
+    message: { computerID: string },
+  ) {
+    const computer = this.state.computers.get(message.computerID);
+    if (computer) {
+      computer.connectedUser.forEach((id) => {
+        this.clients.forEach((cli) => {
+          if (cli.sessionId === id && cli.sessionId !== client.sessionId) {
+            cli.send(Messages.STOP_SCREEN_SHARE, client.sessionId);
+          }
+        });
+      });
+    }
+  }
+
+  private _handleToConnectWhiteboard(
+    client: Client,
+    message: { whiteboardID: string },
+  ) {
     this._dispatcher.dispatch(new WhiteboardAddUserCommand(), {
       client,
       whiteboardID: message.whiteboardID,

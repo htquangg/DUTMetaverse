@@ -14,6 +14,7 @@ import { EventManager } from '@tlq/game/events';
 import { BuildConfig } from '@tlq/game/config';
 import { WebRTCManager } from '@tlq/game/features/webRTC';
 import { DataChange } from '@colyseus/schema';
+import store from '@tlq/store';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
@@ -85,6 +86,14 @@ export default class NetworkManager {
       console.error('lobby disconnect');
       this._lobby.leave();
     }
+  }
+
+  public startShareScreen() {
+    this._webRTC.startShareScreen();
+  }
+
+  public stopShareScreen() {
+    this._webRTC.stopShareScreen();
   }
 
   private _initialize() {
@@ -195,6 +204,11 @@ export default class NetworkManager {
     this._room.onMessage(Messages.NEW_COMMER, (content) => {
       console.error('new commer', content);
       this._webRTC.connectToNewUser(content.playerID);
+    });
+
+    this._room.onMessage(Messages.STOP_SCREEN_SHARE, (clientID: string) => {
+      const computerState = store.getState().computer;
+      computerState.shareScreenManager?.onUserLeft(clientID);
     });
   }
 
@@ -330,5 +344,10 @@ export default class NetworkManager {
     );
     if (!this._room) return;
     this._room.send(Messages.DISCONNECT_FROM_WHITEBOARD, { whiteboardID });
+  }
+
+  public sendMsgPlayerStopShareScreen(id: string) {
+    if (!this._room) return;
+    this._room?.send(Messages.STOP_SCREEN_SHARE, { computerID: id });
   }
 }

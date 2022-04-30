@@ -17,7 +17,7 @@ export class Player extends Schema implements IPlayer {
   @type('string') name = 'Quang';
   @type('number') x = 100;
   @type('number') y = 100;
-  @type('string') anim = '';
+  @type('string') anim = 'nancy_idle_down';
   @type('boolean') readyToConnect = false;
   @type('boolean') videoConnected = false;
 }

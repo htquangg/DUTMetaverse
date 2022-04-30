@@ -45,14 +45,18 @@ export default class MyPlayer extends Player {
 
     if (Phaser.Input.Keyboard.JustDown(cursors.keyR)) {
       switch (itemType) {
-        case ItemType.COMPUTER:
+        case ItemType.COMPUTER: {
           const computer = itemSelected as Computer;
           computer.openDialog(this._playerID);
+          this.disableKeys();
           break;
-        case ItemType.WHITEBOARD:
+        }
+        case ItemType.WHITEBOARD: {
           const whiteboard = itemSelected as Whiteboard;
           whiteboard.openDialog(this._playerID);
+          this.disableKeys();
           break;
+        }
         default:
           break;
       }
@@ -188,6 +192,14 @@ export default class MyPlayer extends Player {
     this._playContainerBody.setVelocity(0, 0);
   }
 
+  public disableKeys() {
+    this.scene.input.keyboard.enabled = false;
+  }
+
+  public enableKeys() {
+    this.scene.input.keyboard.enabled = true;
+  }
+
   public setUserName(name: string) {
     this._playerName.setText(name);
     // EventManager.getInstance().emit(EventMessage.PLAYER_CHANGE_NAME, { name });
@@ -212,6 +224,7 @@ declare global {
         x: number,
         y: number,
         texture: string | Phaser.Textures.Texture,
+        id: string,
         frame?: string | number,
       ): MyPlayer;
     }

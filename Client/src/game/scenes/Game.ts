@@ -40,7 +40,7 @@ export default class Game extends Phaser.Scene {
   private _otherPlayers!: Phaser.Physics.Arcade.Group;
   private _otherPlayerMap!: Map<string, OtherPlayer>;
 
-  private _computerMap!: Map<string, Computer>;
+  public _computerMap!: Map<string, Computer>;
   private _whiteboardMap!: Map<string, Whiteboard>;
 
   private _network!: NetworkManager;
@@ -343,5 +343,37 @@ export default class Game extends Phaser.Scene {
 
   public setSkinPlayer(skin: string): void {
     this._myPlayer.setSKin(skin);
+  }
+
+  public startShareScreen(): void {
+    // TODO
+  }
+
+  public stopShareScreen(itemID: string): void {
+    // TODO
+    this._network.sendMsgPlayerStopShareScreen(itemID);
+  }
+
+  public connectToComputer() {
+    // TODO
+  }
+
+  public disconnectFromComputer(computerID: string) {
+    this._network.sendMsgPlayerDisconnectFromComputer(computerID);
+  }
+
+  public connectToWhiteboard() {
+    // TODO
+  }
+
+  public disconnectFromWhiteboard(whiteboardID: string) {
+    this._network.sendMsgPlayerDisconnectFromWhiteboard(whiteboardID);
+  }
+  public disableKeys() {
+    this.input.keyboard.enabled = false;
+  }
+
+  public enableKeys() {
+    this.input.keyboard.enabled = true;
   }
 }

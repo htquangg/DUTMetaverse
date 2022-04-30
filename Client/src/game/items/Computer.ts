@@ -2,6 +2,8 @@ import ItemBase from './ItemBase';
 import { EventMessage, ItemType } from '@tlq/game/types';
 import { SetSchema } from '@colyseus/schema';
 import { EventManager } from '@tlq/game/events';
+import store from '@tlq/store';
+import { openDialog } from '@tlq/store/computer';
 
 export default class Computer extends ItemBase {
   public id!: string;
@@ -20,9 +22,11 @@ export default class Computer extends ItemBase {
 
   private _updateStatus() {
     if (!this.currentUsers) return;
-    const numberOfUsers = this.currentUsers.size;
     this.hideStatusDialog();
-    if (numberOfUsers === 1) {
+    const numberOfUsers = this.currentUsers.size;
+    if (numberOfUsers === 0) {
+      this.hideStatusDialog();
+    } else if (numberOfUsers === 1) {
       this.showStatusDialog(`${numberOfUsers} user.`);
     } else {
       this.showStatusDialog(`${numberOfUsers} users.`);
@@ -44,6 +48,7 @@ export default class Computer extends ItemBase {
   public openDialog(playerID: string) {
     if (!this.id) return;
     console.error('Computer openDialog: ', playerID);
+    store.dispatch(openDialog({ itemID: this.id, userID: playerID }));
     EventManager.getInstance().emit(EventMessage.CONNECT_TO_COMPUTER, {
       computerID: this.id,
     });
