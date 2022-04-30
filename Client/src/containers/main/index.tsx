@@ -25,6 +25,7 @@ const App = () => {
 
   const isLogin = useAppSelector((state) => state.user.isLogin);
   const localUser = useAppSelector((state) => state.user.userInfo);
+  const isComputerOpen = useAppSelector((state) => state.computer.isOpen);
 
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;

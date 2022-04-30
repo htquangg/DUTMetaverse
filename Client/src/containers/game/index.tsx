@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from '@tlq/hooks';
 import './styles.css';
 import { setGamePhaser, setPreloadScene, setGameScene } from '@tlq/store/game';
 import { SceneType } from '@tlq/game/types';
+import ComputerDialog from '@tlq/components/computer-dialog';
+import { closeDialog } from '@tlq/store/computer';
 // import "@tlq/game/phaserGame";
 
 // hard code phaserGame
@@ -19,6 +21,13 @@ const GameContainer = () => {
   const [game, setGame] = useState<Phaser.Game>();
 
   const dispatch = useAppDispatch();
+
+  const isComputerOpen = useAppSelector((state) => state.computer.isOpen);
+  const computerID = useAppSelector((state) => state.computer.itemID);
+  const myStream = useAppSelector((state) => state.computer.myStream);
+  const shareScreenManager = useAppSelector(
+    (state) => state.computer.shareScreenManager,
+  );
 
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
@@ -42,7 +51,7 @@ const GameContainer = () => {
         default: 'arcade',
         arcade: {
           gravity: { y: 0 },
-          debug: true,
+          debug: false,
         },
       },
       scene: [Preload, Background, Game],
@@ -79,6 +88,23 @@ const GameContainer = () => {
     };
   }, [game, gameScene]);
 
+  const handleOpenComputer = () => {
+    if (shareScreenManager?.myStream) {
+      shareScreenManager.stopScreenShare();
+    } else {
+      shareScreenManager?.startScreenShare();
+    }
+  };
+
+  const handleCloseComputer = () => {
+    console.error('handleClosecomputer: ', computerID);
+    if (computerID) {
+      gameScene.disconnectFromComputer(computerID);
+    }
+    gameScene.enableKeys();
+    dispatch(closeDialog());
+  };
+
   return (
     <>
       <Box
@@ -92,7 +118,16 @@ const GameContainer = () => {
         borderRadius="5px"
         borderStyle="solid"
         borderColor="green.700"
-      ></Box>
+      >
+        {isComputerOpen && (
+          <ComputerDialog
+            stream={myStream}
+            playerName="you"
+            onOpen={handleOpenComputer}
+            onClose={handleCloseComputer}
+          />
+        )}
+      </Box>
       <Box
         display={{ base: 'none', xl: 'block' }}
         className="video-grid"
