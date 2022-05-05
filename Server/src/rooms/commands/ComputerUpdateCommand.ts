@@ -29,3 +29,14 @@ export class ComputerRemoveUserCommand extends Command<DUTOffice, Payload> {
     }
   }
 }
+
+export class ComputerStart extends Command<DUTOffice, Payload> {
+  execute(payload: Payload) {
+    const { client, computerID } = payload;
+    const clientID = client.sessionId;
+    const computer = this.state.computers.get(computerID);
+
+    if (!computer || !computer.connectedUser.has(clientID)) return;
+    computer.userMaster = clientID;
+  }
+}

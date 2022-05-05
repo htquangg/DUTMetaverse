@@ -13,6 +13,7 @@ import { GameConfig } from '../config/GameConfig';
 import {
   ComputerAddUserCommand,
   ComputerRemoveUserCommand,
+  ComputerStart,
 } from './commands/ComputerUpdateCommand';
 import {
   WhiteboardAddUserCommand,
@@ -106,8 +107,13 @@ export class DUTOffice extends Room<DUTState> {
     );
 
     this.onMessage(
-      Messages.STOP_SCREEN_SHARE,
-      this._handleToStopScreenShare.bind(this),
+      Messages.START_SHARE_SCREEN,
+      this._handleToStartShareScreen.bind(this),
+    );
+
+    this.onMessage(
+      Messages.STOP_SHARE_SCREEN,
+      this._handleToStopShareScreen.bind(this),
     );
 
     this.onMessage(
@@ -145,6 +151,16 @@ export class DUTOffice extends Room<DUTState> {
       client,
       computerID: message.computerID,
     });
+    const computer = this.state.computers.get(message.computerID);
+    if (computer) {
+      computer.connectedUser.forEach((id) => {
+        this.clients.forEach((cli) => {
+          if (cli.sessionId === id && cli.sessionId !== client.sessionId) {
+            cli.send(Messages.CONNECT_TO_COMPUTER, [client.sessionId]);
+          }
+        });
+      });
+    }
   }
 
   private _handleToDisconnectFromComputer(
@@ -155,9 +171,42 @@ export class DUTOffice extends Room<DUTState> {
       client,
       computerID: message.computerID,
     });
+    const computer = this.state.computers.get(message.computerID);
+    if (computer) {
+      console.error('handle to DISCONNECT_FROM_COMPUTER: ', client.sessionId);
+      console.error(
+        'handle to DISCONNECT_FROM_COMPUTER: ',
+        computer.userMaster,
+      );
+      if (client.sessionId === computer.userMaster) {
+        computer.connectedUser.forEach((id) => {
+          this.clients.forEach((cli) => {
+            if (cli.sessionId === id && cli.sessionId !== client.sessionId) {
+              cli.send(Messages.DISCONNECT_FROM_COMPUTER, client.sessionId);
+            }
+          });
+        });
+      } else {
+        client.send(Messages.STOP_SHARE_SCREEN, client.sessionId);
+      }
+    }
   }
 
-  private _handleToStopScreenShare(
+  private _handleToStartShareScreen(
+    client: Client,
+    message: { computerID: string },
+  ) {
+    this._dispatcher.dispatch(new ComputerStart(), {
+      client,
+      computerID: message.computerID,
+    });
+    const computer = this.state.computers.get(message.computerID);
+    if (computer) {
+      client.send(Messages.START_SHARE_SCREEN, computer.connectedUser);
+    }
+  }
+
+  private _handleToStopShareScreen(
     client: Client,
     message: { computerID: string },
   ) {
@@ -165,8 +214,8 @@ export class DUTOffice extends Room<DUTState> {
     if (computer) {
       computer.connectedUser.forEach((id) => {
         this.clients.forEach((cli) => {
-          if (cli.sessionId === id && cli.sessionId !== client.sessionId) {
-            cli.send(Messages.STOP_SCREEN_SHARE, client.sessionId);
+          if (cli.sessionId === id) {
+            cli.send(Messages.STOP_SHARE_SCREEN, client.sessionId);
           }
         });
       });

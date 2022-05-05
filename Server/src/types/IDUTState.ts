@@ -10,6 +10,7 @@ export interface IPlayer extends Schema {
 }
 
 export interface IComputer extends Schema {
+  userMaster: string;
   connectedUser: SetSchema<string>;
 }
 

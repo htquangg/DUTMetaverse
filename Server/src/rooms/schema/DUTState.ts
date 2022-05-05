@@ -23,6 +23,7 @@ export class Player extends Schema implements IPlayer {
 }
 
 export class Computer extends Schema implements IComputer {
+  @type('string') userMaster = '';
   @type({ set: 'string' }) connectedUser = new SetSchema<string>();
 }
 
