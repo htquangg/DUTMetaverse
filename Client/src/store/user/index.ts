@@ -32,7 +32,7 @@ const getLocalUser = (): UserInfoProps | undefined => {
 
 const localUser = getLocalUser();
 
-console.error('localuser: ', !!localUser);
+console.error('[StoreUser] localUser: ', !!localUser);
 
 const initialState: UserState = {
   isLogin: !!localUser,
@@ -50,7 +50,7 @@ export const userSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<UserInfoProps>) => {
       const userInfo = action.payload;
       if (userInfo && userInfo.name) {
-        console.error('setUserInfo: ', userInfo);
+        console.error('[StoreUser] userInfo: ', userInfo);
         state.isLogin = true;
         TlqLocalStorage.setItem(LOCAL_STORAGE.USER, JSON.stringify(userInfo));
       }

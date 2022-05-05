@@ -33,24 +33,13 @@ export const computerSlice = createSlice({
       state,
       action: PayloadAction<{ itemID: string; userID: string }>,
     ) => {
-      if (!state.shareScreenManager) {
-        state.shareScreenManager = new ShareScreenManager(
-          action.payload.userID,
-        );
-      }
       state.isOpen = true;
       state.itemID = action.payload.itemID;
-      state.shareScreenManager.onOpen();
     },
     closeDialog: (state) => {
-      for (const { call } of state.peerStreams.values()) {
-        call.close();
-      }
-      state.shareScreenManager?.onClose();
       state.isOpen = false;
       state.myStream = null;
       state.itemID = null;
-      state.peerStreams.clear();
     },
     setStream: (state, action) => {
       state.myStream = action.payload;

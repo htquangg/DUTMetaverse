@@ -24,10 +24,7 @@ const GameContainer = () => {
 
   const isComputerOpen = useAppSelector((state) => state.computer.isOpen);
   const computerID = useAppSelector((state) => state.computer.itemID);
-  const myStream = useAppSelector((state) => state.computer.myStream);
-  const shareScreenManager = useAppSelector(
-    (state) => state.computer.shareScreenManager,
-  );
+  const computerStream = useAppSelector((state) => state.computer.myStream);
 
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
@@ -89,15 +86,17 @@ const GameContainer = () => {
   }, [game, gameScene]);
 
   const handleOpenComputer = () => {
-    if (shareScreenManager?.myStream) {
-      shareScreenManager.stopScreenShare();
-    } else {
-      shareScreenManager?.startScreenShare();
+    if (computerID) {
+      if (computerStream) {
+        gameScene?.stopShareScreen(computerID);
+      } else {
+        gameScene?.startShareScreen(computerID);
+      }
     }
   };
 
   const handleCloseComputer = () => {
-    console.error('handleClosecomputer: ', computerID);
+    console.error('[GameContainer] handleClosecomputer: ', computerID);
     if (computerID) {
       gameScene.disconnectFromComputer(computerID);
     }
@@ -121,7 +120,7 @@ const GameContainer = () => {
       >
         {isComputerOpen && (
           <ComputerDialog
-            stream={myStream}
+            stream={computerStream}
             playerName="you"
             onOpen={handleOpenComputer}
             onClose={handleCloseComputer}

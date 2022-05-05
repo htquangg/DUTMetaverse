@@ -141,8 +141,6 @@ const ModalLogin = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState<string>('');
   const [indexSlide, setIndexSlide] = useState<number>(0);
 
-  console.error('modallogin: ', indexSlide);
-
   const onChangeSlide = useCallback(
     (currentSlide: number) => {
       setIndexSlide(currentSlide);

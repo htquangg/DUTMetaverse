@@ -322,14 +322,14 @@ export default class Game extends Phaser.Scene {
   private _handlePlayerConnectComputer<
     T extends EventParamsMap[EventMessage.CONNECT_TO_COMPUTER],
   >(msg: T): void {
-    console.error('_handlePlayerConnectComputer');
+    console.error('[GameScene] handlePlayerConnectComputer');
     this._network.sendMsgPlayerConnectComputer(msg.computerID);
   }
 
   private _handlePlayerConnectWhiteboard<
     T extends EventParamsMap[EventMessage.CONNECT_TO_WHITEBOARD],
   >(msg: T): void {
-    console.error('_handlePlayerConnectComputer');
+    console.error('[GameScene] handlePlayerConnectWhiteboard.');
     this._network.sendMsgPlayerConnectWhiteboard(msg.whiteboardID);
   }
 
@@ -345,13 +345,14 @@ export default class Game extends Phaser.Scene {
     this._myPlayer.setSKin(skin);
   }
 
-  public startShareScreen(): void {
-    // TODO
+  public startShareScreen(itemID: string): void {
+    console.error('[GameScene] user start share screen.');
+    this._network.startShareScreen(itemID);
   }
 
   public stopShareScreen(itemID: string): void {
-    // TODO
-    this._network.sendMsgPlayerStopShareScreen(itemID);
+    console.error('[GameScene] user stop share screen.');
+    this._network.stopShareScreen(itemID);
   }
 
   public connectToComputer() {

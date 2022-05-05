@@ -6,7 +6,8 @@ export enum Messages {
   USER_LEAVE = 'user-leave',
   CONNECT_TO_COMPUTER = 'connect-to-computer',
   DISCONNECT_FROM_COMPUTER = 'disconnect-from-computer',
-  STOP_SCREEN_SHARE = 'stop-screen-share',
+  START_SHARE_SCREEN = 'start-share-screen',
+  STOP_SHARE_SCREEN = 'stop-share-screen',
   CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
   DISCONNECT_FROM_WHITEBOARD = 'disconnect-from-whiteboard',
 }

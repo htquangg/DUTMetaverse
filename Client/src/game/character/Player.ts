@@ -40,7 +40,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       .container(this.x, this.y - 30)
       .setDepth(5000);
 
-  console.error("player constructor")
     // add playerName to playerContainer
     this._playerName = this.scene.add
       .text(0, 0, '')

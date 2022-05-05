@@ -14,13 +14,14 @@ import { EventManager } from '@tlq/game/events';
 import { BuildConfig } from '@tlq/game/config';
 import { WebRTCManager } from '@tlq/game/features/webRTC';
 import { DataChange } from '@colyseus/schema';
-import store from '@tlq/store';
+import ShareScreenManager from '@tlq/game/features/webRTC/ShareScreenManager';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
   private _lobby!: Colyseus.Room;
   private _room?: Colyseus.Room<IDUTState>;
-  private _webRTC!: WebRTCManager;
+  private _webRTCInstance!: WebRTCManager;
+  private _shareScreenInstance!: ShareScreenManager;
 
   public sessionID!: string;
 
@@ -36,7 +37,8 @@ export default class NetworkManager {
     const gameUrl = `${protocol}://${serverDomain}:${serverPort}`;
 
     this._client = new Colyseus.Client(gameUrl);
-    this._webRTC = WebRTCManager.getInstance();
+    this._webRTCInstance = WebRTCManager.getInstance();
+    this._shareScreenInstance = ShareScreenManager.getInstance();
 
     this.joinLobbyRoom();
     console.error('[NetworkManager] Game Server URL: ', gameUrl);
@@ -51,22 +53,22 @@ export default class NetworkManager {
   }
 
   public getUserMedia(): Promise<MediaStream> {
-    return this._webRTC.getUserMedia();
+    return this._webRTCInstance.getUserMedia();
   }
 
   public async joinLobbyRoom() {
     this._lobby = await this._client.joinOrCreate(RoomState.LOBBY);
 
     this._lobby.onMessage('rooms', (rooms) => {
-      console.log('[NetworkClient] rooms joinLobbyRoom: ', rooms);
+      console.error('[NetworkManager] rooms joinLobbyRoom: ', rooms);
     });
 
     this._lobby.onMessage('+', (rooms) => {
-      console.log('[NetworkClient] + joinLobbyRoom: ', rooms);
+      console.error('[NetworkManager] + joinLobbyRoom: ', rooms);
     });
 
     this._lobby.onMessage('-', (rooms) => {
-      console.log('[NetworkClient] - joinLobbyRoom: ', rooms);
+      console.error('[NetworkManager] - joinLobbyRoom: ', rooms);
     });
   }
 
@@ -76,24 +78,28 @@ export default class NetworkManager {
   }
 
   public disconnect() {
-    this._webRTC.disconnect();
+    this._webRTCInstance.disconnect();
 
     if (this._room) {
-      console.error('room disconnect');
+      console.error('[NetworkManager] room disconnect');
       this._room.leave();
     }
     if (this._lobby) {
-      console.error('lobby disconnect');
+      console.error('[NetworkManager] lobby disconnect');
       this._lobby.leave();
     }
   }
 
-  public startShareScreen() {
-    this._webRTC.startShareScreen();
+  public startShareScreen(itemID: string) {
+    this._shareScreenInstance.startShareScreen().then((_stream) => {
+      this.sendMsgPlayerStartShareScreen(itemID);
+    });
   }
 
-  public stopShareScreen() {
-    this._webRTC.stopShareScreen();
+  public stopShareScreen(itemID: string) {
+    this._shareScreenInstance.stopShareScreen().then(() => {
+      this.sendMsgPlayerStopShareScreen(itemID);
+    });
   }
 
   private _initialize() {
@@ -102,10 +108,11 @@ export default class NetworkManager {
     this._lobby.leave();
     this.sessionID = this._room.sessionId;
 
-    this._webRTC.initilize(this.sessionID);
+    this._webRTCInstance.initilize(this.sessionID);
+    this._shareScreenInstance.initilize(this.sessionID);
 
-    console.error(this._room);
-    console.error(this.sessionID);
+    console.error('[NetworkManager] room: ', this._room);
+    console.error('[NetworkManager] sessionID: ', this.sessionID);
 
     // handle room state change
     this._handleRoomStateChange();
@@ -120,7 +127,7 @@ export default class NetworkManager {
     this._room.state.players.onAdd = (player: IPlayer, key: string) => {
       if (key === this.sessionID) return;
 
-      console.error('player: ', player, key);
+      console.error('[NetworkManager] _handleRoomStateChange.', player, key);
       player.onChange = (
         changes: DataChange<
           EventParamsMap[EventMessage.PLAYER_UPDATED]['value']
@@ -150,8 +157,8 @@ export default class NetworkManager {
       EventManager.getInstance().emit(EventMessage.PLAYER_LEFT, {
         playerID: key,
       });
-      this._webRTC.stopVideoStream(key);
-      this._webRTC.stopOnCalledVideoStream(key);
+      this._webRTCInstance.stopVideoStream(key);
+      this._webRTCInstance.stopOnCalledVideoStream(key);
     };
 
     this._room.state.computers.onAdd = (computer: IComputer, key: string) => {
@@ -198,18 +205,35 @@ export default class NetworkManager {
     if (!this._room) return;
 
     this._room.onMessage(Messages.SEND_ROOM_DATA, (content) => {
-      console.error('send room data: ', content);
+      console.error('[NetworkManager] send room data.', content);
     });
 
     this._room.onMessage(Messages.NEW_COMMER, (content) => {
-      console.error('new commer', content);
-      this._webRTC.connectToNewUser(content.playerID);
+      console.error('[NetworkManager] new commer.', content);
+      this._webRTCInstance.connectToNewUser(content.playerID);
     });
 
-    this._room.onMessage(Messages.STOP_SCREEN_SHARE, (clientID: string) => {
-      const computerState = store.getState().computer;
-      computerState.shareScreenManager?.onUserLeft(clientID);
+    this._room.onMessage(Messages.START_SHARE_SCREEN, (clientIDs: string[]) => {
+      this._shareScreenInstance.callRemoteUsers(clientIDs);
     });
+
+    this._room.onMessage(Messages.STOP_SHARE_SCREEN, (clientID: string) => {
+      this._shareScreenInstance.onUserLeft(clientID);
+    });
+
+    this._room.onMessage(
+      Messages.CONNECT_TO_COMPUTER,
+      (clientIDs: string[]) => {
+        this._shareScreenInstance.callRemoteUsers(clientIDs);
+      },
+    );
+
+    this._room.onMessage(
+      Messages.DISCONNECT_FROM_COMPUTER,
+      (clientID: string) => {
+        this._shareScreenInstance.onUserLeft(clientID);
+      },
+    );
   }
 
   // <------------------------------------------------------->
@@ -248,7 +272,7 @@ export default class NetworkManager {
     callback: (msg: T) => void,
     context?: any,
   ) {
-    console.error('onItemAddUser');
+    console.error('[NetworkManager] onItemAddUser');
     EventManager.getInstance().on(
       EventMessage.ITEM_ADD_USER,
       callback,
@@ -259,7 +283,7 @@ export default class NetworkManager {
   public onItemRemoveUser<
     T extends EventParamsMap[EventMessage.ITEM_REMOVE_USER],
   >(callback: (msg: T) => void, context?: any) {
-    console.error('onItemRemoveUser');
+    console.error('[NetworkManager] onItemRemoveUser.');
     EventManager.getInstance().on(
       EventMessage.ITEM_REMOVE_USER,
       callback,
@@ -270,7 +294,7 @@ export default class NetworkManager {
   public onPlayerConnectComputer<
     T extends EventParamsMap[EventMessage.CONNECT_TO_COMPUTER],
   >(callback: (msg: T) => void, context?: any) {
-    console.error('onPlayerConnectComputer');
+    console.error('[NetworkManager] onPlayerConnectComputer.');
     EventManager.getInstance().on(
       EventMessage.CONNECT_TO_COMPUTER,
       callback,
@@ -281,7 +305,7 @@ export default class NetworkManager {
   public onPlayerConnectWhiteboard<
     T extends EventParamsMap[EventMessage.CONNECT_TO_WHITEBOARD],
   >(callback: (msg: T) => void, context?: any) {
-    console.error('onPlayerConnectWhiteboard');
+    console.error('[NetworkManager] onPlayerConnectWhiteboard.');
     EventManager.getInstance().on(
       EventMessage.CONNECT_TO_WHITEBOARD,
       callback,
@@ -311,14 +335,18 @@ export default class NetworkManager {
   }
 
   public sendMsgPlayerConnectComputer(computerID: string) {
-    console.error('send sendMsgPlayerConnectComputer', computerID, this._room);
+    console.error(
+      '[NetworkManager] sendMsgPlayerConnectComputer',
+      computerID,
+      this._room,
+    );
     if (!this._room) return;
     this._room.send(Messages.CONNECT_TO_COMPUTER, { computerID });
   }
 
   public sendMsgPlayerConnectWhiteboard(whiteboardID: string) {
     console.error(
-      'send sendMsgPlayerConnectWhiteboard',
+      '[NetworkManager] sendMsgPlayerConnectWhiteboard',
       whiteboardID,
       this._room,
     );
@@ -328,7 +356,7 @@ export default class NetworkManager {
 
   public sendMsgPlayerDisconnectFromComputer(computerID: string) {
     console.error(
-      ' send sendMsgPlayerDisconnectFromComputer',
+      '[NetworkManager] sendMsgPlayerDisconnectFromComputer',
       computerID,
       this._room,
     );
@@ -338,7 +366,7 @@ export default class NetworkManager {
 
   public sendMsgPlayerDisconnectFromWhiteboard(whiteboardID: string) {
     console.error(
-      ' send sendMsgPlayerDisconnectFromComputer',
+      '[NetworkManager] sendMsgPlayerDisconnectFromComputer',
       whiteboardID,
       this._room,
     );
@@ -346,8 +374,13 @@ export default class NetworkManager {
     this._room.send(Messages.DISCONNECT_FROM_WHITEBOARD, { whiteboardID });
   }
 
+  public sendMsgPlayerStartShareScreen(id: string) {
+    if (!this._room) return;
+    this._room.send(Messages.START_SHARE_SCREEN, { computerID: id });
+  }
+
   public sendMsgPlayerStopShareScreen(id: string) {
     if (!this._room) return;
-    this._room?.send(Messages.STOP_SCREEN_SHARE, { computerID: id });
+    this._room.send(Messages.STOP_SHARE_SCREEN, { computerID: id });
   }
 }

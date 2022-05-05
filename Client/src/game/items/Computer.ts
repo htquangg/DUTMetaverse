@@ -4,6 +4,7 @@ import { SetSchema } from '@colyseus/schema';
 import { EventManager } from '@tlq/game/events';
 import store from '@tlq/store';
 import { openDialog } from '@tlq/store/computer';
+import ShareScreenManager from '../features/webRTC/ShareScreenManager';
 
 export default class Computer extends ItemBase {
   public id!: string;
@@ -47,15 +48,16 @@ export default class Computer extends ItemBase {
 
   public openDialog(playerID: string) {
     if (!this.id) return;
-    console.error('Computer openDialog: ', playerID);
+    console.error('[Game Item Computer] open dialog');
     store.dispatch(openDialog({ itemID: this.id, userID: playerID }));
     EventManager.getInstance().emit(EventMessage.CONNECT_TO_COMPUTER, {
       computerID: this.id,
     });
+    ShareScreenManager.getInstance().onOpen();
   }
 
   public addCurrentUser(playerID: string) {
-    console.error('computer add currentUsers');
+    console.error('[Game Item Computer] add current user.');
     if (!this.currentUsers || this.currentUsers.has(playerID)) return;
     this.currentUsers.add(playerID);
     this._updateStatus();
