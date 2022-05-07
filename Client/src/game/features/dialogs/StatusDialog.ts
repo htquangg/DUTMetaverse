@@ -13,7 +13,7 @@ export default class StatusDialog extends DialogBase {
     const dlgBoxWidth = innerText.width + 4;
     const dlgBoxHeight = innerText.height + 2;
     const dlgBoxX = -dlgBoxWidth * 0.5;
-    const dlgBoxY = this.y - this!.height*2;
+    const dlgBoxY = - this.height * 0.5;
 
     this.add(
       this.scene.add
