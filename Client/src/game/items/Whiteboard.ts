@@ -22,9 +22,11 @@ export default class Whiteboard extends ItemBase {
 
   private _updateStatus() {
     if (!this.currentUsers) return;
-    const numberOfUsers = this.currentUsers.size;
     this.hideStatusDialog();
-    if (numberOfUsers === 1) {
+    const numberOfUsers = this.currentUsers.size;
+    if (numberOfUsers === 0) {
+      this.hideStatusDialog();
+    } else if (numberOfUsers === 1) {
       this.showStatusDialog(`${numberOfUsers} user.`);
     } else {
       this.showStatusDialog(`${numberOfUsers} users.`);
