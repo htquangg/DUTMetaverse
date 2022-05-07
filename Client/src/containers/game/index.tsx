@@ -6,8 +6,10 @@ import { useAppDispatch, useAppSelector } from '@tlq/hooks';
 import './styles.css';
 import { setGamePhaser, setPreloadScene, setGameScene } from '@tlq/store/game';
 import { SceneType } from '@tlq/game/types';
-import ComputerDialog from '@tlq/components/computer-dialog';
+// import ComputerDialog from '@tlq/components/computer-dialog';
+import { ComputerDialog, WhiteboardDialog } from '@tlq/components/dialog';
 import { closeDialog } from '@tlq/store/computer';
+import { closeWhiteboardDialog } from '@tlq/store/whiteboard';
 // import "@tlq/game/phaserGame";
 
 // hard code phaserGame
@@ -25,6 +27,10 @@ const GameContainer = () => {
   const isComputerOpen = useAppSelector((state) => state.computer.isOpen);
   const computerID = useAppSelector((state) => state.computer.itemID);
   const computerStream = useAppSelector((state) => state.computer.myStream);
+
+  const isWhiteboardOpen = useAppSelector((state) => state.whiteboard.isOpen);
+  const whiteboardID = useAppSelector((state) => state.whiteboard.itemID);
+  const whiteboardUrl = useAppSelector((state) => state.whiteboard.url);
 
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
@@ -96,12 +102,27 @@ const GameContainer = () => {
   };
 
   const handleCloseComputer = () => {
-    console.error('[GameContainer] handleClosecomputer: ', computerID);
+    console.error('[GameContainer] handle close computer: ', computerID);
     if (computerID) {
       gameScene.disconnectFromComputer(computerID);
     }
     gameScene.enableKeys();
     dispatch(closeDialog());
+  };
+
+  const handleOpenWhiteboard = () => {
+    if (whiteboardID) {
+      // TODO
+    }
+  };
+
+  const handleCloseWhiteboard = () => {
+    console.error('[GameContainer] handle close whiteboard: ', whiteboardID);
+    if (whiteboardID) {
+      gameScene.disconnectFromWhiteboard(whiteboardID);
+    }
+    gameScene.enableKeys();
+    dispatch(closeWhiteboardDialog());
   };
 
   return (
@@ -124,6 +145,13 @@ const GameContainer = () => {
             playerName="you"
             onOpen={handleOpenComputer}
             onClose={handleCloseComputer}
+          />
+        )}
+        {isWhiteboardOpen && (
+          <WhiteboardDialog
+            whiteboardUrl={whiteboardUrl}
+            onOpen={handleOpenWhiteboard}
+            onClose={handleCloseWhiteboard}
           />
         )}
       </Box>

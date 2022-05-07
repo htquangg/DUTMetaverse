@@ -15,6 +15,8 @@ import { BuildConfig } from '@tlq/game/config';
 import { WebRTCManager } from '@tlq/game/features/webRTC';
 import { DataChange } from '@colyseus/schema';
 import ShareScreenManager from '@tlq/game/features/webRTC/ShareScreenManager';
+import store from '@tlq/store';
+import { setWhiteboardUrls } from '@tlq/store/whiteboard';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
@@ -183,6 +185,12 @@ export default class NetworkManager {
       whiteboard: IWhiteboard,
       key: string,
     ) => {
+      store.dispatch(
+        setWhiteboardUrls({
+          whiteboardID: key,
+          roomID: whiteboard.roomID,
+        }),
+      );
       whiteboard.connectedUser.onAdd = (clientID: string) => {
         EventManager.getInstance().emit(EventMessage.ITEM_ADD_USER, {
           playerID: clientID,
