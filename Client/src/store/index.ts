@@ -3,6 +3,7 @@ import { enableMapSet } from 'immer';
 import userSlice from './user';
 import gameSlice from './game';
 import computerSlice from './computer';
+import whiteboardSlice from './whiteboard';
 
 enableMapSet();
 
@@ -11,6 +12,7 @@ const store = configureStore({
     user: userSlice,
     game: gameSlice,
     computer: computerSlice,
+    whiteboard: whiteboardSlice,
   },
   // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.
   // https://stackoverflow.com/a/63244831
