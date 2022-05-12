@@ -14,7 +14,7 @@ import {
 } from '../../types/IDUTState';
 
 export class Player extends Schema implements IPlayer {
-  @type('string') name = 'Quang';
+  @type('string') name = '';
   @type('number') x = 100;
   @type('number') y = 100;
   @type('string') anim = 'nancy_idle_down';

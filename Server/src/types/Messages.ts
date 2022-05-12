@@ -1,4 +1,5 @@
 export enum Messages {
+  PLAYER_CHANGE_NAME = 'player-change-name',
   UPDATE_PLAYER = 'update-player',
   READY_TO_CONNECT = 'ready-to-connect',
   SEND_ROOM_DATA = 'send-room-data',

@@ -1,11 +1,9 @@
 import Phaser from 'phaser';
 import { PlayerState, ItemType, CustomCursorKeys } from '@tlq/game/types';
-import { ItemBase, Chair, Whiteboard, Computer } from '@tlq/game/items';
+import { Chair, Whiteboard, Computer } from '@tlq/game/items';
 import { NetworkManager } from '@tlq/game/network';
 import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
-import { EventManager } from '../events';
-import { EventMessage } from '@tlq/game/types';
 
 export default class MyPlayer extends Player {
   private _playContainerBody: Phaser.Physics.Arcade.Body;
@@ -202,6 +200,7 @@ export default class MyPlayer extends Player {
 
   public setUserName(name: string) {
     this._playerName.setText(name);
+    this._network.sendMsgPlayerChangeName(name);
     // EventManager.getInstance().emit(EventMessage.PLAYER_CHANGE_NAME, { name });
     // store.dispatch(pushPlayerJoinedMessage(name));
   }
@@ -209,6 +208,7 @@ export default class MyPlayer extends Player {
   public setSKin(texture: string) {
     this._skin = texture;
     this.anims.play(`${this._skin}_idle_down`, true);
+    this._network.sendMsgUpdatePlayer(this.x, this.y, texture);
     // EventManager.getInstance().emit(EventMessage.PLAYER_CHANGE_SKIN, {
     //   x: this.x,
     //   y: this.y,

@@ -5,6 +5,7 @@ import { ItemType } from './Item';
 export enum EventMessage {
   PLAYER_JOINED = 'player-joined',
   PLAYER_UPDATED = 'player-updated',
+  PLAYER_CHANGE_NAME = 'player-change-name',
   PLAYER_LEFT = 'player-left',
   ITEM_ADD_USER = 'item-add-user',
   ITEM_REMOVE_USER = 'item-remove-user',

@@ -326,7 +326,7 @@ export default class NetworkManager {
   // <------------------------------------------------------->
   public sendMsgUpdatePlayer(
     currentX: number,
-    currentY: number,
+   currentY: number,
     currentAnim: string,
   ) {
     if (!this._room) return;
@@ -334,6 +334,13 @@ export default class NetworkManager {
       x: currentX,
       y: currentY,
       anim: currentAnim,
+    });
+  }
+
+  public sendMsgPlayerChangeName(name: string) {
+    if (!this._room) return;
+    this._room.send(Messages.PLAYER_CHANGE_NAME, {
+      name,
     });
   }
 

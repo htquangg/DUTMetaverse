@@ -19,6 +19,7 @@ import {
   WhiteboardAddUserCommand,
   WhiteboardRemoveUserCommand,
 } from './commands/WhiteboardUpdateCommand';
+import PlayerUpdateNameCommand from './commands/PlayerUpdateNameCommand';
 
 export class DUTOffice extends Room<DUTState> {
   private _dispatcher!: Dispatcher<this>;
@@ -74,9 +75,6 @@ export class DUTOffice extends Room<DUTState> {
       if (whiteboard.connectedUser.has(clientID)) {
         whiteboard.connectedUser.delete(clientID);
       }
-
-      console.log('room', this.roomId, 'disposing...');
-      this._dispatcher.stop();
     });
   }
 
@@ -85,11 +83,19 @@ export class DUTOffice extends Room<DUTState> {
       if (whiteboardRoomIds.has(whiteboard.roomID)) {
         whiteboardRoomIds.delete(whiteboard.roomID);
       }
+
+      console.log('room', this.roomId, 'disposing...');
+      this._dispatcher.stop();
     });
   }
 
   private _onMessageFromClient(): void {
     this.onMessage(Messages.UPDATE_PLAYER, this._handleUpdatePlayer.bind(this));
+
+    this.onMessage(
+      Messages.PLAYER_CHANGE_NAME,
+      this._handlePlayerChangeName.bind(this),
+    );
 
     this.onMessage(Messages.READY_TO_CONNECT, (client) => {
       const player = this.state.players.get(client.sessionId);
@@ -140,6 +146,13 @@ export class DUTOffice extends Room<DUTState> {
       x: message.x,
       y: message.y,
       anim: message.anim,
+    });
+  }
+
+  private _handlePlayerChangeName(client: Client, message: { name: string }) {
+    this._dispatcher.dispatch(new PlayerUpdateNameCommand(), {
+      client,
+      name: message.name,
     });
   }
 
