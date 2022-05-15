@@ -17,6 +17,7 @@ import { DataChange } from '@colyseus/schema';
 import ShareScreenManager from '@tlq/game/features/webRTC/ShareScreenManager';
 import store from '@tlq/store';
 import { setWhiteboardUrls } from '@tlq/store/whiteboard';
+import { setVideoConnected } from '@tlq/store/user';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
@@ -52,6 +53,13 @@ export default class NetworkManager {
     }
 
     return NetworkManager.inst;
+  }
+
+  public async checkPreviousPermission(): Promise<void> {
+    const result = await this._webRTCInstance.checkPreviousPermissions();
+    if (result) {
+      store.dispatch(setVideoConnected(true));
+    }
   }
 
   public getUserMedia(): Promise<MediaStream> {
@@ -326,7 +334,7 @@ export default class NetworkManager {
   // <------------------------------------------------------->
   public sendMsgUpdatePlayer(
     currentX: number,
-   currentY: number,
+    currentY: number,
     currentAnim: string,
   ) {
     if (!this._room) return;

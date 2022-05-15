@@ -26,14 +26,10 @@ export default class Preload extends Phaser.Scene {
   }
 
   launchGame() {
-    this._network
-      .getUserMedia()
-      .then((_userMedia) => {
-        this._network.joinOrCreatePublic().then(() => {
-          this.scene.launch(SceneType.GAME);
-        });
-      })
-      .catch((err) => window.alert(err));
+    this._network.checkPreviousPermission();
+    this._network.joinOrCreatePublic().then(() => {
+      this.scene.launch(SceneType.GAME);
+    });
   }
 
   private async _loadAsset(): Promise<void> {

@@ -85,6 +85,9 @@ export default class ShareScreenManager {
             };
           }
           resolve(stream);
+        })
+        .catch((error) => {
+          console.error('Cannot share screen: ', error);
         });
     });
   }
@@ -96,21 +99,11 @@ export default class ShareScreenManager {
         this.myStream = stream;
         store.dispatch(setStream(stream));
         resolve(stream);
-        // const game = store.getState().game.gameScene as Game;
-        // const itemID = store.getState().computer.itemID;
-        // if (itemID) {
-        //   const computerItem = game._computerMap.get(itemID);
-        //   if (computerItem) {
-        //     for (const userId of computerItem.currentUsers.values()) {
-        //       this.onUserJoined(userId);
-        //     }
-        //   }
-        // }
       });
     });
   }
 
-  stopShareScreen(shouldDispatch = true): Promise<void> {
+  stopShareScreen(): Promise<void> {
     return new Promise((resolve, reject) => {
       console.error('[ShareScreenManager] stop share screen.');
       this.myStream?.getTracks().forEach((track) => track.stop());

@@ -337,6 +337,10 @@ export default class Game extends Phaser.Scene {
     this._network.disconnect();
   }
 
+  public async getUserMedia(): Promise<MediaStream> {
+    return this._network.getUserMedia();
+  }
+
   public setNamePlayer(name: string): void {
     this._myPlayer.setUserName(name);
   }

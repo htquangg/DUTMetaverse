@@ -76,7 +76,7 @@ export default class WebRTCManager {
 
   public initilize(playerID: string): void {
     const sanitizedID = Utils.replaceInvalidID(playerID);
-    console.error("WebRTCManager initilize: ", process.env.PEER_SERVER_DOMAIN)
+    console.error('WebRTCManager initilize: ', process.env.PEER_SERVER_DOMAIN);
 
     this._myPeer = new Peer(sanitizedID, {
       host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
@@ -113,23 +113,23 @@ export default class WebRTCManager {
     this._myPeer.destroy();
   }
 
-  public checkPreviousPermissions(): Promise<boolean> {
-    return new Promise<boolean>(async (resolve, reject) => {
+  public async checkPreviousPermissions(): Promise<boolean> {
+    try {
       const permission = 'microphone' as PermissionName;
       const permissionStatus = await navigator.permissions.query({
         name: permission,
       });
 
-      if (permissionStatus.state !== 'granted') {
-        return reject(
-          new Error(
-            'No webcam or microphone found, or permission is blocked!!!',
-          ),
-        );
+      if (permissionStatus.state === 'granted') {
+        this.getUserMedia();
+        return Promise.resolve(true);
       }
-
-      return resolve(true);
-    });
+      return false;
+    } catch (error) {
+      this.getUserMedia();
+      console.error('Browser is not support permission: ', error);
+      return Promise.resolve(true);
+    }
   }
 
   public getUserMedia(): Promise<MediaStream> {

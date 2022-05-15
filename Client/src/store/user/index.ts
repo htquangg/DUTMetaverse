@@ -12,6 +12,7 @@ export interface UserState {
   isLogin: boolean;
   sessionID: string | undefined;
   userInfo: UserInfoProps;
+  videoConnected: boolean;
 }
 
 const getLocalUser = (): UserInfoProps | undefined => {
@@ -41,6 +42,7 @@ const initialState: UserState = {
     name: '',
     skin: '',
   },
+  videoConnected: false,
 };
 
 export const userSlice = createSlice({
@@ -62,9 +64,12 @@ export const userSlice = createSlice({
     setSessionID: (state, action: PayloadAction<string>) => {
       state.sessionID = action.payload;
     },
+    setVideoConnected: (state, action: PayloadAction<boolean>) => {
+      state.videoConnected = action.payload
+    },
   },
 });
 
-export const { setUserInfo, setLoggedIn, setSessionID } = userSlice.actions;
+export const { setUserInfo, setLoggedIn, setSessionID, setVideoConnected } = userSlice.actions;
 
 export default userSlice.reducer;

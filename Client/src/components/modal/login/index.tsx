@@ -17,9 +17,14 @@ import {
   Button,
   useBreakpointValue,
   Container,
+  Alert,
+  AlertTitle,
+  AlertIcon,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import Slider, { Settings } from 'react-slick';
+import { useAppSelector, useAppDispatch } from '@tlq/hooks';
 
 import './style.css';
 
@@ -27,6 +32,9 @@ import Adam from '@tlq/assets/character/avatar/adam.png';
 import Ash from '@tlq/assets/character/avatar/ash.png';
 import Lucy from '@tlq/assets/character/avatar/lucy.png';
 import Nancy from '@tlq/assets/character/avatar/nancy.png';
+import { Game } from '@tlq/game/scenes';
+import { setStream } from '@tlq/store/computer';
+import { setVideoConnected } from '@tlq/store/user';
 
 const avatars = [
   { name: 'adam', img: Adam },
@@ -141,6 +149,11 @@ const ModalLogin = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState<string>('');
   const [indexSlide, setIndexSlide] = useState<number>(0);
 
+  const dispatch = useAppDispatch();
+
+  const videoConnected = useAppSelector((state) => state.user.videoConnected);
+  const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
+
   const onChangeSlide = useCallback(
     (currentSlide: number) => {
       setIndexSlide(currentSlide);
@@ -174,30 +187,62 @@ const ModalLogin = ({ isOpen, onClose, onSubmit }) => {
           <ModalBody pb={6}>
             <HStack alignItems="flex-start">
               <VStack>
-                <Text fontFamily="monospace" fontWeight="bold">
+                <Text fontWeight="bold" fontSize="medium">
                   Select an avatar
                 </Text>
                 <AvatarCarousel handleChangeSlide={onChangeSlide} />
               </VStack>
-              <VStack justifyContent="flex-start" alignItems="flex-start">
-                <Box ml="50px">
+              <VStack
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                width="70%"
+              >
+                <Box ml="50px" w="90%">
                   <Input
                     autoFocus
                     placeholder="Name"
                     focusBorderColor="green.600"
                     mb="20px"
                     onChange={handleOnChangeName}
+                    size="lg"
                   />
-                  <Button
-                    colorScheme="teal"
-                    variant="outline"
-                    size="md"
-                    onClick={() => {
-                      // TODO
-                    }}
-                  >
-                    Connect to camera
-                  </Button>
+                  {!videoConnected ? (
+                    <VStack>
+                      <Alert status="warning">
+                        <AlertIcon />
+                        <Box>
+                          <AlertTitle>Warning</AlertTitle>
+                          <AlertDescription>
+                            No webcam/mic connected -{' '}
+                            <strong>connect one for best experience!</strong>
+                          </AlertDescription>
+                        </Box>
+                      </Alert>
+                      <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        size="md"
+                        onClick={async () => {
+                          // TODO
+                          gameScene.getUserMedia().then((stream) => {
+                            dispatch(setVideoConnected(true));
+                          });
+                        }}
+                      >
+                        Connect to webcam
+                      </Button>
+                    </VStack>
+                  ) : (
+                    <VStack>
+                      <Alert status="success">
+                        <AlertIcon />
+                        <Box>
+                          <AlertTitle>Success</AlertTitle>
+                          <AlertDescription>Webcam connected!</AlertDescription>
+                        </Box>
+                      </Alert>
+                    </VStack>
+                  )}
                 </Box>
               </VStack>
             </HStack>
