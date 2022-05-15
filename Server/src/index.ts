@@ -8,7 +8,7 @@ import { monitor } from '@colyseus/monitor';
 import { DUTOffice } from './rooms/DUTOffice';
 import { RoomState } from './types/';
 
-const port = Number(process.env.port) || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 console.log("@@@@@@@@@@@@ env: ", process.env.NODE_ENV)
 const app = express();
