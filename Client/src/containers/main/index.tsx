@@ -10,10 +10,15 @@ import { Header, Sidebar } from '@tlq/components';
 import { useAppSelector, useAppDispatch } from '@tlq/hooks';
 import { ModalLogin } from '@tlq/components/modal';
 
-import { setUserInfo, setLoggedIn } from '@tlq/store/user';
+import { setUserInfo, setLoggedIn, logout } from '@tlq/store/user';
 
 import './style.css';
 import { Game } from '@tlq/game/scenes';
+
+import _ from 'lodash';
+import { FacebookResponse } from '@tlq/types';
+import { TlqLocalStorage } from '@tlq/localstorage';
+import { LOCAL_STORAGE } from '@tlq/constants';
 
 const StyledSidebar = chakra(Sidebar);
 
@@ -39,6 +44,37 @@ const App = () => {
     }
   }, [gamePhaser, gameScene]);
 
+  const handleResponseFacebook = (response: FacebookResponse) => {
+    if (!gamePhaser || !gameScene) return;
+
+    if (response.accessToken) {
+      const { accessToken: socialToken, id: socialId } = response;
+      const userInfo = {
+        name: `${response.first_name} ${response.last_name}`,
+        skin:
+          TlqLocalStorage.getItem(LOCAL_STORAGE.USER)?.skin || response.skin,
+        socialToken,
+        socialId,
+        avatar: response?.picture?.data?.url,
+        friends: _.get(response, 'friends.data', []),
+      };
+      gameScene.setNamePlayer(userInfo.name);
+      gameScene.setSkinPlayer(userInfo.skin);
+      dispatch(setUserInfo(userInfo));
+    }
+  };
+
+  const handleClickLogout = () => {
+    if (window.FB) {
+      window.FB.logout();
+    }
+    const emptyUser = {
+      name: '',
+      skin: '',
+    };
+    dispatch(logout(emptyUser));
+  };
+
   const handleOnSubmit = (name: string, skin: string) => {
     if (!gamePhaser || !gameScene) return;
     // TODO
@@ -60,6 +96,7 @@ const App = () => {
             isOpen={!isLogin}
             onClose={onCloseModal}
             onSubmit={handleOnSubmit}
+            responseFacebook={handleResponseFacebook}
           />
         )}
         <StyledSidebar
@@ -69,11 +106,22 @@ const App = () => {
           borderRightWidth="1px"
           borderRightStyle="solid"
         />
-        <Header onOpen={onOpen} />
+        {localUser && localUser.name && (
+          <Header
+            onOpen={onOpen}
+            user={localUser}
+            responseFacebook={handleResponseFacebook}
+            onClickLogout={handleClickLogout}
+          />
+        )}
         <Box
           ml={{ base: 0, md: 60 }}
           p="4"
-          height="calc(100vh - 80px)"
+          height={
+            localUser && localUser.name && localUser.socialId
+              ? 'calc(100vh - 80px)'
+              : '100vh'
+          }
           display="flex"
         >
           <Outlet />

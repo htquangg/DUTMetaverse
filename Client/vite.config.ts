@@ -26,6 +26,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
         watch: {
           usePolling: true,
         },
+        https: true,
       },
       optimizeDeps: {
         exclude: ['path'],
@@ -37,6 +38,7 @@ export default ({ command }: ConfigEnv): UserConfig => {
           PEER_SERVER_DOMAIN: 'localhost',
           PEER_SERVER_PORT: '9000',
           PEER_SERVER_PATH: 'myapp',
+          FACEBOOK_APP_ID: '3183078108632658',
         },
       },
     };

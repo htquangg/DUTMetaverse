@@ -33,8 +33,10 @@ import Ash from '@tlq/assets/character/avatar/ash.png';
 import Lucy from '@tlq/assets/character/avatar/lucy.png';
 import Nancy from '@tlq/assets/character/avatar/nancy.png';
 import { Game } from '@tlq/game/scenes';
-import { setStream } from '@tlq/store/computer';
 import { setVideoConnected } from '@tlq/store/user';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { LoginFbButton } from '@tlq/components/button';
+import { FacebookResponse } from '@tlq/types';
 
 const avatars = [
   { name: 'adam', img: Adam },
@@ -145,7 +147,7 @@ const AvatarCarousel = ({ handleChangeSlide }) => {
   );
 };
 
-const ModalLogin = ({ isOpen, onClose, onSubmit }) => {
+const ModalLogin = ({ isOpen, onClose, onSubmit, responseFacebook }) => {
   const [name, setName] = useState<string>('');
   const [indexSlide, setIndexSlide] = useState<number>(0);
 
@@ -205,6 +207,30 @@ const ModalLogin = ({ isOpen, onClose, onSubmit }) => {
                     mb="20px"
                     onChange={handleOnChangeName}
                     size="lg"
+                  />
+                  <FacebookLogin
+                    appId={process.env.FACEBOOK_APP_ID}
+                    fields="name,email,picture,first_name,last_name"
+                    callback={(response: FacebookResponse) => {
+                      const skin = avatars[indexSlide].name;
+                      const data = { ...response, skin };
+                      responseFacebook(data);
+                    }}
+                    onFailure={(error) =>
+                      console.log('@@@ error login fb', error)
+                    }
+                    isMobile={false}
+                    // version="v2.7"
+                    scope="public_profile,user_friends"
+                    disableMobileRedirect={true}
+                    render={(renderProps) => (
+                      <LoginFbButton
+                        onClick={() => {
+                          renderProps.onClick();
+                        }}
+                        mb="20px"
+                      />
+                    )}
                   />
                   {!videoConnected ? (
                     <VStack>

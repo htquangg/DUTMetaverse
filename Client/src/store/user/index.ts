@@ -6,6 +6,10 @@ import { TlqLocalStorage } from '@tlq/localstorage';
 export interface UserInfoProps {
   name: string;
   skin: string;
+  socialToken?: string;
+  socialId?: string;
+  avatar?: string;
+  friends?: [];
 }
 
 export interface UserState {
@@ -33,10 +37,10 @@ const getLocalUser = (): UserInfoProps | undefined => {
 
 const localUser = getLocalUser();
 
-console.error('[StoreUser] localUser: ', !!localUser);
+console.error('[StoreUser] localUser: ', localUser);
 
 const initialState: UserState = {
-  isLogin: !!localUser,
+  isLogin: localUser?.name !== '',
   sessionID: undefined,
   userInfo: localUser || {
     name: '',
@@ -58,18 +62,40 @@ export const userSlice = createSlice({
       }
       state.userInfo = userInfo;
     },
+    updateUserInfo: (state, action: PayloadAction<UserInfoProps>) => {
+      state.userInfo = { ...state.userInfo, ...action.payload };
+      TlqLocalStorage.setItem(
+        LOCAL_STORAGE.USER,
+        JSON.stringify(state.userInfo),
+      );
+    },
     setLoggedIn: (state, action: PayloadAction<boolean>) => {
       state.isLogin = action.payload;
+    },
+    logout: (state, action) => {
+      state.userInfo = action.payload;
+      state.isLogin = false;
+      TlqLocalStorage.setItem(
+        LOCAL_STORAGE.USER,
+        JSON.stringify(action.payload),
+      );
     },
     setSessionID: (state, action: PayloadAction<string>) => {
       state.sessionID = action.payload;
     },
     setVideoConnected: (state, action: PayloadAction<boolean>) => {
-      state.videoConnected = action.payload
+      state.videoConnected = action.payload;
     },
   },
 });
 
-export const { setUserInfo, setLoggedIn, setSessionID, setVideoConnected } = userSlice.actions;
+export const {
+  setUserInfo,
+  updateUserInfo,
+  setLoggedIn,
+  logout,
+  setSessionID,
+  setVideoConnected,
+} = userSlice.actions;
 
 export default userSlice.reducer;
