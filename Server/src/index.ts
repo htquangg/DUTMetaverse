@@ -9,6 +9,7 @@ import { monitor } from '@colyseus/monitor';
 import { DUTOffice } from './rooms/DUTOffice';
 import { RoomState } from './types/';
 import Utils from './utils';
+import './utils/handleCrash';
 
 const port = Number(process.env.PORT) || 3000;
 
