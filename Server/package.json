@@ -26,7 +26,8 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "pm2": "^5.2.0"
+    "pm2": "^5.2.0",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
