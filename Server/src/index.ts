@@ -8,6 +8,7 @@ import { monitor } from '@colyseus/monitor';
 
 import { DUTOffice } from './rooms/DUTOffice';
 import { RoomState } from './types/';
+import Utils from './utils';
 
 const port = Number(process.env.PORT) || 3000;
 
@@ -28,16 +29,39 @@ gameServer.define(RoomState.LOBBY, LobbyRoom);
 gameServer.define(RoomState.PUBLIC, DUTOffice);
 
 app.use('/colyseus', monitor());
-app.post('/fb_data_deletion', (req, res, next) => {
-    console.log(req.body); // {}
-    console.log(req.query); // {}
+app.post('/auth/facebook/callback', (req, res) => {
+  if (!req.body || !req.body.signed_request) {
+    console.log('@@@ auth facebook callback failed'); // Ends up here whenever Facebook calls this route
+    return res.sendStatus(404);
+  }
 
-    if (!req.body || !req.body.signed_request) {
-        console.log('Bad request'); // Ends up here whenever Facebook calls this route
-        // return req.sendStatus(400);
-    }
+  // verify request, delete user's data + other code here
+  const data = Utils.parseSignedRequest(req.body.signed_request);
+  const userId = data['user_id'];
+  // Remove all data for user here
+  // delete user id from DB
+  console.log('@@@ delete user id from DB!!!');
 
-    // verify request, delete user's data + other code here
+  const confirmationCode = Utils.randomNumber();
+  const path = `/facebook/deletion-status?code=${confirmationCode}`;
+  const url = Utils.toAbsoluteUrl(req, path);
 
+  const payload = {
+    url: `${url}`,
+    confirmation_code: `${confirmationCode}`,
+  };
+  console.log('@@@ data auth facebook callback: ', data);
+  console.log('@@@ payload auth facebook callback: ', payload);
+  // Facebook requires the JSON to be non-quoted and formatted like this, so we need to create the JSON by hand:
+  res.type('json');
+  res.send(payload);
 });
+
+app.get('/facebook/deletion-status', (req, res) => {
+  const code = req.query.code;
+  console.log('@@@ facebook deletion-status: ', code);
+  res.send({ code });
+  // res.render('facebook/deletionStatus', { code });
+});
+
 gameServer.listen(port);
