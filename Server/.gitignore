@@ -5,3 +5,5 @@
 /dist
 .vimspector.json
 .env
+log.txt
+error.txt

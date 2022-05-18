@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 export default class Utils {
   static base64decode(data: any) {
@@ -9,10 +9,7 @@ export default class Utils {
     return new Buffer(data, 'base64').toString('utf-8');
   }
 
-  static parseSignedRequest(
-    signedRequest: string,
-    secret: string = '5dfb985484b954b585323ec80734b06a',
-  ) {
+  static parseSignedRequest(signedRequest: string, secret: string) {
     var encoded_data = signedRequest.split('.', 2); // decode the data
     var sig = encoded_data[0];
     var json = this.base64decode(encoded_data[1]);
