@@ -40,7 +40,7 @@ const localUser = getLocalUser();
 console.error('[StoreUser] localUser: ', localUser);
 
 const initialState: UserState = {
-  isLogin: localUser?.name !== '',
+  isLogin: !!(localUser && localUser.name !== ''),
   sessionID: undefined,
   userInfo: localUser || {
     name: '',
