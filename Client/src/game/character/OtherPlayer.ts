@@ -23,6 +23,10 @@ export default class OtherPlayer extends Player {
     this._playerName.setText(name);
     this._playContainerBody = this.playerContainer
       .body as Phaser.Physics.Arcade.Body;
+    // this._playContainerBody.x = this._targetPosition[0] + 100;
+    this.playerContainer.x = this.x;
+    this.playerContainer.y = this.y;
+
   }
 
   preUpdate(t: number, dt: number) {
@@ -104,11 +108,13 @@ export default class OtherPlayer extends Player {
       case 'x':
         if (typeof value === 'number') {
           this._targetPosition[0] = value;
+          this.playerContainer.x = value;
         }
         break;
       case 'y':
         if (typeof value === 'number') {
           this._targetPosition[1] = value;
+          this.playerContainer.y = value;
         }
         break;
       case 'anim':

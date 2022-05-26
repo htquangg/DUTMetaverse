@@ -1,12 +1,10 @@
 import Phaser from 'phaser';
-import * as Colyseus from 'colyseus.js';
 import {
   SceneType,
   AssetKey,
   LayerKey,
   TilesetKey,
   PlayerKey,
-  PlayerState,
   CustomCursorKeys,
   ItemType,
   EventMessage,
@@ -60,15 +58,6 @@ export default class Game extends Phaser.Scene {
 
     this._createMap();
 
-    // create map objects
-    this._createMapObjects();
-
-    // create map layers
-    this._createMapLayers();
-
-    // register network event listeners
-    this._registerNetworkListener();
-
     // create game objects
     this._myPlayer = this.add.myPlayer(
       100,
@@ -79,14 +68,24 @@ export default class Game extends Phaser.Scene {
     this._playerSelector = new PlayerSelector(this, 0, 0, 16, 16);
     this._otherPlayers = this.physics.add.group({ classType: OtherPlayer });
 
-    // handle camera
-    this.cameras.main.startFollow(this._myPlayer);
+    // create map objects
+    this._createMapObjects();
+
+    // create map layers
+    this._createMapLayers();
+
+    // register network event listeners
+    this._registerNetworkListener();
 
     // handle objects collisions
     this.physics.add.collider(
       [this._myPlayer, this._myPlayer.playerContainer],
       this._wallLayer,
+      this._handlePlayerWallCollision,
+      undefined,
+      this,
     );
+
     this.physics.add.overlap(
       this._playerSelector,
       [this._chairs, this._computers, this._whiteboards],
@@ -94,6 +93,9 @@ export default class Game extends Phaser.Scene {
       undefined,
       this,
     );
+
+    // handle camera
+    this.cameras.main.startFollow(this._myPlayer);
   }
 
   update(t: number, dt: number) {
@@ -110,6 +112,35 @@ export default class Game extends Phaser.Scene {
 
   private _createMap(): void {
     this._map = this.make.tilemap({ key: 'tilemap' });
+  }
+
+  private _addGroupFromTiled(
+    objectLayerName: string,
+    key: string,
+    tilesetName: string,
+    collidable: boolean,
+  ) {
+    const group = this.physics.add.staticGroup();
+    const objectLayer = this._map.getObjectLayer(objectLayerName);
+    objectLayer.objects.forEach((object) => {
+      const actualX = object.x! + object.width! * 0.5;
+      const actualY = object.y! - object.height! * 0.5;
+      console.log('@@@ object: ', object.y, object.height, actualY);
+      group
+        .get(
+          actualX,
+          actualY,
+          key,
+          object.gid! - this._map.getTileset(tilesetName).firstgid,
+        )
+        .setDepth(actualY);
+    });
+    if (this._myPlayer && collidable) {
+      this.physics.add.collider(
+        [this._myPlayer, this._myPlayer.playerContainer],
+        group,
+      );
+    }
   }
 
   private _createMapLayers(): void {
@@ -129,6 +160,19 @@ export default class Game extends Phaser.Scene {
     // debugDraw(wallLayer, this);
     // debugDraw(groundLayer, this);
 
+    this._addGroupFromTiled(
+      LayerKey.GENERIC,
+      AssetKey.GENERIC,
+      TilesetKey.GENERIC,
+      false,
+    );
+
+    this._addGroupFromTiled(
+      LayerKey.WALL,
+      AssetKey.TILES_WALL,
+      TilesetKey.FLOOR_AND_GROUND,
+      true,
+    );
     // import items objects
     this._chairs = this.physics.add.staticGroup({ classType: Chair });
     const chairLayer = this._map.getObjectLayer(LayerKey.CHAIR);
@@ -139,6 +183,8 @@ export default class Game extends Phaser.Scene {
         AssetKey.CHAIR,
         TilesetKey.CHAIR,
       ) as Chair;
+
+      console.log('chair: ', chairObj);
 
       item.direction = chairObj.properties[0].value;
     });
@@ -215,6 +261,41 @@ export default class Game extends Phaser.Scene {
 
     playerSelector.itemSelected = selectionItem;
     selectionItem.onOverlapDialog();
+  }
+
+  private _handlePlayerWallCollision(
+    obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+  ) {
+    if (obj1 instanceof Phaser.GameObjects.Container) {
+      const leftDown = this._cursors.left?.isDown || this._cursors.keyH.isDown;
+      const rightDown =
+        this._cursors.right?.isDown || this._cursors.keyL.isDown;
+      const upDown = this._cursors.up?.isDown || this._cursors.keyK.isDown;
+      const downDown = this._cursors.down?.isDown || this._cursors.keyJ.isDown;
+
+      const playerContainer = obj1 as Phaser.GameObjects.Container;
+      const playerContainerBody =
+        playerContainer.body as Phaser.Physics.Arcade.Body;
+
+      if (leftDown) {
+        // playerContainerBody.offset.x = 0;
+      } else if (rightDown) {
+        // TODO
+      } else if (upDown) {
+        // console.log('offset: ', playerContainerBody.);
+        // playerContainer.y = 30;
+        playerContainerBody.setVelocity(0, 0);
+      } else if (downDown) {
+        // TODO
+      } else {
+        // TODO
+      }
+
+      if (leftDown || rightDown || upDown || downDown) {
+        // this.activeChest = undefined;
+      }
+    }
   }
 
   private _registerNetworkListener(): void {

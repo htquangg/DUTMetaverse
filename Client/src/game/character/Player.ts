@@ -30,15 +30,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
 
     this._playerID = id;
-    this.setDepth(this.y);
+    this.setDepth(9999);
 
     this._skin = texture;
 
     this.anims.play(`${this._skin}_idle_down`, false);
 
     this.playerContainer = this.scene.add
-      .container(this.x, this.y - 30)
-      .setDepth(5000);
+      .container(this.x - 16, this.y - 24)
+      .setDepth(9999);
 
     // add playerName to playerContainer
     this._playerName = this.scene.add
@@ -46,15 +46,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       .setFontFamily('Arial')
       .setFontSize(12)
       .setColor('#000000')
+      .setPosition(this.x - 84, this.y - 128)
       .setOrigin(0.5);
     this.playerContainer.add(this._playerName);
 
     this.scene.physics.world.enable(this.playerContainer);
     const playContainerBody = this.playerContainer
       .body as Phaser.Physics.Arcade.Body;
-    const collisionScale = [0.5, 0.2];
-    playContainerBody
-      .setSize(this.width * collisionScale[0], this.height * collisionScale[1])
-      .setOffset(-8, this.height * (1 - collisionScale[1]) + 6);
+    // const collisionScale = [0.5, 0.2];
+    playContainerBody.setSize(this.width, this.height);
+    // .setOffset(-8, this.height * (1 - collisionScale[1]) + 6);
   }
 }

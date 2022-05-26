@@ -73,17 +73,14 @@ export default class MyPlayer extends Player {
             callback: () => {
               this.setVelocity(0, 0);
               if (chairItem.direction) {
-                this.setPosition(
-                  chairItem.x + sittingShiftData[chairItem.direction][0],
-                  chairItem.y + sittingShiftData[chairItem.direction][1],
-                ).setDepth(
+                this.setPosition(chairItem.x, chairItem.y).setDepth(
                   chairItem.depth + sittingShiftData[chairItem.direction][2],
                 );
 
                 this._playContainerBody.setVelocity(0, 0);
                 this.playerContainer.setPosition(
-                  chairItem.x + sittingShiftData[chairItem.direction][0],
-                  chairItem.y + sittingShiftData[chairItem.direction][1] - 30,
+                  this.x - this.width / 2,
+                  this.y - this.height / 2,
                 );
 
                 this.play(`${this._skin}_sit_${chairItem.direction}`, true);
@@ -124,6 +121,7 @@ export default class MyPlayer extends Player {
         }
         break;
     }
+    this.setDepth(9999);
   }
 
   private _controlCursors(cursors: CustomCursorKeys) {
@@ -151,6 +149,7 @@ export default class MyPlayer extends Player {
     this.anims.play(`${this._skin}_run_up`, true);
     this.setVelocity(0, -this.SPEED);
     this._playContainerBody.setVelocity(0, -this.SPEED);
+    // this._playContainerBody.y = this.y ;
   }
 
   private _moveBottom() {

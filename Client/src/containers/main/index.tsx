@@ -117,11 +117,7 @@ const App = () => {
         <Box
           ml={{ base: 0, md: 60 }}
           p="4"
-          height={
-            localUser && localUser.name && localUser.socialId
-              ? 'calc(100vh - 80px)'
-              : '100vh'
-          }
+          height={localUser && localUser.name ? 'calc(100vh - 80px)' : '100vh'}
           display="flex"
         >
           <Outlet />
