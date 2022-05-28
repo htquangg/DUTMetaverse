@@ -55,6 +55,26 @@ export default class Preload extends Phaser.Scene {
       }),
     );
 
+    const { default: genericPath } = await import(
+      '../../assets/items/generic.png'
+    );
+    await Utils.asyncLoader(
+      this.load.spritesheet(AssetKey.GENERIC, genericPath, {
+        frameWidth: 32,
+        frameHeight: 32,
+      }),
+    );
+
+    const { default: mordernItemPath } = await import(
+      '../../assets/items/Modern_Office_Black_Shadow.png'
+    );
+    await Utils.asyncLoader(
+      this.load.spritesheet(AssetKey.MORDERN_ITEM, mordernItemPath, {
+        frameWidth: 32,
+        frameHeight: 32,
+      }),
+    );
+
     const { default: computerPath } = await import(
       '../../assets/items/computer.png'
     );

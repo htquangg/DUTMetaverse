@@ -60,8 +60,8 @@ export default class Game extends Phaser.Scene {
 
     // create game objects
     this._myPlayer = this.add.myPlayer(
-      100,
-      100,
+      768,
+      1440,
       PlayerKey.NANCY,
       this._network.sessionID,
     );
@@ -125,7 +125,6 @@ export default class Game extends Phaser.Scene {
     objectLayer.objects.forEach((object) => {
       const actualX = object.x! + object.width! * 0.5;
       const actualY = object.y! - object.height! * 0.5;
-      console.log('@@@ object: ', object.y, object.height, actualY);
       group
         .get(
           actualX,
@@ -133,7 +132,7 @@ export default class Game extends Phaser.Scene {
           key,
           object.gid! - this._map.getTileset(tilesetName).firstgid,
         )
-        .setDepth(actualY);
+        .setDepth(1);
     });
     if (this._myPlayer && collidable) {
       this.physics.add.collider(
@@ -149,10 +148,15 @@ export default class Game extends Phaser.Scene {
       AssetKey.TILES_WALL,
     );
 
+    const Generic = this._map.addTilesetImage(
+      TilesetKey.GENERIC,
+      AssetKey.GENERIC,
+    );
+
     this._wallLayer = this._map.createLayer(LayerKey.WALL, FloorAndGround);
     // const groundLayer = this.map.createLayer('Ground', FloorAndGround);
 
-    this._map.createLayer(LayerKey.GROUND, FloorAndGround);
+    this._map.createLayer(LayerKey.GROUND, [FloorAndGround]);
 
     this._wallLayer.setCollisionByProperty({ collides: true });
     // groundLayer.setCollisionByProperty({ collides: true });
@@ -173,6 +177,21 @@ export default class Game extends Phaser.Scene {
       TilesetKey.FLOOR_AND_GROUND,
       true,
     );
+
+    this._addGroupFromTiled(
+      LayerKey.GENERIC_COLLIDES,
+      AssetKey.GENERIC,
+      TilesetKey.GENERIC,
+      true,
+    );
+
+    this._addGroupFromTiled(
+      LayerKey.MORDERN_ITEM_COLLIDES,
+      AssetKey.MORDERN_ITEM,
+      TilesetKey.MORDERN_ITEM,
+      true,
+    );
+
     // import items objects
     this._chairs = this.physics.add.staticGroup({ classType: Chair });
     const chairLayer = this._map.getObjectLayer(LayerKey.CHAIR);
@@ -183,9 +202,7 @@ export default class Game extends Phaser.Scene {
         AssetKey.CHAIR,
         TilesetKey.CHAIR,
       ) as Chair;
-
-      console.log('chair: ', chairObj);
-
+      item.setDepth(item.y + item.height * 0.27);
       item.direction = chairObj.properties[0].value;
     });
 
@@ -213,7 +230,7 @@ export default class Game extends Phaser.Scene {
         AssetKey.WHITEBOARD,
         TilesetKey.WHITEBOARD,
       ) as Whiteboard;
-
+      item.setDepth(item.y + item.height * 0.27);
       item.id = idx.toString();
       this._whiteboardMap.set(item.id, item);
     });

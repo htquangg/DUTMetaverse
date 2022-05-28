@@ -121,7 +121,7 @@ export default class MyPlayer extends Player {
         }
         break;
     }
-    this.setDepth(9999);
+    // this.setDepth(9999);
   }
 
   private _controlCursors(cursors: CustomCursorKeys) {

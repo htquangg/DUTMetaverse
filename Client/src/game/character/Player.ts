@@ -30,7 +30,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
 
     this._playerID = id;
-    this.setDepth(9999);
+    this.setDepth(this.y);
 
     this._skin = texture;
 
@@ -38,7 +38,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.playerContainer = this.scene.add
       .container(this.x - 16, this.y - 24)
-      .setDepth(9999);
+      .setDepth(5000);
 
     // add playerName to playerContainer
     this._playerName = this.scene.add
