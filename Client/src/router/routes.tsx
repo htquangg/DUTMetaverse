@@ -2,7 +2,7 @@ import React from 'react';
 import { useRoutes } from 'react-router-dom';
 import { PrivateRoute } from '@tlq/components';
 import { MainEntry } from '@tlq/containers';
-import { LoginContainer, GameContainer } from '@tlq/containers';
+import { LoginContainer, GameContainer, DK4Container } from '@tlq/containers';
 
 const MainRoutes = () => {
   const _Login = (
@@ -55,9 +55,9 @@ const MainRoutes = () => {
           path: 'trending',
           element: (
             <PrivateRoute
-              element={GameContainer}
+              element={DK4Container}
               meta={{
-                requiresAuth: true,
+                requiresAuth: false,
                 title: 'Trending',
               }}
             />
