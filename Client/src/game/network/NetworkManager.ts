@@ -115,7 +115,10 @@ export default class NetworkManager {
   private _initialize() {
     if (!this._room) return;
 
-    this._lobby.leave();
+    if (this._lobby) {
+      this._lobby.leave();
+    }
+
     this.sessionID = this._room.sessionId;
 
     this._webRTCInstance.initilize(this.sessionID);

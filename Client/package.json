@@ -4,13 +4,11 @@
   "description": "",
   "scripts": {
     "start": "npm run start:dev",
-    "start:dev": "vite --host",
+    "build": "craco build",
+    "start:dev": "craco start",
     "start:prod": "npm run build && npm run preview",
     "start:app": "cross-env ELECTRON_DEBUG=true electron dist/main.js",
-    "build": "npm run build:vite",
-    "build:vite": "vite build",
     "build:mac": "rimraf build && parcel build src/main.ts src/index.html --no-minify --public-url ./ -d dist --out-file=main --target=electron && electron-builder",
-    "preview": "vite preview --host",
     "deploy": "npm run build && firebase deploy",
     "watch": "rimraf build && parcel watch src/main.ts src/index.html --public-url ./ -d build --out-file=main --target=electron",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
@@ -42,6 +40,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.8",
+    "@craco/craco": "^6.4.3",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@reduxjs/toolkit": "^1.8.1",
@@ -61,6 +60,7 @@
     "react-icons": "^4.3.1",
     "react-redux": "^8.0.1",
     "react-router-dom": "^6.3.0",
+    "react-scripts": "^5.0.1",
     "react-slick": "^0.29.0",
     "redux": "^4.2.0",
     "regenerator-runtime": "^0.13.9",

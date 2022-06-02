@@ -11,8 +11,12 @@ export default class ItemBase extends Phaser.Physics.Arcade.Sprite {
   }
 
   // must implement
-  public onOverlapDialog(): void {}
-  public openDialog(playerID: string): void {}
+  public onOverlapDialog(): void {
+    // TODO
+  }
+  public openDialog(playerID: string): void {
+    // TODO
+  }
 
   constructor(
     scene: Phaser.Scene,

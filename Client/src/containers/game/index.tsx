@@ -60,18 +60,18 @@ const GameContainer = () => {
       scene: [Preload, Background, Game],
       callbacks: {
         postBoot: (game) => {
-          const preloadScene = game.scene.keys[SceneType.PRELOAD];
           const gameScene = game.scene.keys[SceneType.GAME];
 
           gameScene.events.on('create', (_gameScene: Game) => {
             dispatch(setGameScene(_gameScene));
+            dispatch(setGamePhaser(game));
           });
 
-          preloadScene.events.on('create', (_preloadScene: Preload) => {
-            dispatch(setGameScene(_preloadScene));
+          gameScene.events.on('resume', (_gameScene: Game) => {
+            dispatch(setGameScene(_gameScene));
+            dispatch(setGamePhaser(game));
           });
 
-          dispatch(setGamePhaser(game));
         },
       },
     });

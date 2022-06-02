@@ -17,7 +17,9 @@ export default class DialogBase extends Phaser.GameObjects.Container {
     }
   }
 
-  protected _show(text: string): void {}
+  protected _show(text: string): void {
+    // TODO
+  }
   public show(text: string): void {
     this._show(text);
   }

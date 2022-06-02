@@ -26,7 +26,6 @@ export default class OtherPlayer extends Player {
     // this._playContainerBody.x = this._targetPosition[0] + 100;
     this.playerContainer.x = this.x;
     this.playerContainer.y = this.y;
-
   }
 
   preUpdate(t: number, dt: number) {
@@ -102,6 +101,7 @@ export default class OtherPlayer extends Player {
     switch (field) {
       case 'name':
         if (typeof value === 'string') {
+          // TODO
         }
 
         break;

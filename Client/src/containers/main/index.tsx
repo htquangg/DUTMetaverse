@@ -65,8 +65,8 @@ const App = () => {
   };
 
   const handleClickLogout = () => {
-    if (window.FB) {
-      window.FB.logout();
+    if ((window as any).FB) {
+      (window as any).FB.logout();
     }
     const emptyUser = {
       name: '',

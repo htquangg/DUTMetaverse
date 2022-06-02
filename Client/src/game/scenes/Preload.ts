@@ -15,8 +15,12 @@ export default class Preload extends Phaser.Scene {
     this._network = NetworkManager.getInstance();
   }
 
-  async create() {
+  async preload() {
+    // TODO
     await this._loadAsset();
+  }
+
+  async create() {
     this.launchBackground();
     this.launchGame();
   }
@@ -32,113 +36,98 @@ export default class Preload extends Phaser.Scene {
     });
   }
 
-  private async _loadAsset(): Promise<void> {
-    const { default: backdropDayPath } = await import(
-      '../../assets/background/backdrop_day.png'
-    );
-    await Utils.asyncLoader(
-      this.load.image(AssetKey.BACKDROP_DAY, backdropDayPath),
-    );
+  private _loadBase64Image(props: {
+    data: any;
+    key: string;
+    scene: Phaser.Scene;
+  }) {
+    return new Promise<void>((resolve) => {
+      props.scene.textures.once(Phaser.Textures.Events.ADD, () => {
+        this.load.spritesheet(props.key, props.data, {
+          frameWidth: 96,
+          frameHeight: 64,
+        }),
+          resolve();
+      });
+      props.scene.textures.addBase64(props.key, props.data);
+    });
+  }
 
+  private async _loadAsset(): Promise<void> {
+    this.load.image(
+      AssetKey.BACKDROP_DAY,
+      '../../assets/background/backdrop_day.png',
+    );
     const { default: mapJson } = await import('../../assets/map/map.json');
+
     await Utils.asyncLoader(
       this.load.tilemapTiledJSON(AssetKey.TILEMAP, mapJson),
     );
 
-    const { default: floorAndGroundPath } = await import(
-      '../../assets/map/FloorAndGround.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.TILES_WALL, floorAndGroundPath, {
+    this.load.spritesheet(
+      AssetKey.TILES_WALL,
+      '../../assets/map/FloorAndGround.png',
+      {
         frameWidth: 32,
         frameHeight: 32,
-      }),
+      },
     );
-
-    const { default: genericPath } = await import(
-      '../../assets/items/generic.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.GENERIC, genericPath, {
+    this.load.spritesheet(AssetKey.GENERIC, '../../assets/items/Generic.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+    this.load.spritesheet(
+      AssetKey.MORDERN_ITEM,
+      '../../assets/items/Modern_Office_Black_Shadow.png',
+      {
         frameWidth: 32,
         frameHeight: 32,
-      }),
+      },
     );
-
-    const { default: mordernItemPath } = await import(
-      '../../assets/items/Modern_Office_Black_Shadow.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.MORDERN_ITEM, mordernItemPath, {
-        frameWidth: 32,
-        frameHeight: 32,
-      }),
-    );
-
-    const { default: computerPath } = await import(
-      '../../assets/items/computer.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.COMPUTER, computerPath, {
-        frameWidth: 96,
-        frameHeight: 64,
-      }),
-    );
-
-    const { default: whiteboardPath } = await import(
-      '../../assets/items/whiteboard.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.WHITEBOARD, whiteboardPath, {
+    this.load.spritesheet(
+      AssetKey.WHITEBOARD,
+      '../../assets/items/whiteboard.png',
+      {
         frameWidth: 64,
         frameHeight: 64,
-      }),
+      },
     );
 
-    const { default: chairPath } = await import('../../assets/items/chair.png');
-    await Utils.asyncLoader(
-      this.load.spritesheet(AssetKey.CHAIR, chairPath, {
-        frameWidth: 32,
+    this.load.spritesheet(
+      AssetKey.COMPUTER,
+      '../../assets/items/computer.png',
+      {
+        frameWidth: 96,
         frameHeight: 64,
-      }),
+      },
     );
-
-    const { default: nancyPath } = await import(
-      '../../assets/character/nancy.png'
-    );
+    this.load.spritesheet(AssetKey.CHAIR, '../../assets/items/chair.png', {
+      frameWidth: 32,
+      frameHeight: 64,
+    });
     await Utils.asyncLoader(
-      this.load.spritesheet(PlayerKey.NANCY, nancyPath, {
-        frameWidth: 32,
-        frameHeight: 48,
-      }),
+      this.load.spritesheet(
+        PlayerKey.NANCY,
+        '../../assets/character/nancy.png',
+        {
+          frameWidth: 32,
+          frameHeight: 48,
+        },
+      ),
     );
+    this.load.spritesheet(PlayerKey.ADAM, '../../assets/character/adam.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
 
-    const { default: adamPath } = await import(
-      '../../assets/character/adam.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(PlayerKey.ADAM, adamPath, {
-        frameWidth: 32,
-        frameHeight: 48,
-      }),
-    );
+    this.load.spritesheet(PlayerKey.ASH, '../../assets/character/ash.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
 
-    const { default: ashPath } = await import('../../assets/character/ash.png');
-    await Utils.asyncLoader(
-      this.load.spritesheet(PlayerKey.ASH, ashPath, {
-        frameWidth: 32,
-        frameHeight: 48,
-      }),
-    );
-
-    const { default: lucyPath } = await import(
-      '../../assets/character/lucy.png'
-    );
-    await Utils.asyncLoader(
-      this.load.spritesheet(PlayerKey.LUCY, lucyPath, {
-        frameWidth: 32,
-        frameHeight: 48,
-      }),
-    );
+    this.load.spritesheet(PlayerKey.LUCY, '../../assets/character/lucy.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
   }
 }

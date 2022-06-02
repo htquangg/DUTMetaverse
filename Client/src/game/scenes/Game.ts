@@ -377,18 +377,20 @@ export default class Game extends Phaser.Scene {
     const { playerID, itemID, itemType } = msg;
 
     switch (itemType) {
-      case ItemType.COMPUTER:
+      case ItemType.COMPUTER: {
         const computer = this._computerMap.get(itemID);
         if (computer) {
           computer.addCurrentUser(playerID);
         }
         break;
-      case ItemType.WHITEBOARD:
+      }
+      case ItemType.WHITEBOARD: {
         const whiteboard = this._whiteboardMap.get(itemID);
         if (whiteboard) {
           whiteboard.addCurrentUser(playerID);
         }
         break;
+      }
       default:
         break;
     }
@@ -400,18 +402,20 @@ export default class Game extends Phaser.Scene {
     const { playerID, itemID, itemType } = msg;
 
     switch (itemType) {
-      case ItemType.COMPUTER:
+      case ItemType.COMPUTER: {
         const computer = this._computerMap.get(itemID);
         if (computer) {
           computer.removeCurrentUsers(playerID);
         }
         break;
-      case ItemType.WHITEBOARD:
+      }
+      case ItemType.WHITEBOARD: {
         const whiteboard = this._whiteboardMap.get(itemID);
         if (whiteboard) {
           whiteboard.removeCurrentUsers(playerID);
         }
         break;
+      }
       default:
         break;
     }

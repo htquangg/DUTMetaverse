@@ -57,7 +57,7 @@ export default class ShareScreenManager {
   }
 
   onClose() {
-    this.stopShareScreen(false);
+    this.stopShareScreen();
     this.myPeer.disconnect();
   }
 

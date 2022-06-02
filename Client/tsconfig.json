@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
+    "target": "esnext",
+    "module": "esnext",
     "strict": true,
     "noImplicitAny": false,
     "noEmit": true,
@@ -10,17 +9,17 @@
     "jsx": "react",
     "resolveJsonModule": true,
     "importHelpers": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@tlq/*": ["src/*"]
+      "@tlq/*": ["./src/*"]
     },
     "typeRoots": ["node_modules/@types", "node_module/phaser/types"],
     "types": ["phaser", "vite/client", "node"]
   },
-  "include": ["src/**/*"]
+  "include": ["src"]
 }

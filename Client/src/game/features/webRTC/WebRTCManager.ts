@@ -40,7 +40,7 @@ export default class WebRTCManager {
     { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
   >;
 
-  private _peerRemoteId: string = '';
+  private _peerRemoteId!: string;
 
   public static inst: WebRTCManager;
 
@@ -135,7 +135,7 @@ export default class WebRTCManager {
   public getUserMedia(): Promise<MediaStream> {
     return new Promise((resolve, reject) => {
       // Older browsers might not implement mediaDevices at all, so we set an empty object first
-      let navigatorCopy = navigator as any;
+      const navigatorCopy = navigator as any;
 
       if (navigator.mediaDevices === undefined) {
         navigatorCopy.mediaDevices = {};
