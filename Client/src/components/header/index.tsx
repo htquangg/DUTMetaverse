@@ -100,7 +100,7 @@ const Header = ({
       ) : (
         <Flex justifyContent={'center'} alignItems={'center'}>
           <FacebookLogin
-            appId={process.env.FACEBOOK_APP_ID}
+            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
             fields="name,email,picture,first_name,last_name"
             callback={responseFacebook}
             onFailure={(error) => console.log('@@@ error login fb', error)}
