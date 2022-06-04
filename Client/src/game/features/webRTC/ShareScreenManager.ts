@@ -6,7 +6,8 @@ import {
   removeVideoStream,
 } from '@tlq/store/computer';
 import { BuildConfig } from '@tlq/game/config';
-import { Game } from '@tlq/game/scenes';
+import { EventManager } from '@tlq/game/events';
+import { EventMessage } from '@tlq/game/types';
 
 export default class ShareScreenManager {
   private _playerID!: string;
@@ -81,7 +82,12 @@ export default class ShareScreenManager {
           const track = stream.getVideoTracks()[0];
           if (track) {
             track.onended = () => {
+              const itemID = store.getState().computer.itemID as string;
               this.stopShareScreen();
+              EventManager.getInstance().emit(
+                EventMessage.STOP_SHARING,
+                { itemID },
+              );
             };
           }
           resolve(stream);

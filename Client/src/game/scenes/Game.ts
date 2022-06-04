@@ -331,6 +331,11 @@ export default class Game extends Phaser.Scene {
       this._handlePlayerConnectWhiteboard,
       this,
     );
+
+    this._network.onPlayerStopSharing(
+      this._handleStopSharing,
+      this,
+    );
   }
 
   private _handlePlayerJoined<
@@ -433,6 +438,14 @@ export default class Game extends Phaser.Scene {
   >(msg: T): void {
     console.error('[GameScene] handlePlayerConnectWhiteboard.');
     this._network.sendMsgPlayerConnectWhiteboard(msg.whiteboardID);
+  }
+
+  private _handleStopSharing<
+    T extends EventParamsMap[EventMessage.STOP_SHARING],
+  >(msg: T): void {
+    console.error('[GameScene] handlePlayerConnectWhiteboard.');
+    // this._network.sendMsgPlayerConnectWhiteboard(msg.itemID);
+    this.stopShareScreen(msg.itemID)
   }
 
   public leave(): void {

@@ -11,6 +11,7 @@ export enum EventMessage {
   ITEM_REMOVE_USER = 'item-remove-user',
   CONNECT_TO_COMPUTER = 'connect-to-computer',
   CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
+  STOP_SHARING = 'stop-sharing',
 }
 
 export type KeyEventMessage = keyof typeof EventMessage;
@@ -45,5 +46,8 @@ export type EventParamsMap = {
   };
   [EventMessage.CONNECT_TO_WHITEBOARD]: {
     whiteboardID: string;
+  };
+  [EventMessage.STOP_SHARING]: {
+    itemID: string;
   };
 };

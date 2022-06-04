@@ -332,6 +332,17 @@ export default class NetworkManager {
     );
   }
 
+  public onPlayerStopSharing<
+    T extends EventParamsMap[EventMessage.STOP_SHARING],
+  >(callback: (msg: T) => void, context?: any) {
+    console.error('[NetworkManager] onPlayerConnectWhiteboard.');
+    EventManager.getInstance().on(
+      EventMessage.STOP_SHARING,
+      callback,
+      context,
+    );
+  }
+
   // <------------------------------------------------------->
   // <--------------- HANDLE SEND MESSAGE TO SERVER --------->
   // <------------------------------------------------------->
