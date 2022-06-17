@@ -7,4 +7,5 @@ export type CustomCursorKeys = Phaser.Types.Input.Keyboard.CursorKeys & {
   keyJ: Phaser.Input.Keyboard.Key;
   keyK: Phaser.Input.Keyboard.Key;
   keyL: Phaser.Input.Keyboard.Key;
+  keyM: Phaser.Input.Keyboard.Key;
 };

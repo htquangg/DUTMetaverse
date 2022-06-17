@@ -9,6 +9,7 @@ import {
   ItemType,
   EventMessage,
   EventParamsMap,
+  IChatMessage,
 } from '@tlq/game/types';
 import { EventManager } from '@tlq/game/events';
 import { BuildConfig } from '@tlq/game/config';
@@ -18,6 +19,7 @@ import ShareScreenManager from '@tlq/game/features/webRTC/ShareScreenManager';
 import store from '@tlq/store';
 import { setWhiteboardUrls } from '@tlq/store/whiteboard';
 import { setVideoConnected } from '@tlq/store/user';
+import { pushChatMessage } from '@tlq/store/chat';
 
 export default class NetworkManager {
   private _client: Colyseus.Client;
@@ -33,9 +35,9 @@ export default class NetworkManager {
   constructor() {
     const protocol = process.env.NODE_ENV === 'development' ? 'ws' : 'wss';
     const serverDomain =
-      process.env.GAME_SERVER_DOMAIN || BuildConfig.GameServerDomain;
+      process.env.REACT_APP_GAME_SERVER_DOMAIN || BuildConfig.GameServerDomain;
     const serverPort =
-      process.env.GAME_SERVER_PORT || BuildConfig.GameServerPort;
+      process.env.REACT_APP_GAME_SERVER_PORT || BuildConfig.GameServerPort;
 
     const gameUrl = `${protocol}://${serverDomain}:${serverPort}`;
 
@@ -218,6 +220,10 @@ export default class NetworkManager {
         });
       };
     };
+
+    this._room.state.chatMessages.onAdd = (content: IChatMessage) => {
+      store.dispatch(pushChatMessage(content));
+    };
   }
 
   private _handleOnMessagesFromServer(): void {
@@ -253,6 +259,13 @@ export default class NetworkManager {
         this._shareScreenInstance.onUserLeft(clientID);
       },
     );
+
+    this._room.onMessage(Messages.ADD_CHAT_MESSAGE, ({ playerID, content }) => {
+      EventManager.getInstance().emit(EventMessage.UPDATE_DIALOG_BUBBLE, {
+        playerID,
+        content,
+      });
+    });
   }
 
   // <------------------------------------------------------->
@@ -336,8 +349,15 @@ export default class NetworkManager {
     T extends EventParamsMap[EventMessage.STOP_SHARING],
   >(callback: (msg: T) => void, context?: any) {
     console.error('[NetworkManager] onPlayerConnectWhiteboard.');
+    EventManager.getInstance().on(EventMessage.STOP_SHARING, callback, context);
+  }
+
+  public onChatMessageAdded<
+    T extends EventParamsMap[EventMessage.UPDATE_DIALOG_BUBBLE],
+  >(callback: (msg: T) => void, context?: any) {
+    console.error('[NetworkManager] onChatMessageAdded.');
     EventManager.getInstance().on(
-      EventMessage.STOP_SHARING,
+      EventMessage.UPDATE_DIALOG_BUBBLE,
       callback,
       context,
     );
@@ -419,5 +439,11 @@ export default class NetworkManager {
   public sendMsgPlayerStopShareScreen(id: string) {
     if (!this._room) return;
     this._room.send(Messages.STOP_SHARE_SCREEN, { computerID: id });
+  }
+
+  public sendMsgPlayerAddChatMessage(content: string) {
+    if (!this._room) return;
+    console.log("networ addd chat conent: ", content)
+    this._room.send(Messages.ADD_CHAT_MESSAGE, { content });
   }
 }

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
+import { MediaConnection } from 'peerjs';
 import { sanitizeId } from '@tlq/utils';
 import ShareScreenManager from '@tlq/game/features/webRTC/ShareScreenManager';
 
@@ -11,7 +11,7 @@ interface ComputerState {
     string,
     {
       stream: MediaStream;
-      call: Peer.MediaConnection;
+      call: MediaConnection;
     }
   >;
   shareScreenManager: ShareScreenManager | null;

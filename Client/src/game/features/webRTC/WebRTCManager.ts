@@ -1,5 +1,5 @@
 /// <reference types="webrtc" />
-import Peer from 'peerjs';
+import Peer, { MediaConnection } from 'peerjs';
 import Utils from '@tlq/game/utils';
 import { TlqLocalStorage } from '@tlq/localstorage';
 import { StorageKeys } from '@tlq/game/types';
@@ -33,11 +33,11 @@ export default class WebRTCManager {
 
   private _peers: Map<
     string,
-    { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
+    { call: MediaConnection; video: HTMLVideoElement; encryptID: string }
   >;
   private _onCalledPeers: Map<
     string,
-    { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
+    { call: MediaConnection; video: HTMLVideoElement; encryptID: string }
   >;
 
   private _peerRemoteId!: string;
@@ -58,11 +58,11 @@ export default class WebRTCManager {
 
     this._peers = new Map<
       string,
-      { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
+      { call: MediaConnection; video: HTMLVideoElement; encryptID: string }
     >();
     this._onCalledPeers = new Map<
       string,
-      { call: Peer.MediaConnection; video: HTMLVideoElement; encryptID: string }
+      { call: MediaConnection; video: HTMLVideoElement; encryptID: string }
     >();
   }
 
@@ -76,16 +76,16 @@ export default class WebRTCManager {
 
   public initilize(playerID: string): void {
     const sanitizedID = Utils.replaceInvalidID(playerID);
-    console.error('WebRTCManager initilize: ', process.env.PEER_SERVER_DOMAIN);
+    console.error('WebRTCManager initilize: ', process.env.REACT_APP_PEER_SERVER_DOMAIN);
 
     this._myPeer = new Peer(sanitizedID, {
-      host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
-      port: Number(process.env.PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
-      path: process.env.PEER_SERVER_PATH || BuildConfig.PeerServerPath,
-      secure: process.env.PEER_SERVER_DOMAIN === 'localhost' ? false : true,
+      host: process.env.REACT_APP_PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
+      port: Number(process.env.REACT_APP_PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
+      path: process.env.REACT_APP_PEER_SERVER_PATH || BuildConfig.PeerServerPath,
+      secure: process.env.REACT_APP_PEER_SERVER_DOMAIN === 'localhost' ? false : true,
     });
 
-    this._myPeer.on('call', (call: Peer.MediaConnection) => {
+    this._myPeer.on('call', (call: MediaConnection) => {
       const video = document.createElement('video');
 
       call.answer(this._myStream);

@@ -332,10 +332,9 @@ export default class Game extends Phaser.Scene {
       this,
     );
 
-    this._network.onPlayerStopSharing(
-      this._handleStopSharing,
-      this,
-    );
+    this._network.onPlayerStopSharing(this._handleStopSharing, this);
+
+    this._network.onChatMessageAdded(this._handleChatMessageAdded, this);
   }
 
   private _handlePlayerJoined<
@@ -445,7 +444,15 @@ export default class Game extends Phaser.Scene {
   >(msg: T): void {
     console.error('[GameScene] handlePlayerConnectWhiteboard.');
     // this._network.sendMsgPlayerConnectWhiteboard(msg.itemID);
-    this.stopShareScreen(msg.itemID)
+    this.stopShareScreen(msg.itemID);
+  }
+
+  private _handleChatMessageAdded<
+    T extends EventParamsMap[EventMessage.UPDATE_DIALOG_BUBBLE],
+  >(msg: T): void {
+    console.error('[GameScene] _handleChatMessageAdded.');
+    const otherPlayer = this._otherPlayerMap.get(msg.playerID);
+    otherPlayer?.updateDialogBubble(msg.content);
   }
 
   public leave(): void {
@@ -495,5 +502,11 @@ export default class Game extends Phaser.Scene {
 
   public enableKeys() {
     this.input.keyboard.enabled = true;
+  }
+
+  public addChatMessage(content: string) {
+    console.log(content)
+    this._myPlayer.updateDialogBubble(content);
+    this._network.sendMsgPlayerAddChatMessage(content);
   }
 }

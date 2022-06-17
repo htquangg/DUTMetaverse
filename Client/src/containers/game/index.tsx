@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Phaser from 'phaser';
-import { Box } from '@chakra-ui/react';
+import { Box,Icon } from '@chakra-ui/react';
+import {
+  IoChatboxEllipsesOutline,
+  IoChatboxOutline,
+} from 'react-icons/io5';
 import { Preload, Background, Game } from '@tlq/game/scenes';
 import { useAppDispatch, useAppSelector } from '@tlq/hooks';
 import './styles.css';
@@ -10,6 +14,8 @@ import { SceneType } from '@tlq/game/types';
 import { ComputerDialog, WhiteboardDialog } from '@tlq/components/dialog';
 import { closeDialog } from '@tlq/store/computer';
 import { closeWhiteboardDialog } from '@tlq/store/whiteboard';
+import Chat from '@tlq/components/chat';
+import { setShowChat } from '@tlq/store/chat';
 // import "@tlq/game/phaserGame";
 
 // hard code phaserGame
@@ -32,8 +38,21 @@ const GameContainer = () => {
   const whiteboardID = useAppSelector((state) => state.whiteboard.itemID);
   const whiteboardUrl = useAppSelector((state) => state.whiteboard.url);
 
+  const chatFocused = useAppSelector((state) => state.chat.focused);
+  const showChat = useAppSelector((state) => state.chat.showChat);
+
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
+
+  useEffect(() => {
+    if (!gamePhaser || !gameScene) return;
+
+    if (chatFocused) {
+      gameScene.disableKeys();
+    } else {
+      gameScene.enableKeys();
+    }
+  }, [chatFocused]);
 
   useEffect(() => {
     if (game) return;
@@ -71,7 +90,6 @@ const GameContainer = () => {
             dispatch(setGameScene(_gameScene));
             dispatch(setGamePhaser(game));
           });
-
         },
       },
     });
@@ -125,6 +143,10 @@ const GameContainer = () => {
     dispatch(closeWhiteboardDialog());
   };
 
+  const handleSubmit = (value: string) => {
+    gameScene.addChatMessage(value);
+  };
+
   return (
     <>
       <Box
@@ -155,6 +177,19 @@ const GameContainer = () => {
           />
         )}
       </Box>
+      <Box pos="absolute" bottom="80px" left="300px">
+        <Icon
+          as={showChat ? IoChatboxOutline : IoChatboxEllipsesOutline}
+          w="36px"
+          h="36px"
+          color="green.900"
+          pos="absolute"
+          onClick={() => {
+            dispatch(setShowChat(!showChat));
+          }}
+        />
+      </Box>
+      <Chat onSubmit={handleSubmit} isShow={showChat}/>
       <Box
         display={{ base: 'none', xl: 'block' }}
         className="video-grid"

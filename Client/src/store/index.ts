@@ -4,6 +4,7 @@ import userSlice from './user';
 import gameSlice from './game';
 import computerSlice from './computer';
 import whiteboardSlice from './whiteboard';
+import chatSlice from './chat'
 
 enableMapSet();
 
@@ -13,6 +14,7 @@ const store = configureStore({
     game: gameSlice,
     computer: computerSlice,
     whiteboard: whiteboardSlice,
+    chat: chatSlice
   },
   // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.
   // https://stackoverflow.com/a/63244831

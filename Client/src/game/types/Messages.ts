@@ -11,4 +11,5 @@ export enum Messages {
   STOP_SHARE_SCREEN = 'stop-share-screen',
   CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
   DISCONNECT_FROM_WHITEBOARD = 'disconnect-from-whiteboard',
+  ADD_CHAT_MESSAGE = 'add-chat-message',
 }

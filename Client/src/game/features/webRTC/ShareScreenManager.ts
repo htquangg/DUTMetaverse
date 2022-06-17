@@ -30,10 +30,10 @@ export default class ShareScreenManager {
 
     const sanatizedId = this.makeId(playerID);
     this.myPeer = new Peer(sanatizedId, {
-      host: process.env.PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
-      port: Number(process.env.PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
-      path: process.env.PEER_SERVER_PATH || BuildConfig.PeerServerPath,
-      secure: process.env.PEER_SERVER_DOMAIN === 'localhost' ? false : true,
+      host: process.env.REACT_APP_PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
+      port: Number(process.env.REACT_APP_PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
+      path: process.env.REACT_APP_PEER_SERVER_PATH || BuildConfig.PeerServerPath,
+      secure: process.env.REACT_APP_PEER_SERVER_DOMAIN === 'localhost' ? false : true,
     });
     this.myPeer.on('error', (err) => {
       console.error('[ShareScreenManager] error: ', err);

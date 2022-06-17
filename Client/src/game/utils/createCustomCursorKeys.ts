@@ -17,5 +17,6 @@ export const createCustomCursorKeys = (scene: Phaser.Scene): CustomCursorKeys =>
     keyJ: KeyCodes.J,
     keyK: KeyCodes.K,
     keyL: KeyCodes.L,
+    keyM: KeyCodes.M,
   }) as CustomCursorKeys;
 };

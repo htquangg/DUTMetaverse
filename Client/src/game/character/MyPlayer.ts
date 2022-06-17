@@ -4,6 +4,8 @@ import { Chair, Whiteboard, Computer } from '@tlq/game/items';
 import { NetworkManager } from '@tlq/game/network';
 import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
+import store from '@tlq/store';
+import { setShowChat, setFocused } from '@tlq/store/chat';
 
 export default class MyPlayer extends Player {
   private _playContainerBody: Phaser.Physics.Arcade.Body;
@@ -40,6 +42,11 @@ export default class MyPlayer extends Player {
     const itemSelected = playerSelector.itemSelected;
 
     const itemType = itemSelected?.getType();
+
+    if (Phaser.Input.Keyboard.JustDown(cursors.keyM)) {
+      store.dispatch(setShowChat(true));
+      store.dispatch(setFocused(true));
+    }
 
     if (Phaser.Input.Keyboard.JustDown(cursors.keyR)) {
       switch (itemType) {

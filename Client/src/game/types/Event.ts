@@ -12,6 +12,7 @@ export enum EventMessage {
   CONNECT_TO_COMPUTER = 'connect-to-computer',
   CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
   STOP_SHARING = 'stop-sharing',
+  UPDATE_DIALOG_BUBBLE = 'update-dialog-bubble',
 }
 
 export type KeyEventMessage = keyof typeof EventMessage;
@@ -49,5 +50,9 @@ export type EventParamsMap = {
   };
   [EventMessage.STOP_SHARING]: {
     itemID: string;
+  };
+  [EventMessage.UPDATE_DIALOG_BUBBLE]: {
+    playerID: string;
+    content: string;
   };
 };
