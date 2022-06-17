@@ -20,6 +20,7 @@ import {
   WhiteboardRemoveUserCommand,
 } from './commands/WhiteboardUpdateCommand';
 import PlayerUpdateNameCommand from './commands/PlayerUpdateNameCommand';
+import { ChatMessageUpdateCommand } from './commands/ChatMessageUpdateCommand';
 
 export class DUTOffice extends Room<DUTState> {
   private _dispatcher!: Dispatcher<this>;
@@ -130,6 +131,11 @@ export class DUTOffice extends Room<DUTState> {
     this.onMessage(
       Messages.DISCONNECT_FROM_WHITEBOARD,
       this._handleToDisconnectFromWhiteboard.bind(this),
+    );
+
+    this.onMessage(
+      Messages.ADD_CHAT_MESSAGE,
+      this._handleToReceiveChatMessage.bind(this),
     );
   }
 
@@ -253,5 +259,20 @@ export class DUTOffice extends Room<DUTState> {
       client,
       whiteboardID: message.whiteboardID,
     });
+  }
+  private _handleToReceiveChatMessage(
+    client: Client,
+    message: { content: string },
+  ) {
+    this._dispatcher.dispatch(new ChatMessageUpdateCommand(), {
+      client,
+      content: message.content,
+    });
+
+    this.broadcast(
+      Messages.ADD_CHAT_MESSAGE,
+      { playerID: client.sessionId, content: message.content },
+      { except: client },
+    );
   }
 }
