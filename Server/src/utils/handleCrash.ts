@@ -1,5 +1,5 @@
-const winston = require('winston');
-var util = require('util');
+import winston from 'winston';
+import util from 'util';
 var logStdout = process.stdout;
 const logger = winston.createLogger({
   format: winston.format.json(),
@@ -27,17 +27,17 @@ const getDate = function () {
   );
 };
 console.log = function () {
-  let msg = '[log]' + getDate() + util.format.apply(null, arguments);
+  let msg = '[log]' + getDate() + util.format.apply(null, [...arguments]);
   logger.info(msg);
   logStdout.write(msg + '\n');
 };
 console.error = function () {
-  let msg = '[error]' + getDate() + util.format.apply(null, arguments);
+  let msg = '[error]' + getDate() + util.format.apply(null, [...arguments]);
   logger.error(msg);
   logStdout.write(msg + '\n');
 };
 console.warn = function () {
-  let msg = '[warn]' + getDate() + util.format.apply(null, arguments);
+  let msg = '[warn]' + getDate() + util.format.apply(null, [...arguments]);
   logger.warn(msg);
   logStdout.write(msg + '\n');
 };

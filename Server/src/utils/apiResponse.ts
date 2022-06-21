@@ -98,7 +98,7 @@ export default class ApiResponse {
     return res.status(StatusCodes.UNAUTHORIZED).json(data);
   }
 
-  static OutOfDateResponse(res: Response, msg: String) {
+  static outOfDateResponse(res: Response, msg: String) {
     const data = {
       status: StatusCodes.UNAUTHORIZED,
       message: msg,
