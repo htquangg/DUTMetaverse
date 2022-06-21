@@ -4,8 +4,11 @@ import { LOCAL_STORAGE } from '@tlq/constants';
 import { TlqLocalStorage } from '@tlq/localstorage';
 
 export interface UserInfoProps {
+  playerID: string;
+  secretKey: string;
   name: string;
   skin: string;
+  accessToken?: string;
   socialToken?: string;
   socialId?: string;
   avatar?: string;
@@ -45,6 +48,8 @@ const initialState: UserState = {
   userInfo: localUser || {
     name: '',
     skin: '',
+    playerID: '',
+    secretKey: '',
   },
   videoConnected: false,
 };
@@ -62,7 +67,7 @@ export const userSlice = createSlice({
       }
       state.userInfo = userInfo;
     },
-    updateUserInfo: (state, action: PayloadAction<UserInfoProps>) => {
+    updateUserInfo: (state, action: PayloadAction<Partial<UserInfoProps>>) => {
       state.userInfo = { ...state.userInfo, ...action.payload };
       TlqLocalStorage.setItem(
         LOCAL_STORAGE.USER,

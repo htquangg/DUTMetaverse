@@ -6,11 +6,16 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { Header, Sidebar } from '@tlq/components';
 import { useAppSelector, useAppDispatch } from '@tlq/hooks';
 import { ModalLogin } from '@tlq/components/modal';
-
-import { setUserInfo, setLoggedIn, logout } from '@tlq/store/user';
+import {
+  setUserInfo,
+  setLoggedIn,
+  logout,
+  updateUserInfo,
+} from '@tlq/store/user';
 
 import './style.css';
 import { Game } from '@tlq/game/scenes';
@@ -19,6 +24,7 @@ import _ from 'lodash';
 import { FacebookResponse } from '@tlq/types';
 import { TlqLocalStorage } from '@tlq/localstorage';
 import { LOCAL_STORAGE } from '@tlq/constants';
+import { UserService } from '@tlq/services/user';
 
 const StyledSidebar = chakra(Sidebar);
 
@@ -35,12 +41,27 @@ const App = () => {
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
 
+  // useEffect(() => {
+  //   if (!gamePhaser || !gameScene) return;
+  //
+  // }, []);
+
   useEffect(() => {
     if (!gamePhaser || !gameScene) return;
 
-    if (localUser) {
-      gameScene.setNamePlayer(localUser.name);
-      gameScene.setSkinPlayer(localUser.skin);
+    if (localUser && localUser.name !== '') {
+      const playerID = TlqLocalStorage.getItem(LOCAL_STORAGE.PLAYER_ID);
+      const secretKey = TlqLocalStorage.getItem(LOCAL_STORAGE.SECRET_KEY);
+      const name = localUser.name;
+
+      UserService.getAccessToken(
+        { playerID, secretKey, name },
+        (accessToken: string) => {
+          gameScene.setNamePlayer(name);
+          gameScene.setSkinPlayer(localUser.skin);
+          dispatch(updateUserInfo({ accessToken }));
+        },
+      );
     }
   }, [gamePhaser, gameScene]);
 
@@ -57,6 +78,8 @@ const App = () => {
         socialId,
         avatar: response?.picture?.data?.url,
         friends: _.get(response, 'friends.data', []),
+        playerID: uuidv4(),
+        secretKey: uuidv4(),
       };
       gameScene.setNamePlayer(userInfo.name);
       gameScene.setSkinPlayer(userInfo.skin);
@@ -77,10 +100,30 @@ const App = () => {
 
   const handleOnSubmit = (name: string, skin: string) => {
     if (!gamePhaser || !gameScene) return;
-    // TODO
-    gameScene.setNamePlayer(name);
-    gameScene.setSkinPlayer(skin);
-    dispatch(setUserInfo({ name, skin }));
+
+    const userInfo = {
+      name,
+      skin,
+      playerID: uuidv4(),
+      secretKey: uuidv4(),
+    };
+
+    dispatch(setUserInfo(userInfo));
+
+    TlqLocalStorage.setItem(
+      LOCAL_STORAGE.PLAYER_ID,
+      JSON.stringify(userInfo.playerID),
+    );
+    TlqLocalStorage.setItem(
+      LOCAL_STORAGE.SECRET_KEY,
+      JSON.stringify(userInfo.secretKey),
+    );
+
+    UserService.getAccessToken(userInfo, (accessToken: string) => {
+      gameScene.setNamePlayer(name);
+      gameScene.setSkinPlayer(skin);
+      dispatch(updateUserInfo({ accessToken }));
+    });
   };
 
   return (
