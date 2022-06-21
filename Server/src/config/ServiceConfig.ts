@@ -1,6 +1,12 @@
-export const ServiceConfig = {
-  port: Number(process.env.PORT) || 3000,
-  isDev: JSON.parse(process.env.IS_DEV!.toLowerCase()) || true,
-  enableSSL: JSON.parse(process.env.ENABLE_SSL!.toLowerCase()) || false,
-  fbSecretKey: String(process.env.FB_SECRET_KEY) || '',
-};
+import dotenv from 'dotenv';
+import dotenvParseVariables from 'dotenv-parse-variables';
+
+const env = dotenv.config({
+  path: process.env.dotenv_path || undefined,
+});
+
+if (env.error) throw env.error;
+
+export const ServiceConfig = dotenvParseVariables(
+  env.parsed as dotenvParseVariables.Parsed,
+) as NodeJS.ProcessEnv;

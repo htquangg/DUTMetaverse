@@ -5,8 +5,10 @@ export default class DataDeletionService {
   static parseSignedRequest(signedRequest: string) {
     return new Promise((resolve, reject) => {
       try {
-        const fbSecretKey = ServiceConfig.fbSecretKey;
-        const data = Utils.parseSignedRequest(signedRequest, fbSecretKey);
+        const data = Utils.parseSignedRequest(
+          signedRequest,
+          ServiceConfig.FB_SECRET_KEY,
+        );
         if (data) {
           resolve(data);
         }
