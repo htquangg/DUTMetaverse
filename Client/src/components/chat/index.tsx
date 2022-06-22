@@ -241,7 +241,6 @@ const Chat = ({ isShow, onSubmit, ...restProps }) => {
     dispatch(setFocused(true));
   };
 
-  console.log('chatMessages: ', chatMessages);
   return (
     <>
       {isShow && (

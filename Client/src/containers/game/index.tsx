@@ -148,7 +148,6 @@ const GameContainer = () => {
     gameScene.addChatMessage(value);
   };
 
-  console.log('accessToken: ', accessToken);
   return (
     <>
       <Box
