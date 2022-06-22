@@ -20,4 +20,7 @@ module.exports = {
       return webpackConfig; // Important: return the modified config
     },
   },
+  devServer: {
+    port: 8000,
+  },
 };
