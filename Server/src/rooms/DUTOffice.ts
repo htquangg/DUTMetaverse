@@ -198,6 +198,7 @@ export class DUTOffice extends Room<DUTState> {
         computer.userMaster,
       );
       if (client.sessionId === computer.userMaster) {
+        client.send(Messages.STOP_SHARE_SCREEN, client.sessionId);
         computer.connectedUser.forEach((id) => {
           this.clients.forEach((cli) => {
             if (cli.sessionId === id && cli.sessionId !== client.sessionId) {
