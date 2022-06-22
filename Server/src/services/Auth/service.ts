@@ -3,15 +3,11 @@ import jwt from 'jsonwebtoken';
 import prisma from '~/lib/prisma';
 import ApiResponse from '~/utils/apiResponse';
 import { ServiceConfig } from '~/config/ServiceConfig';
-import { PlayerService } from '~/services/PlayerProfile';
+import { PlayerService } from '~/services/Player';
 import type { Info } from './types';
 
 async function getAuthToken(info: Info) {
-  const playerInfo = await prisma.player.findUnique({
-    where: {
-      playerID: info.playerID,
-    },
-  });
+  const playerInfo = await PlayerService.get(info);
   if (playerInfo) {
     if (playerInfo.secretKey !== info.secretKey) {
       return Promise.reject('Not match!!!');
@@ -45,7 +41,6 @@ async function verifyAuthToken(
   next: NextFunction,
 ) {
   const authHeader = req.headers.authorization;
-
   if (authHeader) {
     const token = authHeader.split(' ')[1];
     jwt.verify(
@@ -63,7 +58,8 @@ async function verifyAuthToken(
         if (!playerInfo) {
           ApiResponse.outOfDateResponse(res, 'OutOfDate');
         }
-        req.params.playrID = playerInfo!.playerID;
+        req.params.playerID = playerInfo!.playerID;
+        req.params.secretKey = playerInfo!.secretKey;
         next();
       },
     );
