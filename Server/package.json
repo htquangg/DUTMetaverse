@@ -50,6 +50,6 @@
   },
   "_moduleAliases": {
     "@root": ".",
-    "~": "src"
+    "~": "dist/src"
   }
 }
