@@ -505,8 +505,17 @@ export default class Game extends Phaser.Scene {
   }
 
   public addChatMessage(content: string) {
-    console.log(content)
+    console.log(content);
     this._myPlayer.updateDialogBubble(content);
     this._network.sendMsgPlayerAddChatMessage(content);
+  }
+
+  public getPositionMyPlayer() {
+    return [this._myPlayer.x, this._myPlayer.y];
+  }
+
+  public updateMyPlayer(currentX: number, currentY: number) {
+    // this._myPlayer.setPosition(currentX, currentY);
+    this._myPlayer.updatePosition(currentX, currentY);
   }
 }

@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Phaser from 'phaser';
-import { Box,Icon } from '@chakra-ui/react';
-import {
-  IoChatboxEllipsesOutline,
-  IoChatboxOutline,
-} from 'react-icons/io5';
+import { Box, Icon, Spinner } from '@chakra-ui/react';
+import { IoChatboxEllipsesOutline, IoChatboxOutline } from 'react-icons/io5';
 import { Preload, Background, Game } from '@tlq/game/scenes';
 import { useAppDispatch, useAppSelector } from '@tlq/hooks';
 import './styles.css';
@@ -43,6 +40,10 @@ const GameContainer = () => {
 
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
+
+  const accessToken = useAppSelector(
+    (state) => state.user.userInfo.accessToken,
+  );
 
   useEffect(() => {
     if (!gamePhaser || !gameScene) return;
@@ -147,6 +148,7 @@ const GameContainer = () => {
     gameScene.addChatMessage(value);
   };
 
+  console.log('accessToken: ', accessToken);
   return (
     <>
       <Box
@@ -160,6 +162,7 @@ const GameContainer = () => {
         borderRadius="5px"
         borderStyle="solid"
         borderColor="green.700"
+        display={accessToken ? 'block' : 'none'}
       >
         {isComputerOpen && (
           <ComputerDialog
@@ -177,7 +180,12 @@ const GameContainer = () => {
           />
         )}
       </Box>
-      <Box pos="absolute" bottom="80px" left="300px">
+      <Box
+        pos="absolute"
+        bottom="80px"
+        left="300px"
+        display={accessToken ? 'block' : 'none'}
+      >
         <Icon
           as={showChat ? IoChatboxOutline : IoChatboxEllipsesOutline}
           w="36px"
@@ -189,9 +197,13 @@ const GameContainer = () => {
           }}
         />
       </Box>
-      <Chat onSubmit={handleSubmit} isShow={showChat}/>
+      <Chat
+        onSubmit={handleSubmit}
+        isShow={showChat}
+        display={accessToken ? 'block' : 'none'}
+      />
       <Box
-        display={{ base: 'none', xl: 'block' }}
+        display={{ base: 'none', xl: accessToken ? 'block' : 'none' }}
         className="video-grid"
         w={{ base: 0, xl: '250px' }}
       ></Box>

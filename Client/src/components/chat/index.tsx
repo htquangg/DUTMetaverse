@@ -197,7 +197,7 @@ const InputMessage = React.forwardRef<HTMLInputElement, CustomInputProps>(
   },
 );
 
-const Chat = ({ isShow, onSubmit }) => {
+const Chat = ({ isShow, onSubmit, ...restProps }) => {
   const dispatch = useAppDispatch();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -255,6 +255,7 @@ const Chat = ({ isShow, onSubmit }) => {
           maxW="50%"
           background="#000000a7"
           borderRadius="10px"
+          {...restProps}
         >
           <ChatHeader>
             <h3>Chat</h3>

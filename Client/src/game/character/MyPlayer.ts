@@ -6,6 +6,7 @@ import PlayerSelector from './PlayerSelector';
 import Player, { sittingShiftData } from './Player';
 import store from '@tlq/store';
 import { setShowChat, setFocused } from '@tlq/store/chat';
+import { current } from 'immer';
 
 export default class MyPlayer extends Player {
   private _playContainerBody: Phaser.Physics.Arcade.Body;
@@ -220,6 +221,11 @@ export default class MyPlayer extends Player {
     //   y: this.y,
     //   anim: this.anims.currentAnim.key,
     // });
+  }
+
+  public updatePosition(currentX: number, currentY: number) {
+    this.setPosition(currentX, currentY);
+    this.playerContainer.setPosition(currentX - 16, currentY - 24);
   }
 }
 

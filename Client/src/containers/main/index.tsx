@@ -20,7 +20,7 @@ import {
 import './style.css';
 import { Game } from '@tlq/game/scenes';
 
-import _ from 'lodash';
+import get from 'lodash/get';
 import { FacebookResponse } from '@tlq/types';
 import { TlqLocalStorage } from '@tlq/localstorage';
 import { LOCAL_STORAGE } from '@tlq/constants';
@@ -41,27 +41,69 @@ const App = () => {
   const gamePhaser = useAppSelector((state) => state.game.gamePhaser);
   const gameScene = useAppSelector((state) => state.game.gameScene) as Game;
 
-  // useEffect(() => {
-  //   if (!gamePhaser || !gameScene) return;
-  //
-  // }, []);
+  useEffect(() => {
+    if (!gamePhaser || !gameScene) return;
+    window.onbeforeunload = (event: Event) => {
+      event.preventDefault();
+      const player = TlqLocalStorage.getItem(LOCAL_STORAGE.USER);
+      const accessToken = player.accessToken;
+      delete player.accessToken;
+      TlqLocalStorage.setItem(LOCAL_STORAGE.USER, player);
+      const [x, y] = gameScene.getPositionMyPlayer();
+      const playerID = TlqLocalStorage.getItem(LOCAL_STORAGE.PLAYER_ID);
+      const data = {
+        playerID,
+        x: Math.round(x),
+        y: Math.round(y),
+      };
+      UserService.updateProfileFetch(accessToken, data);
+    };
+  }, [gamePhaser, gameScene]);
 
   useEffect(() => {
     if (!gamePhaser || !gameScene) return;
 
+    const getUser = async (
+      playerID: string,
+      secretKey: string,
+      name: string,
+    ) => {
+      const accessTokenPromise = await UserService.getAccessToken({
+        playerID,
+        secretKey,
+        name,
+      });
+      const playerProfilePromise = await UserService.getProfile({ playerID });
+
+      const [accessTokenRes, playerProfileRes] = await Promise.all([
+        accessTokenPromise,
+        playerProfilePromise,
+      ]);
+
+      return {
+        accessToken: accessTokenRes,
+        ...get(playerProfileRes, 'data.data', {}),
+      };
+    };
     if (localUser && localUser.name !== '') {
       const playerID = TlqLocalStorage.getItem(LOCAL_STORAGE.PLAYER_ID);
       const secretKey = TlqLocalStorage.getItem(LOCAL_STORAGE.SECRET_KEY);
       const name = localUser.name;
 
-      UserService.getAccessToken(
-        { playerID, secretKey, name },
-        (accessToken: string) => {
-          gameScene.setNamePlayer(name);
-          gameScene.setSkinPlayer(localUser.skin);
-          dispatch(updateUserInfo({ accessToken }));
-        },
-      );
+      getUser(playerID, secretKey, name).then((user) => {
+        try {
+          if (user && user.accessToken) {
+            console.log('user: ', user, localUser);
+            gameScene.setNamePlayer(user.name);
+            gameScene.setSkinPlayer(localUser.skin);
+            gameScene.updateMyPlayer(user.x, user.y);
+            dispatch(updateUserInfo({ accessToken: user.accessToken }));
+          }
+        } catch (error) {
+          window.onbeforeunload = null;
+          window.location.reload();
+        }
+      });
     }
   }, [gamePhaser, gameScene]);
 
@@ -77,7 +119,7 @@ const App = () => {
         socialToken,
         socialId,
         avatar: response?.picture?.data?.url,
-        friends: _.get(response, 'friends.data', []),
+        friends: get(response, 'friends.data', []),
         playerID: uuidv4(),
         secretKey: uuidv4(),
       };
@@ -119,7 +161,7 @@ const App = () => {
       JSON.stringify(userInfo.secretKey),
     );
 
-    UserService.getAccessToken(userInfo, (accessToken: string) => {
+    UserService.getAccessToken(userInfo).then((accessToken: string) => {
       gameScene.setNamePlayer(name);
       gameScene.setSkinPlayer(skin);
       dispatch(updateUserInfo({ accessToken }));
