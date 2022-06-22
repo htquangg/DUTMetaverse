@@ -29,11 +29,11 @@ export const UserService = {
     }
   },
   getProfile: async ({ playerID }) => {
-    return axiosInstance.get(`http://localhost:3000/player/${playerID}`);
+    return axiosInstance.get(`/player/${playerID}`);
   },
   updateProfile: async (data: any) => {
     const { playerID, ...restData } = data;
-    return axios.patch(`http://localhost:3000/player/${playerID}`, {
+    return axiosInstance.patch(`/player/${playerID}`, {
       ...restData,
     });
   },
