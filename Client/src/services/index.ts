@@ -18,6 +18,10 @@ export class ApiService {
     return this.#axiosInstance.get(url, { params, ...moreConfigs });
   }
 
+  patch(url: string, data?: any, moreConfigs = {}) {
+    return this.#axiosInstance.patch(url, data, moreConfigs);
+  }
+
   post(url: string, data?: any, moreConfigs = {}) {
     return this.#axiosInstance.post(url, data, moreConfigs);
   }
