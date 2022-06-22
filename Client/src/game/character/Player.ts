@@ -17,7 +17,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   protected _playerName: Phaser.GameObjects.Text;
   private _playerDialogBubble: Phaser.GameObjects.Container;
   public playerContainer: Phaser.GameObjects.Container;
-  private _timeoutID?: number
+  private _timeoutID?: number;
 
   readonly SPEED = 500;
 
@@ -42,7 +42,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       .container(this.x - 16, this.y - 24)
       .setDepth(5000);
     // add dialogBubble to playerContainer
-    this._playerDialogBubble = this.scene.add.container(0, 0).setDepth(5000);
+    this._playerDialogBubble = this.scene.add.container(16, -32).setDepth(5000);
+    this.playerContainer.add(this._playerDialogBubble);
 
     // add playerName to playerContainer
     this._playerName = this.scene.add
@@ -84,9 +85,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     innerText.setY(-innerTextHeight / 2 - this._playerName.height / 2);
     const dialogBoxWidth = innerTextWidth + 10;
-    const dialogBoxHeight = innerTextHeight + 3;
+    const dialogBoxHeight = innerTextHeight + 10;
     const dialogBoxX = innerText.x - innerTextWidth / 2 - 5;
-    const dialogBoxY = innerText.y - innerTextHeight / 2 - 2;
+    const dialogBoxY = innerText.y - innerTextHeight / 2 - 5;
 
     this._playerDialogBubble.add(
       this.scene.add
