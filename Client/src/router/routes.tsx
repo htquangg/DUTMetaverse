@@ -16,15 +16,11 @@ const MainRoutes = () => {
 
   const elements = useRoutes([
     {
-      path: '/',
-      element: _Login,
-    },
-    {
       path: '/login',
       element: _Login,
     },
     {
-      path: '/home',
+      path: '/',
       element: <MainEntry />,
       children: [
         {
