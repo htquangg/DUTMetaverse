@@ -37,10 +37,15 @@ export const UserService = {
       ...restData,
     });
   },
-  updateProfileBeacon: (data: any) => {
-    const blob = new Blob([JSON.stringify(data)], {
-      type: 'application/json',
+  updateProfileFetch: (token: string, data: any) => {
+    fetch(`${SERVER_URL}/player/${data.playerID}`, {
+      keepalive: true,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
     });
-    window.navigator.sendBeacon(`${SERVER_URL}/player/${data.playerID}`, blob);
   },
 };
