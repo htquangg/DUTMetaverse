@@ -1,4 +1,5 @@
 import { Express, Request, Response, NextFunction } from 'express';
+import { AuthService } from '~/services/Auth';
 
 export type Handler = (
   req: Request,
@@ -29,6 +30,7 @@ export const applyRoutes = (routes: Route[], express: Express) => {
         (express as any)[method](path, handler);
         break;
       case 'PRIVATE':
+        (express as any)[method](path, AuthService.verifyAuthToken, handler);
         break;
       case 'MIDDLEWARE':
         (express as any).use(path, handler);
