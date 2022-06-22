@@ -184,7 +184,7 @@ const GameContainer = () => {
         pos="absolute"
         bottom="80px"
         left="300px"
-        display={accessToken ? 'block' : 'none'}
+        display={{ base: 'none', md: accessToken ? 'block' : 'none' }}
       >
         <Icon
           as={showChat ? IoChatboxOutline : IoChatboxEllipsesOutline}
@@ -200,7 +200,7 @@ const GameContainer = () => {
       <Chat
         onSubmit={handleSubmit}
         isShow={showChat}
-        display={accessToken ? 'block' : 'none'}
+        display={{ base: 'none', md: accessToken ? 'block' : 'none' }}
       />
       <Box
         display={{ base: 'none', xl: accessToken ? 'block' : 'none' }}
