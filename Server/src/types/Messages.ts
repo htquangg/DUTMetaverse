@@ -12,4 +12,5 @@ export enum Messages {
   CONNECT_TO_WHITEBOARD = 'connect-to-whiteboard',
   DISCONNECT_FROM_WHITEBOARD = 'disconnect-from-whiteboard',
   ADD_CHAT_MESSAGE = 'add-chat-message',
+  DISCONNECT_STREAM = 'disconnect-stream',
 }

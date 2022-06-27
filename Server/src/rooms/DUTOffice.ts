@@ -137,6 +137,11 @@ export class DUTOffice extends Room<DUTState> {
       Messages.ADD_CHAT_MESSAGE,
       this._handleToReceiveChatMessage.bind(this),
     );
+
+    this.onMessage(
+      Messages.DISCONNECT_STREAM,
+      this._handleToDisconnectStream.bind(this),
+    );
   }
 
   private _handleUpdatePlayer(
@@ -275,5 +280,16 @@ export class DUTOffice extends Room<DUTState> {
       { playerID: client.sessionId, content: message.content },
       { except: client },
     );
+  }
+
+  private _handleToDisconnectStream(
+    client: Client,
+    message: { playerID: string },
+  ) {
+    this.clients.forEach((cli) => {
+      if (cli.sessionId === message.playerID) {
+        cli.send(Messages.DISCONNECT_STREAM, { playerID: client.sessionId });
+      }
+    });
   }
 }
