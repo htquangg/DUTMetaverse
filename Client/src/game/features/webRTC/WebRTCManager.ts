@@ -76,13 +76,17 @@ export default class WebRTCManager {
 
   public initilize(playerID: string): void {
     const sanitizedID = Utils.replaceInvalidID(playerID);
-    console.error('WebRTCManager initilize: ', process.env.REACT_APP_PEER_SERVER_DOMAIN);
-
     this._myPeer = new Peer(sanitizedID, {
-      host: process.env.REACT_APP_PEER_SERVER_DOMAIN || BuildConfig.PeerServerDomain,
-      port: Number(process.env.REACT_APP_PEER_SERVER_PORT) || BuildConfig.PeerServerPort,
-      path: process.env.REACT_APP_PEER_SERVER_PATH || BuildConfig.PeerServerPath,
-      secure: process.env.REACT_APP_PEER_SERVER_DOMAIN === 'localhost' ? false : true,
+      host:
+        process.env.REACT_APP_PEER_SERVER_DOMAIN ||
+        BuildConfig.PeerServerDomain,
+      port:
+        Number(process.env.REACT_APP_PEER_SERVER_PORT) ||
+        BuildConfig.PeerServerPort,
+      path:
+        process.env.REACT_APP_PEER_SERVER_PATH || BuildConfig.PeerServerPath,
+      secure:
+        process.env.REACT_APP_PEER_SERVER_DOMAIN === 'localhost' ? false : true,
     });
 
     this._myPeer.on('call', (call: MediaConnection) => {
@@ -91,13 +95,16 @@ export default class WebRTCManager {
       call.answer(this._myStream);
       call.on('stream', (remoteStream) => {
         if (!this._onCalledPeers.has(call.peer)) {
+          console.error('initilize WebRTCManager: ', call.peer);
           this._peerRemoteId = Utils.formatEncryptID(call.peer);
           this._onCalledPeers.set(call.peer, {
             call,
             video,
             encryptID: this._peerRemoteId,
           });
-          this.startVideoStream(video, remoteStream);
+          if (!this._peers.has(call.peer)) {
+            this.startVideoStream(video, remoteStream);
+          }
         }
       });
     });
@@ -208,7 +215,9 @@ export default class WebRTCManager {
             video,
             encryptID: this._peerRemoteId,
           });
-          this.startVideoStream(video, remoteStream);
+          if (!this._onCalledPeers.has(call.peer)) {
+            this.startVideoStream(video, remoteStream);
+          }
         }
       });
     }

@@ -7,6 +7,7 @@ export enum EventMessage {
   PLAYER_UPDATED = 'player-updated',
   PLAYER_CHANGE_NAME = 'player-change-name',
   PLAYER_LEFT = 'player-left',
+  PLAYER_DISCONNECTED = 'player-diconnected',
   ITEM_ADD_USER = 'item-add-user',
   ITEM_REMOVE_USER = 'item-remove-user',
   CONNECT_TO_COMPUTER = 'connect-to-computer',
@@ -30,6 +31,9 @@ export type EventParamsMap = {
     value: Exclude<IPlayer[keyof IPlayer], Schema[keyof Schema]>;
   };
   [EventMessage.PLAYER_LEFT]: {
+    playerID: string;
+  };
+  [EventMessage.PLAYER_DISCONNECTED]: {
     playerID: string;
   };
   [EventMessage.ITEM_ADD_USER]: {

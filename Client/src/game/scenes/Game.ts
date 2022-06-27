@@ -94,6 +94,14 @@ export default class Game extends Phaser.Scene {
       this,
     );
 
+    this.physics.add.overlap(
+      this._myPlayer,
+      this._otherPlayers,
+      this._handlePlayersOverlap,
+      undefined,
+      this,
+    );
+
     // handle camera
     this.cameras.main.startFollow(this._myPlayer);
   }
@@ -280,6 +288,13 @@ export default class Game extends Phaser.Scene {
     selectionItem.onOverlapDialog();
   }
 
+  private _handlePlayersOverlap(myPlayer, otherPlayer) {
+    // otherPlayer.makeCall(myPlayer, this.network?.webRTC);
+    // myPlayer.makeCall(otherPlayer)
+    // otherPlayer.makeCall(myPlayer);
+    myPlayer.makeCall(otherPlayer);
+  }
+
   private _handlePlayerWallCollision(
     obj1: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     _obj2: Phaser.Types.Physics.Arcade.GameObjectWithBody,
@@ -335,6 +350,11 @@ export default class Game extends Phaser.Scene {
     this._network.onPlayerStopSharing(this._handleStopSharing, this);
 
     this._network.onChatMessageAdded(this._handleChatMessageAdded, this);
+
+    this._network.onPlayerStreamDisconnect(
+      this._handlePlayerStreamDisconnect,
+      this,
+    );
   }
 
   private _handlePlayerJoined<
@@ -453,6 +473,13 @@ export default class Game extends Phaser.Scene {
     console.error('[GameScene] _handleChatMessageAdded.');
     const otherPlayer = this._otherPlayerMap.get(msg.playerID);
     otherPlayer?.updateDialogBubble(msg.content);
+  }
+
+  private _handlePlayerStreamDisconnect<
+    T extends EventParamsMap[EventMessage.PLAYER_DISCONNECTED],
+  >(msg: T): void {
+    console.error('[GameScene] _handlePlayerStreamDisconnect.');
+    this._network.sendMsgPlayeStreamDisconnect(msg.playerID);
   }
 
   public leave(): void {

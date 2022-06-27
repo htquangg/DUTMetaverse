@@ -12,7 +12,7 @@ export const sittingShiftData = {
 };
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  protected _playerID: string;
+  public _playerID: string;
   protected _skin: string | Phaser.Textures.Texture;
   protected _playerName: Phaser.GameObjects.Text;
   private _playerDialogBubble: Phaser.GameObjects.Container;

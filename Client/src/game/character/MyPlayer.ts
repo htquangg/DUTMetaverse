@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
-import { PlayerState, ItemType, CustomCursorKeys } from '@tlq/game/types';
+import {
+  PlayerState,
+  ItemType,
+  CustomCursorKeys,
+  EventMessage,
+} from '@tlq/game/types';
 import { Chair, Whiteboard, Computer } from '@tlq/game/items';
 import { NetworkManager } from '@tlq/game/network';
 import PlayerSelector from './PlayerSelector';
@@ -7,6 +12,8 @@ import Player, { sittingShiftData } from './Player';
 import store from '@tlq/store';
 import { setShowChat, setFocused } from '@tlq/store/chat';
 import { current } from 'immer';
+import { EventManager } from '../events';
+import { OtherPlayer } from '.';
 
 export default class MyPlayer extends Player {
   private _playContainerBody: Phaser.Physics.Arcade.Body;
@@ -19,7 +26,12 @@ export default class MyPlayer extends Player {
     this._behavior = state;
   }
 
+  private _connected: boolean;
+  private _connectionBufferTime: number;
+
   private _network!: NetworkManager;
+
+  private _otherPlayer!: OtherPlayer;
 
   constructor(
     scene: Phaser.Scene,
@@ -31,10 +43,40 @@ export default class MyPlayer extends Player {
   ) {
     super(scene, x, y, texture, id, frame);
 
+    this._connected = false;
+    this._connectionBufferTime = 0;
+
     this._playContainerBody = this.playerContainer
       .body as Phaser.Physics.Arcade.Body;
 
     this._network = NetworkManager.getInstance();
+  }
+
+  preUpdate(t: number, dt: number) {
+    super.preUpdate(t, dt);
+
+    this._connectionBufferTime += dt;
+
+    if (
+      this._connected &&
+      !this.body.embedded &&
+      this.body.touching.none &&
+      this._connectionBufferTime >= 750
+    ) {
+      // if (
+      //   this.x < 610 &&
+      //   this.y > 515 &&
+      //   this.myPlayer!.x < 610 &&
+      //   this.myPlayer!.y > 515
+      // )
+      //   return;
+      EventManager.getInstance().emit(EventMessage.PLAYER_DISCONNECTED, {
+        playerID: this._otherPlayer._playerID,
+      });
+      // phaserEvents.emit(Event.PLAYER_DISCONNECTED, this.playerId);
+      this._connectionBufferTime = 0;
+      this._connected = false;
+    }
   }
 
   update(playerSelector: PlayerSelector, cursors: CustomCursorKeys) {
@@ -130,6 +172,7 @@ export default class MyPlayer extends Player {
         break;
     }
     // this.setDepth(9999);
+    //
   }
 
   private _controlCursors(cursors: CustomCursorKeys) {
@@ -226,6 +269,16 @@ export default class MyPlayer extends Player {
   public updatePosition(currentX: number, currentY: number) {
     this.setPosition(currentX, currentY);
     this.playerContainer.setPosition(currentX - 16, currentY - 24);
+  }
+
+  public makeCall(otherPlayer: OtherPlayer): void {
+    // this._network.makeCall(otherPlayer._playerID);
+    this._otherPlayer = otherPlayer;
+    if (!this._connected && this._connectionBufferTime >= 750) {
+      this._connected = true;
+      this._connectionBufferTime = 0;
+      this._network.makeCall(otherPlayer._playerID);
+    }
   }
 }
 

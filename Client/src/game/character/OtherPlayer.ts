@@ -1,11 +1,21 @@
 import { EventMessage, EventParamsMap } from '@tlq/game/types';
 import Phaser from 'phaser';
+import { NetworkManager } from '@tlq/game/network';
 import Player, { sittingShiftData } from './Player';
+import { MyPlayer } from '.';
+import { EventManager } from '../events';
 
 export default class OtherPlayer extends Player {
+  private _network!: NetworkManager;
+
   private _targetPosition: [number, number];
   private lastUpdateTimestamp?: number;
   private _playContainerBody: Phaser.Physics.Arcade.Body;
+
+  private _connected: boolean;
+  private _connectionBufferTime: number;
+
+  private myPlayer?: MyPlayer;
 
   constructor(
     scene: Phaser.Scene,
@@ -26,6 +36,11 @@ export default class OtherPlayer extends Player {
     // this._playContainerBody.x = this._targetPosition[0] + 100;
     this.playerContainer.x = this.x;
     this.playerContainer.y = this.y;
+
+    this._network = NetworkManager.getInstance();
+
+    this._connected = false;
+    this._connectionBufferTime = 0;
   }
 
   preUpdate(t: number, dt: number) {
@@ -87,6 +102,29 @@ export default class OtherPlayer extends Player {
     // also update playerNameContainer velocity
     this._playContainerBody.setVelocity(vx, vy);
     this._playContainerBody.velocity.setLength(this.SPEED);
+
+    this._connectionBufferTime += dt;
+
+    if (
+      this._connected &&
+      !this.body.embedded &&
+      this.body.touching.none &&
+      this._connectionBufferTime >= 750
+    ) {
+      // if (
+      //   this.x < 610 &&
+      //   this.y > 515 &&
+      //   this.myPlayer!.x < 610 &&
+      //   this.myPlayer!.y > 515
+      // )
+      //   return;
+      EventManager.getInstance().emit(EventMessage.PLAYER_DISCONNECTED, {
+        playerID: this._playerID,
+      });
+      // phaserEvents.emit(Event.PLAYER_DISCONNECTED, this.playerId);
+      this._connectionBufferTime = 0;
+      this._connected = false;
+    }
   }
 
   destroy(fromScene: boolean) {
@@ -127,6 +165,17 @@ export default class OtherPlayer extends Player {
         break;
     }
   }
+
+  // public makeCall(myPlayer: MyPlayer): void {
+  //   console.error('makecall: ', myPlayer._playerID, this._playerID);
+  //   this.myPlayer = myPlayer;
+  //   // const myPlayerId = myPlayer._playerID;
+  //   if (!this._connected && this._connectionBufferTime >= 750) {
+  //     this._connected = true;
+  //     this._connectionBufferTime = 0;
+  //     this._network.makeCall(myPlayer._playerID);
+  //   }
+  // }
 }
 
 declare global {

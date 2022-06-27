@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   chakra,
   Box,
@@ -112,20 +112,20 @@ const App = () => {
 
     if (response.accessToken) {
       const { accessToken: socialToken, id: socialId } = response;
+      const localUser = TlqLocalStorage.getItem(LOCAL_STORAGE.USER);
       const userInfo = {
         name: `${response.first_name} ${response.last_name}`,
-        skin:
-          TlqLocalStorage.getItem(LOCAL_STORAGE.USER)?.skin || response.skin,
+        skin: localUser?.skin || response.skin,
         socialToken,
         socialId,
         avatar: response?.picture?.data?.url,
         friends: get(response, 'friends.data', []),
-        playerID: uuidv4(),
-        secretKey: uuidv4(),
+        playerID: localUser?.playerID || uuidv4(),
+        secretKey: localUser?.secretKey || uuidv4(),
       };
       gameScene.setNamePlayer(userInfo.name);
       gameScene.setSkinPlayer(userInfo.skin);
-      dispatch(setUserInfo(userInfo));
+      dispatch(updateUserInfo(userInfo));
     }
   };
 

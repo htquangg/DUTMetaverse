@@ -114,6 +114,10 @@ export default class NetworkManager {
     });
   }
 
+  public makeCall(playerID: string): void {
+    this._webRTCInstance.connectToNewUser(playerID);
+  }
+
   private _initialize() {
     if (!this._room) return;
 
@@ -235,7 +239,7 @@ export default class NetworkManager {
 
     this._room.onMessage(Messages.NEW_COMMER, (content) => {
       console.error('[NetworkManager] new commer.', content);
-      this._webRTCInstance.connectToNewUser(content.playerID);
+      // this._webRTCInstance.connectToNewUser(content.playerID);
     });
 
     this._room.onMessage(Messages.START_SHARE_SCREEN, (clientIDs: string[]) => {
@@ -265,6 +269,11 @@ export default class NetworkManager {
         playerID,
         content,
       });
+    });
+
+    this._room.onMessage(Messages.DISCONNECT_STREAM, ({ playerID }) => {
+      this._webRTCInstance.stopVideoStream(playerID);
+      this._webRTCInstance.stopOnCalledVideoStream(playerID);
     });
   }
 
@@ -363,6 +372,17 @@ export default class NetworkManager {
     );
   }
 
+  public onPlayerStreamDisconnect<
+    T extends EventParamsMap[EventMessage.PLAYER_DISCONNECTED],
+  >(callback: (msg: T) => void, context?: any) {
+    console.error('[NetworkManager] onPlayerStreamDisconnected.');
+    EventManager.getInstance().on(
+      EventMessage.PLAYER_DISCONNECTED,
+      callback,
+      context,
+    );
+  }
+
   // <------------------------------------------------------->
   // <--------------- HANDLE SEND MESSAGE TO SERVER --------->
   // <------------------------------------------------------->
@@ -443,7 +463,11 @@ export default class NetworkManager {
 
   public sendMsgPlayerAddChatMessage(content: string) {
     if (!this._room) return;
-    console.log("networ addd chat conent: ", content)
     this._room.send(Messages.ADD_CHAT_MESSAGE, { content });
+  }
+
+  public sendMsgPlayeStreamDisconnect(playerID: string) {
+    if (!this._room) return;
+    this._room.send(Messages.DISCONNECT_STREAM, { playerID });
   }
 }
