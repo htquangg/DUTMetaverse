@@ -1,3 +1,3 @@
 # DUTMetaverse
 
-Initialize project
+https://dut-metaverse.web.app/
