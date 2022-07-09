@@ -18,12 +18,12 @@ interface LinkItemProps {
 
 export const HOME_SIDER_MENU_LIST: Array<LinkItemProps> = [
   {
-    path: '/home/index',
+    path: '/index',
     name: 'Home',
     icon: FiHome,
   },
   {
-    path: '/home/trending',
+    path: '/trending',
     name: 'Trending',
     icon: FiTrendingUp,
   },
